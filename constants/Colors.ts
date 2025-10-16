@@ -1,48 +1,48 @@
 // Paleta de colores para la aplicación JCV (Jalisco Cómo Vamos)
-// Paleta básica con 10 colores principales para mantener consistencia visual
+// Basada en el diseño institucional del sitio jaliscocomovamos.org
+// Adaptada para mantener coherencia visual y legibilidad en aplicaciones móviles/web
 
 export const colors = {
   // Colores primarios
-  primary: '#007AFF',        // Color principal - usado para botones principales y elementos destacados
-  primaryLight: '#4DA3FF',   // Variación más clara del color primario
-  primaryDark: '#0056CC',    // Variación más oscura del color primario
+  primary: '#1C366B',        // Azul institucional (botones principales, encabezados)
+  primaryLight: '#3A5CA8',   // Azul más claro (hover, estados activos)
+  primaryDark: '#12264D',    // Azul oscuro (textos o fondos de contraste)
   
   // Colores secundarios
-  secondary: '#34C759',      // Usado para botones de acción positiva (crear cuenta, éxito)
-  accent: '#FF6B6B',         // Usado para errores y elementos de alerta
+  secondary: '#D8A23A',      // Dorado mostaza (acento visual, indicadores)
+  accent: '#E94E1B',         // Naranja (alertas o elementos destacados)
   
   // Colores de fondo y superficie
-  background: '#F5F5F5',     // Color de fondo principal
-  surface: '#FFFFFF',        // Color de superficie para tarjetas y formularios
+  background: '#F7F8FA',     // Fondo general (gris muy claro)
+  surface: '#FFFFFF',        // Superficie de tarjetas, modales, etc.
   
   // Colores de texto
-  textPrimary: '#333333',    // Texto principal
-  textSecondary: '#666666',  // Texto secundario y elementos menos importantes
-  textDisabled: '#CCCCCC',   // Texto deshabilitado y elementos inactivos
+  textPrimary: '#1C1C1C',    // Texto principal (alta legibilidad)
+  textSecondary: '#666666',  // Texto secundario y etiquetas
+  textDisabled: '#BDBDBD',   // Texto deshabilitado
+  
+  // Elementos complementarios
+  border: '#E0E0E0',         // Bordes sutiles
+  link: '#0066CC',           // Enlaces o botones informativos
 } as const;
 
 // Tipo TypeScript derivado para autocompletado y validación
 export type ColorKey = keyof typeof colors;
 
 // Función helper para obtener colores de forma segura
-export const getColor = (colorKey: ColorKey): string => {
-  return colors[colorKey];
-};
+export const getColor = (colorKey: ColorKey): string => colors[colorKey];
 
-// Paleta de colores específica para diferentes estados y contextos
+// Paleta semántica (por contexto o estado)
 export const semanticColors = {
-  // Estados de validación
-  success: colors.secondary,    // Para éxito
-  error: colors.accent,         // Para errores
-  warning: '#FF9500',          // Para advertencias
-  info: colors.primary,        // Para información
+  success: '#3CB371',        // Verde medio para éxito
+  error: '#E94E1B',          // Naranja-rojo para errores
+  warning: '#F4B400',        // Amarillo suave para advertencias
+  info: '#1C366B',           // Azul institucional para mensajes informativos
   
-  // Estados de interacción
   disabled: colors.textDisabled,
   pressed: colors.primaryDark,
   
-  // Bordes y separadores
-  border: '#DDDDDD',
+  border: colors.border,
   separator: '#EEEEEE',
 } as const;
 
