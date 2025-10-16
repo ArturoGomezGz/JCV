@@ -178,9 +178,9 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
             {/* Separador visual: línea horizontal con texto "o" en el centro */}
             <View style={styles.separator}>
-            <View style={styles.separatorLine} />
-            <Text style={styles.separatorText}>o</Text>
-            <View style={styles.separatorLine} />
+              <View style={styles.separatorLine} />
+              <Text style={styles.separatorText}>o</Text>
+              <View style={styles.separatorLine} />
             </View>
 
             {/* Botón secundario: Crear Nueva Cuenta */}
