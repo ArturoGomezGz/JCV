@@ -12,6 +12,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { colors, semanticColors } from '../constants/Colors';
 
 // Definición de la interfaz TypeScript que especifica qué props puede recibir el componente
 // Todas las props son opcionales (?) para mayor flexibilidad
@@ -110,7 +111,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-        
+
         {/* Contenedor principal del formulario con estilos de tarjeta */}
         <View style={styles.formContainer}>
             {/* Título del formulario */}
@@ -214,11 +215,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: colors.background,
   },
-  // Contenedor del formulario: tarjeta blanca con sombra y bordes redondeados
+  // Contenedor del formulario: tarjeta con sombra y bordes redondeados
   formContainer: {
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
     padding: 20,
     borderRadius: 10,
     shadowColor: '#000',
@@ -238,7 +239,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 30,
-    color: '#333',
+    color: colors.textPrimary,
   },
   // Contenedor para cada campo de entrada
   inputContainer: {
@@ -249,60 +250,60 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 8,
-    color: '#333',
+    color: colors.textPrimary,
   },
 
   // === ESTILOS DE INPUTS ===
   // Campo de entrada base
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: semanticColors.border,
     borderRadius: 8,
     paddingHorizontal: 15,
     paddingVertical: 12,
     fontSize: 16,
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
   },
-  // Modificador para inputs con error (borde rojo)
+  // Modificador para inputs con error
   inputError: {
-    borderColor: '#ff6b6b',
+    borderColor: semanticColors.error,
   },
   // Texto de mensajes de error
   errorText: {
-    color: '#ff6b6b',
+    color: semanticColors.error,
     fontSize: 14,
     marginTop: 5,
   },
 
   // === ESTILOS DE BOTONES ===
-  // Botón principal de login (azul)
+  // Botón principal de login
   loginButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.primary,
     paddingVertical: 15,
     borderRadius: 8,
     marginBottom: 15,
   },
   // Estado deshabilitado del botón principal
   loginButtonDisabled: {
-    backgroundColor: '#cccccc',
+    backgroundColor: colors.textDisabled,
   },
   // Texto del botón principal
   loginButtonText: {
-    color: 'white',
+    color: colors.surface,
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
   },
-  // Botón de crear cuenta (verde)
+  // Botón de crear cuenta
   createAccountButton: {
-    backgroundColor: '#34C759',
+    backgroundColor: colors.secondary,
     paddingVertical: 15,
     borderRadius: 8,
     marginBottom: 10,
   },
   // Texto del botón de crear cuenta
   createAccountButtonText: {
-    color: 'white',
+    color: colors.surface,
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
@@ -313,11 +314,11 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#666',
+    borderColor: colors.textSecondary,
   },
   // Texto del botón de invitado
   guestButtonText: {
-    color: '#666',
+    color: colors.textSecondary,
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
@@ -334,12 +335,12 @@ const styles = StyleSheet.create({
   separatorLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#ddd',
+    backgroundColor: semanticColors.border,
   },
   // Texto "o" en el centro del separador
   separatorText: {
     marginHorizontal: 15,
-    color: '#666',
+    color: colors.textSecondary,
     fontSize: 14,
   },
 });
