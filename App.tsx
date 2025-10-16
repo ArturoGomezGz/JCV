@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Alert } from 'react-native';
-import { LoginForm } from './components';
+import { LoginForm, FooterLogo } from './components';
 
 export default function App() {
   const handleLogin = (email: string, password: string) => {
@@ -37,6 +37,8 @@ export default function App() {
         onCreateAccount={handleCreateAccount}
         onGuestAccess={handleGuestAccess}
       />
+      {/* Logo de Jalisco Cómo Vamos en la parte inferior */}
+      <FooterLogo />
       <StatusBar style="auto" />
     </View>
   );
