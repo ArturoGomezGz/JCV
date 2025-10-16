@@ -1,10 +1,42 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View, Alert } from 'react-native';
+import { LoginForm } from './components';
 
 export default function App() {
+  const handleLogin = (email: string, password: string) => {
+    // Aquí puedes implementar tu lógica de autenticación
+    Alert.alert(
+      'Login Exitoso',
+      `Bienvenido!\nEmail: ${email}`,
+      [{ text: 'OK' }]
+    );
+  };
+
+  const handleCreateAccount = () => {
+    // Aquí puedes navegar a la pantalla de registro
+    Alert.alert(
+      'Crear Cuenta',
+      'Redirigiendo a la pantalla de registro...',
+      [{ text: 'OK' }]
+    );
+  };
+
+  const handleGuestAccess = () => {
+    // Aquí puedes implementar el acceso como invitado
+    Alert.alert(
+      'Acceso de Invitado',
+      'Entrando a la aplicación como invitado...',
+      [{ text: 'OK' }]
+    );
+  };
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
+      <LoginForm 
+        onLogin={handleLogin}
+        onCreateAccount={handleCreateAccount}
+        onGuestAccess={handleGuestAccess}
+      />
       <StatusBar style="auto" />
     </View>
   );
@@ -13,8 +45,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#f0f0f0',
   },
 });
