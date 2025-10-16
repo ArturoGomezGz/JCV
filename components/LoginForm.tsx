@@ -1,7 +1,7 @@
 // Importaciones necesarias de React y React Native
 // React: Hook useState para manejar el estado del componente
 // React Native: Componentes UI y utilidades de plataforma
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
 } from 'react-native';
 import { colors, semanticColors } from '../constants/Colors';
 
@@ -37,6 +38,26 @@ const LoginForm: React.FC<LoginFormProps> = ({
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({ email: '', password: '' });
+
+  // useEffect para limpiar errores cuando cambia el estado de carga
+  useEffect(() => {
+    if (!isLoading) {
+      // Limpiar errores cuando se completa la carga
+      setErrors({ email: '', password: '' });
+    }
+  }, [isLoading]);
+
+  // useEffect para manejar eventos del teclado
+  useEffect(() => {
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      // Limpiar errores cuando se oculta el teclado
+      setErrors({ email: '', password: '' });
+    });
+
+    return () => {
+      keyboardDidHideListener?.remove();
+    };
+  }, []);
 
   // Función de validación: verifica que los campos cumplan con los requisitos
   // Retorna true si el formulario es válido, false si hay errores
@@ -221,6 +242,9 @@ const styles = StyleSheet.create({
   formContainer: {
     backgroundColor: colors.surface,
     padding: 20,
+    width: '90%',
+    height: 'auto',
+    margin: 'auto',
     borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: {
@@ -235,21 +259,21 @@ const styles = StyleSheet.create({
   // === ESTILOS DE TEXTO ===
   // Título principal del formulario
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 30,
+    marginBottom: 20,
     color: colors.textPrimary,
   },
   // Contenedor para cada campo de entrada
   inputContainer: {
-    marginBottom: 20,
+    marginBottom: 15,
   },
   // Etiquetas de los campos de entrada
   label: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
-    marginBottom: 8,
+    marginBottom: 5,
     color: colors.textPrimary,
   },
 
@@ -261,7 +285,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 15,
     paddingVertical: 12,
-    fontSize: 16,
+    fontSize: 14,
     backgroundColor: colors.surface,
   },
   // Modificador para inputs con error
@@ -271,7 +295,7 @@ const styles = StyleSheet.create({
   // Texto de mensajes de error
   errorText: {
     color: semanticColors.error,
-    fontSize: 14,
+    fontSize: 12,
     marginTop: 5,
   },
 
@@ -281,7 +305,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     paddingVertical: 15,
     borderRadius: 8,
-    marginBottom: 15,
+    marginBottom: 6,
   },
   // Estado deshabilitado del botón principal
   loginButtonDisabled: {
@@ -290,7 +314,7 @@ const styles = StyleSheet.create({
   // Texto del botón principal
   loginButtonText: {
     color: colors.surface,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     textAlign: 'center',
   },
@@ -304,7 +328,7 @@ const styles = StyleSheet.create({
   // Texto del botón de crear cuenta
   createAccountButtonText: {
     color: colors.surface,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     textAlign: 'center',
   },
@@ -319,7 +343,7 @@ const styles = StyleSheet.create({
   // Texto del botón de invitado
   guestButtonText: {
     color: colors.textSecondary,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     textAlign: 'center',
   },
