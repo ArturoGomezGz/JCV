@@ -20,6 +20,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      <StatusBar style="auto" />
       <HeaderLogo />
       <LoginForm 
         onLogin={handleLogin}
@@ -28,7 +29,6 @@ export default function App() {
         isLoading={useState(false)[0]}
       />
       <FooterLogo />
-      <StatusBar style="auto" />
     </View>
   );
 }
