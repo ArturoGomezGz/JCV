@@ -22,13 +22,13 @@ export default function App() {
     <View style={styles.container}>
       <StatusBar style="auto" />
       <HeaderLogo />
+      <FooterLogo />
       <LoginForm 
         onLogin={handleLogin}
         onCreateAccount={handleCreateAccount}
         onGuestAccess={handleGuestAccess}
         isLoading={useState(false)[0]}
       />
-      <FooterLogo />
     </View>
   );
 }

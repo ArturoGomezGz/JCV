@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
-    backgroundColor: colors.background,
+    backgroundColor: 'transparent',
     marginTop: 45,
   },
   // Contenedor del formulario: tarjeta con sombra y bordes redondeados
