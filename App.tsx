@@ -22,7 +22,7 @@ export default function App() {
     <View style={styles.container}>
       <StatusBar style="auto" />
       <HeaderLogo />
-      <FooterLogo />
+      <FooterLogo /> {/* Moved FooterLogo here to be above LoginForm */}
       <LoginForm 
         onLogin={handleLogin}
         onCreateAccount={handleCreateAccount}
