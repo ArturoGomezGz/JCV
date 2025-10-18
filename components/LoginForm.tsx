@@ -12,6 +12,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
+  ScrollView
 } from 'react-native';
 import { colors, semanticColors } from '../constants/Colors';
 
@@ -129,22 +130,21 @@ const LoginForm: React.FC<LoginFormProps> = ({
   // Diferente comportamiento entre iOS ('padding') y Android ('height')
   return (
     <KeyboardAvoidingView 
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-
-        {/* Contenedor principal del formulario con estilos de tarjeta */}
-        <View style={styles.formContainer}>
-          {/* Título del formulario */}
-          <Text style={styles.title}>Iniciar Sesión</Text>
-          
-          {/* Campo Email */}
-          <View style={styles.inputContainer}>
+      {/* Contenedor principal del formulario con estilos de tarjeta */}
+      <View style={styles.formContainer}>
+        {/* Título del formulario */}
+        <Text style={styles.title}>Iniciar Sesión</Text>
+        
+        {/* Campo Email */}
+        <View style={styles.inputContainer}>
           <Text style={styles.label}>Email</Text>
           <TextInput
               style={[
-              styles.input,
-              errors.email ? styles.inputError : null
+                styles.input,
+                errors.email ? styles.inputError : null
               ]}
               placeholder="Ingresa tu email"
               value={email}
@@ -154,74 +154,74 @@ const LoginForm: React.FC<LoginFormProps> = ({
               autoCorrect={false}
               editable={!isLoading}
           />
-          {/* Mensaje de error para email (solo se muestra si hay error) */}
-          {errors.email ? (
-              <Text style={styles.errorText}>{errors.email}</Text>
-          ) : null}
-          </View>
-
-          {/* Campo Contraseña */}
-          <View style={styles.inputContainer}>
-          <Text style={styles.label}>Contraseña</Text>
-          <TextInput
-              style={[
-              styles.input,
-              errors.password ? styles.inputError : null
-              ]}
-              placeholder="Ingresa tu contraseña"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              autoCapitalize="none"
-              autoCorrect={false}
-              editable={!isLoading}
-          />
-          {/* Mensaje de error para contraseña (solo se muestra si hay error) */}
-          {errors.password ? (
-              <Text style={styles.errorText}>{errors.password}</Text>
-          ) : null}
-          </View>
-
-          {/* Botón principal de Login */}
-          {/* Se deshabilita y cambia de color cuando isLoading es true */}
-          <TouchableOpacity
-          style={[
-              styles.loginButton,
-              isLoading ? styles.loginButtonDisabled : null
-          ]}
-          onPress={handleLogin}
-          disabled={isLoading}
-          >
-          <Text style={styles.loginButtonText}>
-              {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
-          </Text>
-          </TouchableOpacity>
-
-          {/* Separador visual: línea horizontal con texto "o" en el centro */}
-          <View style={styles.separator}>
-            <View style={styles.separatorLine} />
-            <Text style={styles.separatorText}>o</Text>
-            <View style={styles.separatorLine} />
-          </View>
-
-          {/* Botón secundario: Crear Nueva Cuenta */}
-          <TouchableOpacity
-          style={styles.createAccountButton}
-          onPress={handleCreateAccount}
-          disabled={isLoading}
-          >
-          <Text style={styles.createAccountButtonText}>Crear Nueva Cuenta</Text>
-          </TouchableOpacity>
-
-          {/* Botón terciario: Entrar como Invitado */}
-          <TouchableOpacity
-          style={styles.guestButton}
-          onPress={handleGuestAccess}
-          disabled={isLoading}
-          >
-          <Text style={styles.guestButtonText}>Entrar como Invitado</Text>
-          </TouchableOpacity>
+        {/* Mensaje de error para email (solo se muestra si hay error) */}
+        {errors.email ? (
+            <Text style={styles.errorText}>{errors.email}</Text>
+        ) : null}
         </View>
+
+        {/* Campo Contraseña */}
+        <View style={styles.inputContainer}>
+        <Text style={styles.label}>Contraseña</Text>
+        <TextInput
+            style={[
+            styles.input,
+            errors.password ? styles.inputError : null
+            ]}
+            placeholder="Ingresa tu contraseña"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            autoCapitalize="none"
+            autoCorrect={false}
+            editable={!isLoading}
+        />
+        {/* Mensaje de error para contraseña (solo se muestra si hay error) */}
+        {errors.password ? (
+            <Text style={styles.errorText}>{errors.password}</Text>
+        ) : null}
+        </View>
+
+        {/* Botón principal de Login */}
+        {/* Se deshabilita y cambia de color cuando isLoading es true */}
+        <TouchableOpacity
+        style={[
+            styles.loginButton,
+            isLoading ? styles.loginButtonDisabled : null
+        ]}
+        onPress={handleLogin}
+        disabled={isLoading}
+        >
+        <Text style={styles.loginButtonText}>
+            {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+        </Text>
+        </TouchableOpacity>
+
+        {/* Separador visual: línea horizontal con texto "o" en el centro */}
+        <View style={styles.separator}>
+          <View style={styles.separatorLine} />
+          <Text style={styles.separatorText}>o</Text>
+          <View style={styles.separatorLine} />
+        </View>
+
+        {/* Botón secundario: Crear Nueva Cuenta */}
+        <TouchableOpacity
+        style={styles.createAccountButton}
+        onPress={handleCreateAccount}
+        disabled={isLoading}
+        >
+        <Text style={styles.createAccountButtonText}>Crear Nueva Cuenta</Text>
+        </TouchableOpacity>
+
+        {/* Botón terciario: Entrar como Invitado */}
+        <TouchableOpacity
+        style={styles.guestButton}
+        onPress={handleGuestAccess}
+        disabled={isLoading}
+        >
+        <Text style={styles.guestButtonText}>Entrar como Invitado</Text>
+        </TouchableOpacity>
+      </View>
     </KeyboardAvoidingView>
   );
 };
