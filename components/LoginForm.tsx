@@ -142,13 +142,12 @@ const LoginForm: React.FC<LoginFormProps> = ({
         
         {/* Campo Email */}
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Email</Text>
           <TextInput
               style={[
                 styles.input,
                 errors.email ? styles.inputError : null
               ]}
-              placeholder="Ingresa tu email"
+              placeholder="Email"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -164,13 +163,12 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
         {/* Campo Contraseña */}
         <View style={styles.inputContainer}>
-        <Text style={styles.label}>Contraseña</Text>
         <TextInput
             style={[
             styles.input,
             errors.password ? styles.inputError : null
             ]}
-            placeholder="Ingresa tu contraseña"
+            placeholder="Contraseña"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
@@ -273,13 +271,6 @@ const styles = StyleSheet.create({
   // Contenedor para cada campo de entrada
   inputContainer: {
     marginBottom: 15,
-  },
-  // Etiquetas de los campos de entrada
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 5,
-    color: colors.textPrimary,
   },
 
   // === ESTILOS DE INPUTS ===

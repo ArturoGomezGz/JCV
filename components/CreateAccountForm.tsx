@@ -96,13 +96,12 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
         
         {/* Campo Email */}
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Email</Text>
           <TextInput
             style={[
               styles.input,
               errors.email ? styles.inputError : null
             ]}
-            placeholder="Ingresa tu email"
+            placeholder="Email"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -117,13 +116,12 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 
         {/* Campo Contraseña */}
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Contraseña</Text>
           <TextInput
             style={[
               styles.input,
               errors.password ? styles.inputError : null
             ]}
-            placeholder="Ingresa tu contraseña"
+            placeholder="Contraseña"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
@@ -138,13 +136,12 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 
         {/* Campo Confirmar Contraseña */}
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Confirmar Contraseña</Text>
           <TextInput
             style={[
               styles.input,
               errors.confirmPassword ? styles.inputError : null
             ]}
-            placeholder="Confirma tu contraseña"
+            placeholder="Confirmar Contraseña"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             secureTextEntry
@@ -223,12 +220,6 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginBottom: 15,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 5,
-    color: colors.textPrimary,
   },
 
   // === ESTILOS DE INPUTS ===
