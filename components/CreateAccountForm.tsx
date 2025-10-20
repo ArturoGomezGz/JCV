@@ -14,7 +14,7 @@ import { colors, semanticColors } from '../constants/Colors';
 
 // Definición de la interfaz TypeScript para las props del componente
 interface CreateAccountFormProps {
-  onCreateAccount?: (email: string, password: string, confirmPassword: string) => void;
+  onCreateAccount?: (name: string, email: string, phone: string, password: string, confirmPassword: string) => void;
   onBackToLogin?: () => void;
   isLoading?: boolean;
 }
@@ -26,15 +26,23 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
   isLoading = false 
 }) => {
   // Estados del componente
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [errors, setErrors] = useState({ email: '', password: '', confirmPassword: '' });
+  const [errors, setErrors] = useState({ name: '', email: '', phone: '', password: '', confirmPassword: '' });
 
   // Función de validación del formulario
   const validateForm = (): boolean => {
-    const newErrors = { email: '', password: '', confirmPassword: '' };
+    const newErrors = { name: '', email: '', phone: '', password: '', confirmPassword: '' };
     let isValid = true;
+
+    // Validar nombre (obligatorio)
+    if (!name.trim()) {
+      newErrors.name = 'El nombre es requerido';
+      isValid = false;
+    }
 
     // Validar email
     if (!email.trim()) {
@@ -42,6 +50,12 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
       isValid = false;
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = 'Ingresa un email válido';
+      isValid = false;
+    }
+
+    // Validar teléfono (opcional, pero si se proporciona debe ser válido)
+    if (phone.trim() && !/^\d{10}$/.test(phone.replace(/\s+/g, ''))) {
+      newErrors.phone = 'Ingresa un teléfono válido (10 dígitos)';
       isValid = false;
     }
 
@@ -71,9 +85,9 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
   const handleCreateAccount = () => {
     if (validateForm()) {
       if (onCreateAccount) {
-        onCreateAccount(email, password, confirmPassword);
+        onCreateAccount(name, email, phone, password, confirmPassword);
       } else {
-        Alert.alert('Cuenta Creada', `Cuenta creada para: ${email}`);
+        Alert.alert('Cuenta Creada', `Cuenta creada para: ${name} (${email})`);
       }
     }
   };
@@ -94,14 +108,39 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
         {/* Título del formulario */}
         <Text style={styles.title}>Crear Nueva Cuenta</Text>
         
+        {/* Campo Nombre */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>
+            Nombre <Text style={styles.requiredMark}>*</Text>
+          </Text>
+          <TextInput
+            style={[
+              styles.input,
+              errors.name ? styles.inputError : null
+            ]}
+            placeholder="Nombre completo"
+            value={name}
+            onChangeText={setName}
+            autoCapitalize="words"
+            autoCorrect={false}
+            editable={!isLoading}
+          />
+          {errors.name ? (
+            <Text style={styles.errorText}>{errors.name}</Text>
+          ) : null}
+        </View>
+
         {/* Campo Email */}
         <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>
+            Email <Text style={styles.requiredMark}>*</Text>
+          </Text>
           <TextInput
             style={[
               styles.input,
               errors.email ? styles.inputError : null
             ]}
-            placeholder="Email"
+            placeholder="correo@ejemplo.com"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -114,8 +153,32 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
           ) : null}
         </View>
 
+        {/* Campo Teléfono */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Teléfono (opcional)</Text>
+          <TextInput
+            style={[
+              styles.input,
+              errors.phone ? styles.inputError : null
+            ]}
+            placeholder="1234567890"
+            value={phone}
+            onChangeText={setPhone}
+            keyboardType="phone-pad"
+            autoCapitalize="none"
+            autoCorrect={false}
+            editable={!isLoading}
+          />
+          {errors.phone ? (
+            <Text style={styles.errorText}>{errors.phone}</Text>
+          ) : null}
+        </View>
+
         {/* Campo Contraseña */}
         <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>
+            Contraseña <Text style={styles.requiredMark}>*</Text>
+          </Text>
           <TextInput
             style={[
               styles.input,
@@ -136,6 +199,9 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 
         {/* Campo Confirmar Contraseña */}
         <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>
+            Confirmar Contraseña <Text style={styles.requiredMark}>*</Text>
+          </Text>
           <TextInput
             style={[
               styles.input,
@@ -220,6 +286,16 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginBottom: 15,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.textPrimary,
+    marginBottom: 5,
+  },
+  requiredMark: {
+    color: semanticColors.error,
+    fontWeight: 'bold',
   },
 
   // === ESTILOS DE INPUTS ===
