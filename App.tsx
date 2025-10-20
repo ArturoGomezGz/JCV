@@ -11,14 +11,8 @@ export default function App() {
 
   const handleLogin = async (email: string, password: string) => {
     // Aquí puedes implementar tu lógica de autenticación
-    try {
-      // Simulamos una autenticación exitosa
-      setUserEmail(email);
-      setCurrentView('dashboard');
-      Alert.alert('Login Exitoso', `Bienvenido ${email}`);
-    } catch (error) {
-      Alert.alert('Error', 'Credenciales incorrectas');
-    }
+    setCurrentView('dashboard');
+  
   };
 
   const handleCreateAccountNavigation = () => {
@@ -27,8 +21,6 @@ export default function App() {
   };
 
   const handleCreateAccount = async (email: string, password: string, confirmPassword: string) => {
-    // Aquí puedes implementar la lógica para crear una cuenta
-    Alert.alert('Cuenta Creada', `Cuenta creada exitosamente para: ${email}`);
     // Volver al login después de crear la cuenta
     setCurrentView('login');
   };

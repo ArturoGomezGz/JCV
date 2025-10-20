@@ -64,7 +64,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   // Retorna true si el formulario es válido, false si hay errores
   // Actualiza el estado 'errors' con mensajes específicos para cada campo
   const validateForm = (): boolean => {
-    const newErrors = { email: '', password: '' };
+    /* const newErrors = { email: '', password: '' };
     let isValid = true;
 
     // Validar email
@@ -86,7 +86,9 @@ const LoginForm: React.FC<LoginFormProps> = ({
     }
 
     setErrors(newErrors);
-    return isValid;
+    return isValid; */
+      
+    return true; // ← Temporalmente deshabilitada la validación---------------------------------------------(DEBUG MODE ON)
   };
 
   // Manejador del evento de login: se ejecuta cuando el usuario presiona "Iniciar Sesión"
