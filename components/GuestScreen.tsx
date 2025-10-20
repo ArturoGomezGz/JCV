@@ -1,5 +1,5 @@
 // Pantalla para usuarios invitados
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { colors } from '../constants/Colors';
+import BottomNavigation from './BottomNavigation';
 
 // Definición de la interfaz TypeScript para las props del componente
 interface GuestScreenProps {
@@ -20,6 +21,7 @@ const GuestScreen: React.FC<GuestScreenProps> = ({
   onBackToLogin,
   onCreateAccount
 }) => {
+  const [activeTab, setActiveTab] = useState('chat');
 
   const handleBackToLogin = () => {
     if (onBackToLogin) {
@@ -33,72 +35,95 @@ const GuestScreen: React.FC<GuestScreenProps> = ({
     }
   };
 
+  const handleTabPress = (tabName: string) => {
+    setActiveTab(tabName);
+    console.log('Tab pressed:', tabName);
+  };
+
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.content}>
-        {/* Título de bienvenida */}
-        <Text style={styles.welcomeTitle}>Modo Invitado</Text>
-        
-        {/* Descripción */}
-        <Text style={styles.description}>
-          Estás navegando como invitado. Tienes acceso limitado a las funciones de la aplicación.
-        </Text>
-        
-        {/* Sección de funciones disponibles */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Funciones Disponibles:</Text>
-          <View style={styles.featureList}>
-            <Text style={styles.featureItem}>• Ver contenido público</Text>
-            <Text style={styles.featureItem}>• Explorar funcionalidades básicas</Text>
-            <Text style={styles.featureItem}>• Acceso de solo lectura</Text>
-          </View>
-        </View>
-
-        {/* Sección de funciones restringidas */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Para acceso completo:</Text>
-          <View style={styles.featureList}>
-            <Text style={styles.restrictedItem}>• Crear y editar contenido</Text>
-            <Text style={styles.restrictedItem}>• Guardar preferencias</Text>
-            <Text style={styles.restrictedItem}>• Acceso a funciones premium</Text>
-          </View>
-        </View>
-
-        {/* Placeholder para contenido de invitado */}
-        <View style={styles.placeholder}>
-          <Text style={styles.placeholderText}>
-            Contenido disponible para invitados
-          </Text>
-          <Text style={styles.placeholderSubtext}>
-            Esta sección mostraría el contenido limitado que pueden ver los usuarios invitados
-          </Text>
-        </View>
-
-        {/* Botones de acción */}
-        <View style={styles.buttonContainer}>
-          {/* Botón para crear cuenta */}
-          <TouchableOpacity
-            style={styles.createAccountButton}
-            onPress={handleCreateAccount}
-          >
-            <Text style={styles.createAccountButtonText}>Crear Cuenta</Text>
-          </TouchableOpacity>
+    <View style={styles.mainContainer}>
+      <ScrollView style={styles.container}>
+        <View style={styles.content}>
+          {/* Título de bienvenida */}
+          <Text style={styles.welcomeTitle}>Modo Invitado</Text>
           
-          {/* Botón para volver al login */}
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={handleBackToLogin}
-          >
-            <Text style={styles.backButtonText}>Volver al Login</Text>
-          </TouchableOpacity>
+          {/* Descripción */}
+          <Text style={styles.description}>
+            Estás navegando como invitado. Tienes acceso limitado a las funciones de la aplicación.
+          </Text>
+          
+          {/* Información del tab activo */}
+          <View style={styles.tabInfo}>
+            <Text style={styles.tabInfoText}>
+              Tab activo: <Text style={styles.tabInfoValue}>{activeTab}</Text>
+            </Text>
+          </View>
+          
+          {/* Sección de funciones disponibles */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Funciones Disponibles:</Text>
+            <View style={styles.featureList}>
+              <Text style={styles.featureItem}>• Ver contenido público</Text>
+              <Text style={styles.featureItem}>• Explorar funcionalidades básicas</Text>
+              <Text style={styles.featureItem}>• Acceso de solo lectura</Text>
+            </View>
+          </View>
+
+          {/* Sección de funciones restringidas */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Para acceso completo:</Text>
+            <View style={styles.featureList}>
+              <Text style={styles.restrictedItem}>• Crear y editar contenido</Text>
+              <Text style={styles.restrictedItem}>• Guardar preferencias</Text>
+              <Text style={styles.restrictedItem}>• Acceso a funciones premium</Text>
+            </View>
+          </View>
+
+          {/* Placeholder para contenido de invitado */}
+          <View style={styles.placeholder}>
+            <Text style={styles.placeholderText}>
+              Contenido disponible para invitados
+            </Text>
+            <Text style={styles.placeholderSubtext}>
+              Esta sección mostraría el contenido limitado que pueden ver los usuarios invitados
+            </Text>
+          </View>
+
+          {/* Botones de acción */}
+          <View style={styles.buttonContainer}>
+            {/* Botón para crear cuenta */}
+            <TouchableOpacity
+              style={styles.createAccountButton}
+              onPress={handleCreateAccount}
+            >
+              <Text style={styles.createAccountButtonText}>Crear Cuenta</Text>
+            </TouchableOpacity>
+            
+            {/* Botón para volver al login */}
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={handleBackToLogin}
+            >
+              <Text style={styles.backButtonText}>Volver al Login</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+      
+      <BottomNavigation 
+        activeTab={activeTab}
+        onTabPress={handleTabPress}
+      />
+    </View>
   );
 };
 
 // Estilos del componente
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
   container: {
     flex: 1,
     backgroundColor: 'transparent',
@@ -106,6 +131,24 @@ const styles = StyleSheet.create({
   content: {
     padding: 20,
     paddingTop: 60,
+    paddingBottom: 100, // Extra padding for bottom navigation
+  },
+  tabInfo: {
+    backgroundColor: colors.surface,
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  tabInfoText: {
+    fontSize: 16,
+    color: colors.textSecondary,
+    textAlign: 'center',
+  },
+  tabInfoValue: {
+    color: colors.primary,
+    fontWeight: 'bold',
   },
   welcomeTitle: {
     fontSize: 28,
