@@ -210,7 +210,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
         onPress={handleCreateAccount}
         disabled={isLoading}
         >
-        <Text style={styles.createAccountButtonText}>Crear Nueva Cuenta</Text>
+          <Text style={styles.createAccountButtonText}>Crear Nueva Cuenta</Text>
         </TouchableOpacity>
 
         {/* Botón terciario: Entrar como Invitado */}
@@ -219,7 +219,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
         onPress={handleGuestAccess}
         disabled={isLoading}
         >
-        <Text style={styles.guestButtonText}>Entrar como Invitado</Text>
+          <Text style={styles.guestButtonText}>Entrar como Invitado</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
