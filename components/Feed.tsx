@@ -1,4 +1,6 @@
 // Pantalla de feed principal para usuarios invitados y logueados
+// Anteriormente conocido como GuestScreen, ahora renombrado a Feed
+// Soporta tanto modo invitado como usuarios autenticados
 import React, { useState } from 'react';
 import {
   View,
