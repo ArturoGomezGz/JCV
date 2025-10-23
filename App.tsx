@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Alert } from 'react-native';
 import React, { useState } from 'react';
-import { LoginForm, CreateAccountForm, DashboardScreen, GuestScreen, FooterLogo, HeaderLogo } from './components';
+import { LoginForm, CreateAccountForm, DashboardScreen, Feed, FooterLogo, HeaderLogo } from './components';
 import { colors } from './constants/Colors';
 
 export default function App() {
@@ -11,6 +11,7 @@ export default function App() {
 
   const handleLogin = async (email: string, password: string) => {
     // Aquí puedes implementar tu lógica de autenticación
+    setUserEmail(email);
     setCurrentView('dashboard');
   
   };
@@ -65,7 +66,8 @@ export default function App() {
       
       case 'dashboard':
         return (
-          <DashboardScreen
+          <Feed
+            isGuest={false}
             userEmail={userEmail}
             onLogout={handleLogout}
           />
@@ -73,7 +75,8 @@ export default function App() {
       
       case 'guest':
         return (
-          <GuestScreen
+          <Feed
+            isGuest={true}
             onBackToLogin={handleBackToLogin}
             onCreateAccount={handleCreateAccountNavigation}
           />
