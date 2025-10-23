@@ -1,13 +1,19 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Alert } from 'react-native';
 import React, { useState } from 'react';
-import { LoginForm, CreateAccountForm, DashboardScreen, Feed, FooterLogo, HeaderLogo } from './components';
+import { LoginForm, CreateAccountForm, DashboardScreen, Feed, FooterLogo, HeaderLogo, Content } from './components';
 import { colors } from './constants/Colors';
 
 export default function App() {
   // Estado para manejar qué vista mostrar - ahora con múltiples opciones
-  const [currentView, setCurrentView] = useState<'login' | 'createAccount' | 'dashboard' | 'guest'>('login');
+  const [currentView, setCurrentView] = useState<'login' | 'createAccount' | 'dashboard' | 'guest' | 'content'>('login');
   const [userEmail, setUserEmail] = useState<string>('');
+  const [contentData, setContentData] = useState<{
+    title: string;
+    chartType: 'bar' | 'pie' | 'line' | 'progress' | 'donut';
+    data: any[];
+    previousView: 'dashboard' | 'guest';
+  } | null>(null);
 
   const handleLogin = async (email: string, password: string) => {
     // Aquí puedes implementar tu lógica de autenticación
@@ -39,7 +45,28 @@ export default function App() {
   const handleLogout = () => {
     // Limpiar datos del usuario y volver al login
     setUserEmail('');
+    setContentData(null);
     setCurrentView('login');
+  };
+
+  const handleChartPress = (title: string, chartType: 'bar' | 'pie' | 'line' | 'progress' | 'donut', data: any[]) => {
+    // Guardar los datos del contenido y la vista anterior
+    setContentData({
+      title,
+      chartType,
+      data,
+      previousView: currentView === 'dashboard' ? 'dashboard' : 'guest'
+    });
+    setCurrentView('content');
+  };
+
+  const handleBackFromContent = () => {
+    // Volver a la vista anterior (dashboard o guest)
+    if (contentData) {
+      setCurrentView(contentData.previousView);
+    } else {
+      setCurrentView('dashboard'); // Fallback
+    }
   };
 
   // Función para renderizar el contenido según la vista actual
@@ -70,6 +97,7 @@ export default function App() {
             isGuest={false}
             userEmail={userEmail}
             onLogout={handleLogout}
+            onChartPress={handleChartPress}
           />
         );
       
@@ -79,8 +107,19 @@ export default function App() {
             isGuest={true}
             onBackToLogin={handleBackToLogin}
             onCreateAccount={handleCreateAccountNavigation}
+            onChartPress={handleChartPress}
           />
         );
+
+      case 'content':
+        return contentData ? (
+          <Content
+            title={contentData.title}
+            chartType={contentData.chartType}
+            data={contentData.data}
+            onBack={handleBackFromContent}
+          />
+        ) : null;
       
       default:
         return (

@@ -7,3 +7,4 @@ export { default as HeaderLogo } from './HeaderLogo';
 export { default as BottomNavigation } from './BottomNavigation';
 export { default as ChartCard } from './ChartCard';
 export { default as ChartPreview } from './ChartPreview';
+export { default as Content } from './Content';

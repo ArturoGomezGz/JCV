@@ -21,8 +21,6 @@ const HeaderLogo: React.FC = () => {
         }}
         style={styles.logo}
         resizeMode="contain" // Mantiene la proporción de la imagen
-        onError={(error) => console.log('Error loading image:', error)}
-        onLoad={() => console.log('Image loaded successfully')}
       />
     </View>
   );

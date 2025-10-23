@@ -24,8 +24,6 @@ const ChartCard: React.FC<ChartCardProps> = ({
     const handlePress = () => {
         if (onPress) {
         onPress();
-        } else {
-        console.log('Chart card pressed:', title, chartType);
         }
     };
 
