@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { colors } from '../constants/Colors';
 import BottomNavigation from './BottomNavigation';
+import ChartCard from './ChartCard';
 
 // Definición de la interfaz TypeScript para las props del componente
 interface GuestScreenProps {
@@ -22,6 +23,44 @@ const GuestScreen: React.FC<GuestScreenProps> = ({
   onCreateAccount
 }) => {
   const [activeTab, setActiveTab] = useState('chat');
+
+  // Datos de ejemplo para las gráficas
+  const barChartData = [
+    { x: 'Ene', y: 13 },
+    { x: 'Feb', y: 16 },
+    { x: 'Mar', y: 14 },
+    { x: 'Abr', y: 19 },
+    { x: 'May', y: 22 },
+    { x: 'Jun', y: 18 },
+  ];
+
+  const pieChartData = [
+    { label: 'Móvil', value: 45, color: colors.primary },
+    { label: 'Desktop', value: 30, color: '#FF6B6B' },
+    { label: 'Tablet', value: 25, color: '#4ECDC4' },
+  ];
+
+  const lineChartData = [
+    { x: 1, y: 2 },
+    { x: 2, y: 5 },
+    { x: 3, y: 3 },
+    { x: 4, y: 8 },
+    { x: 5, y: 6 },
+    { x: 6, y: 9 },
+  ];
+
+  const progressChartData = [
+    { label: 'Completado', percentage: 75, color: '#4CAF50' },
+    { label: 'En Progreso', percentage: 60, color: '#FF9800' },
+    { label: 'Pendiente', percentage: 30, color: '#F44336' },
+  ];
+
+  const donutChartData = [
+    { label: 'Ventas', value: 40, color: '#9C27B0' },
+    { label: 'Marketing', value: 25, color: '#2196F3' },
+    { label: 'Soporte', value: 20, color: '#FF5722' },
+    { label: 'Desarrollo', value: 15, color: '#795548' },
+  ];
 
   const handleBackToLogin = () => {
     if (onBackToLogin) {
@@ -68,6 +107,47 @@ const GuestScreen: React.FC<GuestScreenProps> = ({
               <Text style={styles.featureItem}>• Acceso de solo lectura</Text>
             </View>
           </View>
+
+          {/* Gráficas de demostración */}
+          <ChartCard
+            title="Actividad Mensual"
+            subtitle="Seguimiento de actividad durante los primeros 6 meses del año"
+            chartType="bar"
+            data={barChartData}
+            onPress={() => console.log('Pressed: Bar Chart')}
+          />
+
+          <ChartCard
+            title="Distribución de Dispositivos"
+            subtitle="Análisis de uso por tipo de dispositivo"
+            chartType="pie"
+            data={pieChartData}
+            onPress={() => console.log('Pressed: Pie Chart')}
+          />
+
+          <ChartCard
+            title="Tendencia de Crecimiento"
+            subtitle="Evolución del crecimiento en los últimos períodos"
+            chartType="line"
+            data={lineChartData}
+            onPress={() => console.log('Pressed: Line Chart')}
+          />
+
+          <ChartCard
+            title="Estado de Proyectos"
+            subtitle="Progreso actual de todos los proyectos activos"
+            chartType="progress"
+            data={progressChartData}
+            onPress={() => console.log('Pressed: Progress Chart')}
+          />
+
+          <ChartCard
+            title="Distribución de Equipos"
+            subtitle="Asignación de recursos por departamento"
+            chartType="donut"
+            data={donutChartData}
+            onPress={() => console.log('Pressed: Donut Chart')}
+          />
 
           {/* Sección de funciones restringidas */}
           <View style={styles.section}>

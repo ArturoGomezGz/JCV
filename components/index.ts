@@ -5,3 +5,5 @@ export { default as GuestScreen } from './GuestScreen';
 export { default as FooterLogo } from './FooterLogo';
 export { default as HeaderLogo } from './HeaderLogo';
 export { default as BottomNavigation } from './BottomNavigation';
+export { default as ChartCard } from './ChartCard';
+export { default as ChartPreview } from './ChartPreview';
