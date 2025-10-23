@@ -117,29 +117,6 @@ const Feed: React.FC<FeedProps> = ({
             </Text>
           </View>
           
-          {/* Sección de funciones disponibles */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>
-              {isGuest ? 'Funciones Disponibles:' : 'Funciones Completas:'}
-            </Text>
-            <View style={styles.featureList}>
-              {isGuest ? (
-                <>
-                  <Text style={styles.featureItem}>• Ver contenido público</Text>
-                  <Text style={styles.featureItem}>• Explorar funcionalidades básicas</Text>
-                  <Text style={styles.featureItem}>• Acceso de solo lectura</Text>
-                </>
-              ) : (
-                <>
-                  <Text style={styles.featureItem}>• Acceso completo a todas las funciones</Text>
-                  <Text style={styles.featureItem}>• Crear y editar contenido</Text>
-                  <Text style={styles.featureItem}>• Configuraciones personalizadas</Text>
-                  <Text style={styles.featureItem}>• Sincronización en la nube</Text>
-                </>
-              )}
-            </View>
-          </View>
-
           {/* Gráficas de demostración */}
           <ChartCard
             title="Actividad Mensual"
