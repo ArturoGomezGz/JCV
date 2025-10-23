@@ -20,6 +20,7 @@ interface FeedProps {
   onCreateAccount?: () => void;
   onLogout?: () => void;
   userEmail?: string;
+  onChartPress?: (title: string, chartType: 'bar' | 'pie' | 'line' | 'progress' | 'donut', data: any[]) => void;
 }
 
 // Componente principal: Feed
@@ -28,7 +29,8 @@ const Feed: React.FC<FeedProps> = ({
   onBackToLogin,
   onCreateAccount,
   onLogout,
-  userEmail
+  userEmail,
+  onChartPress
 }) => {
   const [activeTab, setActiveTab] = useState('chat');
 
@@ -90,7 +92,6 @@ const Feed: React.FC<FeedProps> = ({
 
   const handleTabPress = (tabName: string) => {
     setActiveTab(tabName);
-    console.log('Tab pressed:', tabName);
   };
 
   return (
@@ -122,35 +123,35 @@ const Feed: React.FC<FeedProps> = ({
             title="Actividad Mensual"
             chartType="bar"
             data={barChartData}
-            onPress={() => console.log('Pressed: Bar Chart')}
+            onPress={() => onChartPress && onChartPress("Actividad Mensual", "bar", barChartData)}
           />
 
           <ChartCard
             title="Distribución de Dispositivos"
             chartType="pie"
             data={pieChartData}
-            onPress={() => console.log('Pressed: Pie Chart')}
+            onPress={() => onChartPress && onChartPress("Distribución de Dispositivos", "pie", pieChartData)}
           />
 
           <ChartCard
             title="Tendencia de Crecimiento"
             chartType="line"
             data={lineChartData}
-            onPress={() => console.log('Pressed: Line Chart')}
+            onPress={() => onChartPress && onChartPress("Tendencia de Crecimiento", "line", lineChartData)}
           />
 
           <ChartCard
             title="Estado de Proyectos"
             chartType="progress"
             data={progressChartData}
-            onPress={() => console.log('Pressed: Progress Chart')}
+            onPress={() => onChartPress && onChartPress("Estado de Proyectos", "progress", progressChartData)}
           />
 
           <ChartCard
             title="Distribución de Equipos"
             chartType="donut"
             data={donutChartData}
-            onPress={() => console.log('Pressed: Donut Chart')}
+            onPress={() => onChartPress && onChartPress("Distribución de Equipos", "donut", donutChartData)}
           />
 
           {/* Botones de acción */}
