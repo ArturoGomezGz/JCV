@@ -123,7 +123,6 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
           
           {/* Texto generado por IA */}
           <View style={styles.contentContainer}>
-            <Text style={styles.contentTitle}>Análisis Detallado</Text>
             {isLoading ? (
               <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color={colors.primary} />
@@ -249,12 +248,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3.84,
     elevation: 3,
-  },
-  contentTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: colors.textPrimary,
-    marginBottom: 15,
   },
   contentText: {
     fontSize: 16,
