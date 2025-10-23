@@ -111,7 +111,6 @@ const GuestScreen: React.FC<GuestScreenProps> = ({
           {/* Gráficas de demostración */}
           <ChartCard
             title="Actividad Mensual"
-            subtitle="Seguimiento de actividad durante los primeros 6 meses del año"
             chartType="bar"
             data={barChartData}
             onPress={() => console.log('Pressed: Bar Chart')}
@@ -119,7 +118,6 @@ const GuestScreen: React.FC<GuestScreenProps> = ({
 
           <ChartCard
             title="Distribución de Dispositivos"
-            subtitle="Análisis de uso por tipo de dispositivo"
             chartType="pie"
             data={pieChartData}
             onPress={() => console.log('Pressed: Pie Chart')}
@@ -127,7 +125,6 @@ const GuestScreen: React.FC<GuestScreenProps> = ({
 
           <ChartCard
             title="Tendencia de Crecimiento"
-            subtitle="Evolución del crecimiento en los últimos períodos"
             chartType="line"
             data={lineChartData}
             onPress={() => console.log('Pressed: Line Chart')}
@@ -135,7 +132,6 @@ const GuestScreen: React.FC<GuestScreenProps> = ({
 
           <ChartCard
             title="Estado de Proyectos"
-            subtitle="Progreso actual de todos los proyectos activos"
             chartType="progress"
             data={progressChartData}
             onPress={() => console.log('Pressed: Progress Chart')}
@@ -143,31 +139,10 @@ const GuestScreen: React.FC<GuestScreenProps> = ({
 
           <ChartCard
             title="Distribución de Equipos"
-            subtitle="Asignación de recursos por departamento"
             chartType="donut"
             data={donutChartData}
             onPress={() => console.log('Pressed: Donut Chart')}
           />
-
-          {/* Sección de funciones restringidas */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Para acceso completo:</Text>
-            <View style={styles.featureList}>
-              <Text style={styles.restrictedItem}>• Crear y editar contenido</Text>
-              <Text style={styles.restrictedItem}>• Guardar preferencias</Text>
-              <Text style={styles.restrictedItem}>• Acceso a funciones premium</Text>
-            </View>
-          </View>
-
-          {/* Placeholder para contenido de invitado */}
-          <View style={styles.placeholder}>
-            <Text style={styles.placeholderText}>
-              Contenido disponible para invitados
-            </Text>
-            <Text style={styles.placeholderSubtext}>
-              Esta sección mostraría el contenido limitado que pueden ver los usuarios invitados
-            </Text>
-          </View>
 
           {/* Botones de acción */}
           <View style={styles.buttonContainer}>

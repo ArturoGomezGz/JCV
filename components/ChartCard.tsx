@@ -13,15 +13,13 @@ interface ChartCardProps {
     chartType: 'bar' | 'pie' | 'line' | 'progress' | 'donut';
     data: any[];
     onPress?: () => void;
-    subtitle?: string;
 }
 
 const ChartCard: React.FC<ChartCardProps> = ({
     title,
     chartType,
     data,
-    onPress,
-    subtitle
+    onPress
 }) => {
     const handlePress = () => {
         if (onPress) {
@@ -39,9 +37,6 @@ const ChartCard: React.FC<ChartCardProps> = ({
         >
         <View style={styles.header}>
             <Text style={styles.title}>{title}</Text>
-            {subtitle && (
-            <Text style={styles.subtitle}>{subtitle}</Text>
-            )}
         </View>
         
         <View style={styles.chartContainer}>
@@ -82,11 +77,6 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: colors.textPrimary,
         marginBottom: 5,
-    },
-    subtitle: {
-        fontSize: 14,
-        color: colors.textSecondary,
-        lineHeight: 20,
     },
     chartContainer: {
         paddingHorizontal: 20,
