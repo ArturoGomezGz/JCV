@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 
 // Configuración del cliente OpenAI
 const openai = new OpenAI({
-  apiKey: process.env.EXPO_PUBLIC_LLM_API_KEY,
+  apiKey: process.env.EXPO_PUBLIC_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true, // Necesario para uso en React Native/Expo
 });
 
@@ -17,9 +17,17 @@ export const generateChartAnalysis = async ({
   title,
   data
 }: ChartAnalysisParams): Promise<string> => {
+  // Verificar si el modo AI está habilitado
+  const aiModeEnabled = process.env.EXPO_PUBLIC_AI_MODE_ENABLED === 'true';
+  
+  // Si el modo AI está deshabilitado, devolver texto predeterminado
+  if (!aiModeEnabled) {
+    return getDefaultText(title, chartType);
+  }
+
   try {
     // Verificar que la API key esté configurada
-    if (!process.env.EXPO_PUBLIC_LLM_API_KEY) {
+    if (!process.env.EXPO_PUBLIC_OPENAI_API_KEY) {
       throw new Error('API key de OpenAI no configurada');
     }
 
@@ -70,8 +78,14 @@ El texto debe ser profesional, informativo y estar en español. Debe tener entre
   } catch (error) {
     console.error('Error al generar análisis con OpenAI:', error);
     
-    // Texto de fallback en caso de error (en formato Markdown)
-    return `
+    // En modo AI, si hay error, lanzar excepción para mostrar advertencia
+    throw new Error(`Error al generar análisis con IA: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+  }
+};
+
+// Función para obtener texto predeterminado (modo sin IA)
+const getDefaultText = (title: string, chartType: string): string => {
+  return `
 ## Análisis de la Gráfica: ${title}
 
 Esta es una vista detallada de la gráfica seleccionada. Los datos presentados proporcionan información valiosa para el análisis y la toma de decisiones.
@@ -88,6 +102,7 @@ La visualización de tipo **${chartType}** permite identificar patrones, tendenc
 ### Actualización de Datos
 
 Los datos se actualizan *dinámicamente* y reflejan la información más reciente disponible en el sistema.
-    `;
-  }
+
+> **Nota:** Este análisis utiliza contenido predeterminado. Para obtener análisis personalizados con IA, habilita el modo AI en la configuración.
+  `;
 };

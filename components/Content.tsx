@@ -31,11 +31,16 @@ const Content: React.FC<ContentProps> = ({
   // Estado para el texto generado por IA
   const [generatedText, setGeneratedText] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [hasError, setHasError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
   
   // Efecto para generar el texto con OpenAI al montar el componente
   useEffect(() => {
     const generateAnalysis = async () => {
       setIsLoading(true);
+      setHasError(false);
+      setErrorMessage('');
+      
       try {
         const analysis = await generateChartAnalysis({
           chartType,
@@ -45,7 +50,8 @@ const Content: React.FC<ContentProps> = ({
         setGeneratedText(analysis);
       } catch (error) {
         console.error('Error generating analysis:', error);
-        setGeneratedText(defaultText);
+        setHasError(true);
+        setErrorMessage(error instanceof Error ? error.message : 'Error desconocido');
       } finally {
         setIsLoading(false);
       }
@@ -127,6 +133,37 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
               <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color={colors.primary} />
                 <Text style={styles.loadingText}>Generando análisis...</Text>
+              </View>
+            ) : hasError ? (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorTitle}>⚠️ Error al generar análisis</Text>
+                <Text style={styles.errorMessage}>{errorMessage}</Text>
+                <TouchableOpacity 
+                  style={styles.retryButton}
+                  onPress={() => {
+                    setIsLoading(true);
+                    setHasError(false);
+                    const generateAnalysis = async () => {
+                      try {
+                        const analysis = await generateChartAnalysis({
+                          chartType,
+                          title,
+                          data
+                        });
+                        setGeneratedText(analysis);
+                        setHasError(false);
+                      } catch (error) {
+                        setHasError(true);
+                        setErrorMessage(error instanceof Error ? error.message : 'Error desconocido');
+                      } finally {
+                        setIsLoading(false);
+                      }
+                    };
+                    generateAnalysis();
+                  }}
+                >
+                  <Text style={styles.retryButtonText}>Reintentar</Text>
+                </TouchableOpacity>
               </View>
             ) : (
               <Markdown
@@ -264,6 +301,40 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginTop: 15,
     textAlign: 'center',
+  },
+  errorContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 20,
+    backgroundColor: '#fff5f5',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#fed7d7',
+  },
+  errorTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#e53e3e',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  errorMessage: {
+    fontSize: 14,
+    color: '#c53030',
+    textAlign: 'center',
+    marginBottom: 15,
+    paddingHorizontal: 10,
+  },
+  retryButton: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 6,
+  },
+  retryButtonText: {
+    color: colors.surface,
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 
