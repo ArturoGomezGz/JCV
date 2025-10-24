@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
+import Markdown from 'react-native-markdown-display';
 import { colors } from '../constants/Colors';
 import ChartPreview from './ChartPreview';
+import { generateChartAnalysis } from '../services';
 
 // Definición de la interfaz TypeScript para las props del componente
 interface ContentProps {
@@ -24,6 +27,32 @@ const Content: React.FC<ContentProps> = ({
   data,
   onBack
 }) => {
+  
+  // Estado para el texto generado por IA
+  const [generatedText, setGeneratedText] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  
+  // Efecto para generar el texto con OpenAI al montar el componente
+  useEffect(() => {
+    const generateAnalysis = async () => {
+      setIsLoading(true);
+      try {
+        const analysis = await generateChartAnalysis({
+          chartType,
+          title,
+          data
+        });
+        setGeneratedText(analysis);
+      } catch (error) {
+        console.error('Error generating analysis:', error);
+        setGeneratedText(defaultText);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    generateAnalysis();
+  }, [chartType, title, data]);
   
   // Función para obtener la descripción según el tipo de gráfica
   const getChartDescription = (type: string) => {
@@ -92,12 +121,20 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
             </Text>
           </View>
           
-          {/* Texto preescrito */}
+          {/* Texto generado por IA */}
           <View style={styles.contentContainer}>
-            <Text style={styles.contentTitle}>Análisis Detallado</Text>
-            <Text style={styles.contentText}>
-              {defaultText}
-            </Text>
+            {isLoading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={colors.primary} />
+                <Text style={styles.loadingText}>Generando análisis...</Text>
+              </View>
+            ) : (
+              <Markdown
+                style={markdownStyles}
+              >
+                {generatedText}
+              </Markdown>
+            )}
           </View>
         </View>
       </ScrollView>
@@ -212,16 +249,98 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 3,
   },
-  contentTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: colors.textPrimary,
-    marginBottom: 15,
-  },
   contentText: {
     fontSize: 16,
     color: colors.textSecondary,
     lineHeight: 24,
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 30,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: colors.textSecondary,
+    marginTop: 15,
+    textAlign: 'center',
+  },
+});
+
+// Estilos específicos para Markdown
+const markdownStyles = StyleSheet.create({
+  body: {
+    fontSize: 16,
+    color: colors.textSecondary,
+    lineHeight: 24,
+  },
+  heading1: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.textPrimary,
+    marginBottom: 10,
+    marginTop: 20,
+  },
+  heading2: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors.textPrimary,
+    marginBottom: 8,
+    marginTop: 16,
+  },
+  heading3: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.textPrimary,
+    marginBottom: 6,
+    marginTop: 12,
+  },
+  paragraph: {
+    fontSize: 16,
+    color: colors.textSecondary,
+    lineHeight: 24,
+    marginBottom: 12,
+  },
+  list_item: {
+    fontSize: 16,
+    color: colors.textSecondary,
+    lineHeight: 24,
+    marginBottom: 6,
+  },
+  bullet_list: {
+    marginBottom: 12,
+  },
+  ordered_list: {
+    marginBottom: 12,
+  },
+  strong: {
+    fontWeight: 'bold',
+    color: colors.textPrimary,
+  },
+  em: {
+    fontStyle: 'italic',
+  },
+  code_inline: {
+    backgroundColor: colors.surface,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    borderRadius: 4,
+    fontSize: 14,
+    fontFamily: 'monospace',
+  },
+  fence: {
+    backgroundColor: colors.surface,
+    padding: 12,
+    borderRadius: 8,
+    marginVertical: 8,
+  },
+  blockquote: {
+    borderLeftWidth: 4,
+    borderLeftColor: colors.primary,
+    paddingLeft: 12,
+    marginVertical: 8,
+    backgroundColor: colors.surface,
+    paddingVertical: 8,
   },
 });
 
