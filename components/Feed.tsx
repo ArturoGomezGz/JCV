@@ -23,7 +23,7 @@ interface FeedProps {
   onCreateAccount?: () => void;
   onLogout?: () => void;
   userEmail?: string;
-  onChartPress?: (title: string, chartType: 'bar' | 'pie' | 'line' | 'progress' | 'donut', data: any[], category: string, question: string) => void;
+  onChartPress?: (title: string, chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar', category: string, question: string) => void;
 }
 
 const Feed: React.FC<FeedProps> = ({ 
@@ -69,7 +69,6 @@ const Feed: React.FC<FeedProps> = ({
       onChartPress(
         survey.title,
         survey.chartType,
-        survey.data,
         survey.category,
         survey.question
       );
@@ -113,7 +112,6 @@ const Feed: React.FC<FeedProps> = ({
               key={survey.id}
               title={survey.title}
               chartType={survey.chartType}
-              data={survey.data}
               onPress={() => handleSurveyPress(survey)}
             />
           ))}

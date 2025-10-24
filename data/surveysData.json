@@ -6,15 +6,7 @@
       "category": "Servicios Públicos Generales",
       "question": "¿Cómo calificaría la calidad general de los servicios públicos de su municipio?",
       "chartType": "bar",
-      "description": "Evolución mensual de la satisfacción ciudadana con los servicios públicos municipales",
-      "data": [
-        { "x": "Ene", "y": 4 },
-        { "x": "Feb", "y": 5 },
-        { "x": "Mar", "y": 4 },
-        { "x": "Abr", "y": 6 },
-        { "x": "May", "y": 7 },
-        { "x": "Jun", "y": 6 }
-      ],
+      "description": "Gráfico de barras ideal para comparar valores entre diferentes categorías o períodos. Perfecto para mostrar datos categóricos y facilitar comparaciones visuales rápidas.",
       "metadata": {
         "totalResponses": 1250,
         "averageScore": 17.0,
@@ -27,12 +19,7 @@
       "category": "Infraestructura Digital",
       "question": "¿Considera que su municipio cuenta con una infraestructura digital adecuada?",
       "chartType": "pie",
-      "description": "Distribución de la percepción ciudadana sobre la infraestructura digital municipal",
-      "data": [
-        { "label": "Excelente", "value": 45, "color": "#4CAF50" },
-        { "label": "Bueno", "value": 30, "color": "#FF9800" },
-        { "label": "Regular", "value": 25, "color": "#F44336" }
-      ],
+      "description": "Gráfico circular perfecto para mostrar proporciones y porcentajes de un total. Ideal cuando necesitas visualizar cómo se distribuye un conjunto de datos en partes de un todo.",
       "metadata": {
         "totalResponses": 892,
         "averageScore": 3.2,
@@ -45,15 +32,7 @@
       "category": "Desarrollo Urbano",
       "question": "¿Está satisfecho con las mejoras en infraestructura urbana realizadas el último año?",
       "chartType": "line",
-      "description": "Tendencia de satisfacción con las mejoras en infraestructura urbana durante el último año",
-      "data": [
-        { "x": "Jul 2023", "y": 3 },
-        { "x": "Sep 2023", "y": 4 },
-        { "x": "Nov 2023", "y": 5 },
-        { "x": "Ene 2024", "y": 7 },
-        { "x": "Mar 2024", "y": 8 },
-        { "x": "May 2024", "y": 9 }
-      ],
+      "description": "Gráfico de líneas excelente para mostrar tendencias y cambios a lo largo del tiempo. Ideal para datos temporales y análisis de evolución o progreso.",
       "metadata": {
         "totalResponses": 756,
         "averageScore": 20.0,
@@ -66,13 +45,7 @@
       "category": "Gestión Municipal",
       "question": "¿Qué tan eficiente considera la ejecución de proyectos públicos en su municipio?",
       "chartType": "progress",
-      "description": "Evaluación del progreso y eficiencia en la ejecución de proyectos municipales",
-      "data": [
-        { "label": "Educación", "percentage": 85, "color": "#4CAF50" },
-        { "label": "Salud", "percentage": 72, "color": "#2196F3" },
-        { "label": "Vialidad", "percentage": 60, "color": "#FF9800" },
-        { "label": "Recreación", "percentage": 45, "color": "#F44336" }
-      ],
+      "description": "Gráfico de progreso circular ideal para mostrar porcentajes de completitud o avance. Perfecto para KPIs, metas cumplidas y estados de progreso en múltiples categorías.",
       "metadata": {
         "totalResponses": 1048,
         "averageScore": 65.5,
@@ -81,16 +54,11 @@
     },
     {
       "id": "survey-005",
-      "title": "Distribución de Recursos de Seguridad",
-      "category": "Seguridad Pública",
-      "question": "¿Cómo evalúa la distribución de recursos de seguridad en su zona?",
-      "chartType": "donut",
-      "description": "Percepción ciudadana sobre la distribución de recursos de seguridad pública",
-      "data": [
-        { "label": "Adecuada", "value": 40, "color": "#4CAF50" },
-        { "label": "Insuficiente", "value": 35, "color": "#FF9800" },
-        { "label": "Muy Deficiente", "value": 25, "color": "#F44336" }
-      ],
+      "title": "Actividad en Plataforma Digital Ciudadana",
+      "category": "Participación Digital",
+      "question": "¿Con qué frecuencia utiliza las plataformas digitales municipales?",
+      "chartType": "contribution",
+      "description": "Mapa de calor tipo GitHub que muestra actividad diaria a lo largo del tiempo. Ideal para visualizar patrones de uso, frecuencia de actividades y tendencias temporales densas.",
       "metadata": {
         "totalResponses": 934,
         "averageScore": 2.8,
@@ -99,76 +67,67 @@
     },
     {
       "id": "survey-006",
-      "title": "Satisfacción con Servicios de Salud",
-      "category": "Servicios de Salud",
-      "question": "¿Cómo califica la calidad de los servicios de salud pública en su municipio?",
-      "chartType": "bar",
-      "description": "Evaluación mensual de la satisfacción con servicios de salud pública",
-      "data": [
-        { "x": "Ene", "y": 5 },
-        { "x": "Feb", "y": 6 },
-        { "x": "Mar", "y": 5 },
-        { "x": "Abr", "y": 7 },
-        { "x": "May", "y": 8 },
-        { "x": "Jun", "y": 7 }
-      ],
+      "title": "Distribución de Presupuesto por Área",
+      "category": "Gestión Financiera",
+      "question": "¿Cómo evalúa la distribución del presupuesto municipal por áreas?",
+      "chartType": "stackedBar",
+      "description": "Gráfico de barras apiladas perfecto para mostrar composición de datos en múltiples categorías. Ideal para comparar totales y sus componentes internos simultáneamente.",
       "metadata": {
-        "totalResponses": 987,
-        "averageScore": 21.8,
-        "lastUpdated": "2024-06-30"
+        "totalResponses": 1180,
+        "averageScore": 4.1,
+        "lastUpdated": "2024-06-15"
       }
     },
     {
       "id": "survey-007",
-      "title": "Calidad del Transporte Público",
-      "category": "Movilidad Urbana",
-      "question": "¿Está satisfecho con la calidad del transporte público en su municipio?",
-      "chartType": "pie",
-      "description": "Distribución de opiniones sobre la calidad del transporte público municipal",
-      "data": [
-        { "label": "Muy Satisfecho", "value": 20, "color": "#4CAF50" },
-        { "label": "Satisfecho", "value": 35, "color": "#8BC34A" },
-        { "label": "Neutral", "value": 25, "color": "#FF9800" },
-        { "label": "Insatisfecho", "value": 20, "color": "#F44336" }
-      ],
+      "title": "Tendencia de Satisfacción Ciudadana",
+      "category": "Análisis Temporal",
+      "question": "¿Cómo ha evolucionado su satisfacción general con la gestión municipal?",
+      "chartType": "bezierLine",
+      "description": "Gráfico de líneas suaves que resalta tendencias y flujos naturales en los datos. Ideal para mostrar progresiones orgánicas y suavizar fluctuaciones menores en series temporales.",
       "metadata": {
-        "totalResponses": 1156,
-        "averageScore": 2.9,
-        "lastUpdated": "2024-06-27"
+        "totalResponses": 845,
+        "averageScore": 4.2,
+        "lastUpdated": "2024-06-22"
       }
     },
     {
       "id": "survey-008",
-      "title": "Evolución de Espacios Verdes",
-      "category": "Medio Ambiente",
-      "question": "¿Considera adecuado el mantenimiento de parques y espacios verdes en su zona?",
-      "chartType": "line",
-      "description": "Tendencia de satisfacción con el mantenimiento de espacios verdes municipales",
-      "data": [
-        { "x": "Ene", "y": 4 },
-        { "x": "Feb", "y": 5 },
-        { "x": "Mar", "y": 6 },
-        { "x": "Abr", "y": 7 },
-        { "x": "May", "y": 5 },
-        { "x": "Jun", "y": 6 }
-      ],
+      "title": "Impacto de Políticas Públicas",
+      "category": "Efectividad Gubernamental",
+      "question": "¿Qué impacto han tenido las nuevas políticas públicas en su comunidad?",
+      "chartType": "areaChart",
+      "description": "Gráfico de área que enfatiza el volumen y la magnitud de los datos a lo largo del tiempo. Perfecto para mostrar acumulación, impacto total y áreas de influencia.",
       "metadata": {
-        "totalResponses": 823,
-        "averageScore": 19.3,
-        "lastUpdated": "2024-06-30"
+        "totalResponses": 967,
+        "averageScore": 3.8,
+        "lastUpdated": "2024-06-18"
+      }
+    },
+    {
+      "id": "survey-009",
+      "title": "Evaluación por Departamentos Municipales",
+      "category": "Gestión por Áreas",
+      "question": "¿Cómo califica el desempeño de cada departamento municipal?",
+      "chartType": "horizontalBar",
+      "description": "Gráfico de barras especializado para comparar múltiples departamentos o categorías con nombres largos. Ideal para rankings, evaluaciones comparativas y datos categóricos extensos.",
+      "metadata": {
+        "totalResponses": 1205,
+        "averageScore": 3.9,
+        "lastUpdated": "2024-06-12"
       }
     }
   ],
   "metadata": {
-    "version": "1.0.0",
+    "version": "3.0.0",
     "lastSync": "2024-06-30T10:30:00Z",
-    "totalSurveys": 8,
+    "totalSurveys": 9,
     "apiEndpoint": "https://api.satisfaccion-ciudadana.gob.mx/v1/surveys",
     "notes": [
-      "TODO: Reemplazar este archivo JSON con llamadas a API real",
-      "TODO: Implementar sistema de caché para datos de encuestas",
-      "TODO: Agregar validación de esquemas para los datos",
-      "TODO: Implementar filtros por fecha, categoría y región"
+      "Expandida colección con 9 tipos diferentes de gráficos usando react-native-chart-kit",
+      "Agregados tipos: bezierLine, areaChart, horizontalBar",
+      "Cada gráfico incluye descripción detallada de sus casos de uso ideales",
+      "Diseñado para explorar la variedad completa de visualizaciones disponibles"
     ]
   }
 }

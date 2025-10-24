@@ -7,9 +7,8 @@ const openai = new OpenAI({
 });
 
 export interface ChartAnalysisParams {
-  chartType: 'bar' | 'pie' | 'line' | 'progress' | 'donut';
+  chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar';
   title: string;
-  data: any[];
   category: string;
   question: string;
 }
@@ -17,7 +16,6 @@ export interface ChartAnalysisParams {
 export const generateChartAnalysis = async ({
   chartType,
   title,
-  data,
   category,
   question
 }: ChartAnalysisParams): Promise<string> => {
@@ -45,7 +43,6 @@ Título: ${title}
 Categoría: ${category}
 Pregunta de la encuesta: ${question}
 Tipo de gráfica: ${chartType}
-Datos: ${JSON.stringify(data, null, 2)}
 
 CONTEXTO IMPORTANTE: 
 Esta gráfica forma parte de un sistema de medición de satisfacción ciudadana. La categoría "${category}" agrupa preguntas relacionadas, y esta visualización específica responde a la pregunta: "${question}".

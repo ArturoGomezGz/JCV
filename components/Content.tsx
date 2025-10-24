@@ -13,12 +13,12 @@ import Markdown from 'react-native-markdown-display';
 import { colors } from '../constants/Colors';
 import ChartPreview from './ChartPreview';
 import { generateChartAnalysis } from '../services';
+import surveysData from '../data/surveysData.json';
 
 // Definición de la interfaz TypeScript para las props del componente
 interface ContentProps {
   title: string;
-  chartType: 'bar' | 'pie' | 'line' | 'progress' | 'donut';
-  data: any[];
+  chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar';
   category: string;
   question: string;
   onBack: () => void;
@@ -31,7 +31,6 @@ interface ContentProps {
 const Content: React.FC<ContentProps> = ({
   title,
   chartType,
-  data,
   category,
   question,
   onBack,
@@ -58,7 +57,6 @@ const Content: React.FC<ContentProps> = ({
         const analysis = await generateChartAnalysis({
           chartType,
           title,
-          data,
           category,
           question
         });
@@ -73,24 +71,12 @@ const Content: React.FC<ContentProps> = ({
     };
 
     generateAnalysis();
-  }, [chartType, title, data]);
+  }, [chartType, title]);
   
   // Función para obtener la descripción según el tipo de gráfica
   const getChartDescription = (type: string) => {
-    switch (type) {
-      case 'bar':
-        return 'Esta gráfica de barras muestra la evolución de datos a lo largo del tiempo. Cada barra representa un período específico y su altura indica el valor correspondiente.';
-      case 'pie':
-        return 'Esta gráfica circular representa la distribución proporcional de diferentes categorías. Cada sector muestra el porcentaje que representa cada categoría del total.';
-      case 'line':
-        return 'Esta gráfica de líneas muestra las tendencias y cambios de datos a través del tiempo. Las líneas conectan puntos de datos para revelar patrones y tendencias.';
-      case 'progress':
-        return 'Esta gráfica de progreso muestra el avance o completitud de diferentes proyectos o tareas. Cada barra indica el porcentaje de progreso alcanzado.';
-      case 'donut':
-        return 'Esta gráfica de dona es similar a la circular pero con un espacio central vacío. Muestra la distribución de datos de forma clara y visualmente atractiva.';
-      default:
-        return 'Esta gráfica presenta información importante de manera visual y fácil de interpretar.';
-    }
+    const survey = surveysData.surveys.find(survey => survey.chartType === type);
+    return survey ? survey.description : 'Esta gráfica presenta información importante de manera visual y fácil de interpretar.';
   };
 
   // Función para manejar la exportación a PDF
@@ -162,7 +148,6 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
           <View style={styles.chartContainer}>
             <ChartPreview 
               type={chartType}
-              data={data}
             />
           </View>
           
@@ -195,7 +180,6 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
                         const analysis = await generateChartAnalysis({
                           chartType,
                           title,
-                          data,
                           category,
                           question
                         });

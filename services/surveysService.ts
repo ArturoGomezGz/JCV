@@ -15,9 +15,8 @@ export interface SurveyData {
   title: string;
   category: string;
   question: string;
-  chartType: 'bar' | 'pie' | 'line' | 'progress' | 'donut';
+  chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar';
   description: string;
-  data: any[];
   metadata: {
     totalResponses: number;
     averageScore: number;
