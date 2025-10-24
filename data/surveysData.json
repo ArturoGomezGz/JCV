@@ -8,12 +8,12 @@
       "chartType": "bar",
       "description": "Evolución mensual de la satisfacción ciudadana con los servicios públicos municipales",
       "data": [
-        { "x": "Ene", "y": 13 },
-        { "x": "Feb", "y": 16 },
-        { "x": "Mar", "y": 14 },
-        { "x": "Abr", "y": 19 },
-        { "x": "May", "y": 22 },
-        { "x": "Jun", "y": 18 }
+        { "x": "Ene", "y": 4 },
+        { "x": "Feb", "y": 5 },
+        { "x": "Mar", "y": 4 },
+        { "x": "Abr", "y": 6 },
+        { "x": "May", "y": 7 },
+        { "x": "Jun", "y": 6 }
       ],
       "metadata": {
         "totalResponses": 1250,
@@ -47,12 +47,12 @@
       "chartType": "line",
       "description": "Tendencia de satisfacción con las mejoras en infraestructura urbana durante el último año",
       "data": [
-        { "x": "Jul 2023", "y": 12 },
-        { "x": "Sep 2023", "y": 15 },
-        { "x": "Nov 2023", "y": 18 },
-        { "x": "Ene 2024", "y": 22 },
-        { "x": "Mar 2024", "y": 25 },
-        { "x": "May 2024", "y": 28 }
+        { "x": "Jul 2023", "y": 3 },
+        { "x": "Sep 2023", "y": 4 },
+        { "x": "Nov 2023", "y": 5 },
+        { "x": "Ene 2024", "y": 7 },
+        { "x": "Mar 2024", "y": 8 },
+        { "x": "May 2024", "y": 9 }
       ],
       "metadata": {
         "totalResponses": 756,
@@ -68,10 +68,10 @@
       "chartType": "progress",
       "description": "Evaluación del progreso y eficiencia en la ejecución de proyectos municipales",
       "data": [
-        { "label": "Educación", "progress": 90 },
-        { "label": "Salud", "progress": 72 },
-        { "label": "Vialidad", "progress": 60 },
-        { "label": "Recreación", "progress": 45 }
+        { "label": "Educación", "percentage": 85, "color": "#4CAF50" },
+        { "label": "Salud", "percentage": 72, "color": "#2196F3" },
+        { "label": "Vialidad", "percentage": 60, "color": "#FF9800" },
+        { "label": "Recreación", "percentage": 45, "color": "#F44336" }
       ],
       "metadata": {
         "totalResponses": 1048,
@@ -105,12 +105,12 @@
       "chartType": "bar",
       "description": "Evaluación mensual de la satisfacción con servicios de salud pública",
       "data": [
-        { "x": "Ene", "y": 18 },
-        { "x": "Feb", "y": 21 },
-        { "x": "Mar", "y": 19 },
-        { "x": "Abr", "y": 24 },
-        { "x": "May", "y": 26 },
-        { "x": "Jun", "y": 23 }
+        { "x": "Ene", "y": 5 },
+        { "x": "Feb", "y": 6 },
+        { "x": "Mar", "y": 5 },
+        { "x": "Abr", "y": 7 },
+        { "x": "May", "y": 8 },
+        { "x": "Jun", "y": 7 }
       ],
       "metadata": {
         "totalResponses": 987,
@@ -145,12 +145,12 @@
       "chartType": "line",
       "description": "Tendencia de satisfacción con el mantenimiento de espacios verdes municipales",
       "data": [
-        { "x": "Ene", "y": 16 },
-        { "x": "Feb", "y": 18 },
-        { "x": "Mar", "y": 20 },
-        { "x": "Abr", "y": 22 },
-        { "x": "May", "y": 19 },
-        { "x": "Jun", "y": 21 }
+        { "x": "Ene", "y": 4 },
+        { "x": "Feb", "y": 5 },
+        { "x": "Mar", "y": 6 },
+        { "x": "Abr", "y": 7 },
+        { "x": "May", "y": 5 },
+        { "x": "Jun", "y": 6 }
       ],
       "metadata": {
         "totalResponses": 823,

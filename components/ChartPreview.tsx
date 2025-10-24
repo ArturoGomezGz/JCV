@@ -103,30 +103,34 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
         </View>
     );
 
-    const renderDonutChart = () => (
-        <View style={styles.donutContainer}>
-        <View style={styles.donutChart}>
-            <View style={styles.donutCenter}>
-            <Text style={styles.donutCenterText}>100%</Text>
-            <Text style={styles.donutCenterSubtext}>Total</Text>
+    const renderDonutChart = () => {
+        const totalValue = data.reduce((sum, item) => sum + (item.value || 0), 0);
+        
+        return (
+            <View style={styles.donutContainer}>
+            <View style={styles.donutChart}>
+                <View style={styles.donutCenter}>
+                <Text style={styles.donutCenterText}>{totalValue}%</Text>
+                <Text style={styles.donutCenterSubtext}>Total</Text>
+                </View>
             </View>
-        </View>
-        <View style={styles.donutLegend}>
-            {data.map((item, index) => (
-            <View key={index} style={styles.donutLegendItem}>
-                <View 
-                style={[
-                    styles.donutLegendColor, 
-                    { backgroundColor: item.color || colors.primary }
-                ]} 
-                />
-                <Text style={styles.donutLegendLabel}>{item.label}</Text>
-                <Text style={styles.donutLegendValue}>{item.value}%</Text>
+            <View style={styles.donutLegend}>
+                {data.map((item, index) => (
+                <View key={index} style={styles.donutLegendItem}>
+                    <View 
+                    style={[
+                        styles.donutLegendColor, 
+                        { backgroundColor: item.color || colors.primary }
+                    ]} 
+                    />
+                    <Text style={styles.donutLegendLabel}>{item.label}</Text>
+                    <Text style={styles.donutLegendValue}>{item.value}%</Text>
+                </View>
+                ))}
             </View>
-            ))}
-        </View>
-        </View>
-    );
+            </View>
+        );
+    };
 
     const renderChart = () => {
         switch (type) {
