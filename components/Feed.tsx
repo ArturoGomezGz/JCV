@@ -1,19 +1,22 @@
 // Pantalla de feed principal para usuarios invitados y logueados
-// Anteriormente conocido como GuestScreen, ahora renombrado a Feed
-// Soporta tanto modo invitado como usuarios autenticados
-import React, { useState } from 'react';
+// TODO: Implementar paginación cuando la cantidad de encuestas sea muy grande
+// TODO: Agregar filtros por categoría y fecha
+// TODO: Implementar sistema de favoritos para encuestas
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { colors } from '../constants/Colors';
 import BottomNavigation from './BottomNavigation';
 import ChartCard from './ChartCard';
+import { fetchSurveys, SurveyData } from '../services/surveysService';
 
-// Definición de la interfaz TypeScript para las props del componente
 interface FeedProps {
   isGuest?: boolean;
   onBackToLogin?: () => void;
@@ -23,7 +26,6 @@ interface FeedProps {
   onChartPress?: (title: string, chartType: 'bar' | 'pie' | 'line' | 'progress' | 'donut', data: any[], category: string, question: string) => void;
 }
 
-// Componente principal: Feed
 const Feed: React.FC<FeedProps> = ({ 
   isGuest = true,
   onBackToLogin,
@@ -33,77 +35,101 @@ const Feed: React.FC<FeedProps> = ({
   onChartPress
 }) => {
   const [activeTab, setActiveTab] = useState('chat');
+  const [surveys, setSurveys] = useState<SurveyData[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [hasError, setHasError] = useState<boolean>(false);
 
-  // Datos de ejemplo para las gráficas
-  const barChartData = [
-    { x: 'Ene', y: 13 },
-    { x: 'Feb', y: 16 },
-    { x: 'Mar', y: 14 },
-    { x: 'Abr', y: 19 },
-    { x: 'May', y: 22 },
-    { x: 'Jun', y: 18 },
-  ];
+  useEffect(() => {
+    loadSurveys();
+  }, []);
 
-  const pieChartData = [
-    { label: 'Móvil', value: 45, color: colors.primary },
-    { label: 'Desktop', value: 30, color: '#FF6B6B' },
-    { label: 'Tablet', value: 25, color: '#4ECDC4' },
-  ];
-
-  const lineChartData = [
-    { x: 1, y: 2 },
-    { x: 2, y: 5 },
-    { x: 3, y: 3 },
-    { x: 4, y: 8 },
-    { x: 5, y: 6 },
-    { x: 6, y: 9 },
-  ];
-
-  const progressChartData = [
-    { label: 'Completado', percentage: 75, color: '#4CAF50' },
-    { label: 'En Progreso', percentage: 60, color: '#FF9800' },
-    { label: 'Pendiente', percentage: 30, color: '#F44336' },
-  ];
-
-  const donutChartData = [
-    { label: 'Ventas', value: 40, color: '#9C27B0' },
-    { label: 'Marketing', value: 25, color: '#2196F3' },
-    { label: 'Soporte', value: 20, color: '#FF5722' },
-    { label: 'Desarrollo', value: 15, color: '#795548' },
-  ];
-
-  const handleLogout = () => {
-    if (onLogout) {
-      onLogout();
+  const loadSurveys = async () => {
+    try {
+      setIsLoading(true);
+      setHasError(false);
+      
+      // TODO: En el futuro, esta llamada será a la API real
+      const surveysData = await fetchSurveys();
+      setSurveys(surveysData);
+    } catch (error) {
+      console.error('Error cargando encuestas:', error);
+      setHasError(true);
+      Alert.alert(
+        'Error',
+        'No se pudieron cargar las encuestas. Por favor, intenta de nuevo.',
+        [{ text: 'OK' }]
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleBackToLogin = () => {
-    if (onBackToLogin) {
-      onBackToLogin();
+  const handleSurveyPress = (survey: SurveyData) => {
+    if (onChartPress) {
+      onChartPress(
+        survey.title,
+        survey.chartType,
+        survey.data,
+        survey.category,
+        survey.question
+      );
     }
   };
 
-  const handleCreateAccount = () => {
-    if (onCreateAccount) {
-      onCreateAccount();
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={styles.loadingText}>Cargando encuestas...</Text>
+        </View>
+      );
     }
-  };
 
-  const handleTabPress = (tabName: string) => {
-    setActiveTab(tabName);
+    if (hasError) {
+      return (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>⚠️ Error al cargar las encuestas</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={loadSurveys}>
+            <Text style={styles.retryButtonText}>Reintentar</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
+    return (
+      <>
+        <View style={styles.tabInfo}>
+          <Text style={styles.tabTitle}>📊 Encuestas de Satisfacción Ciudadana</Text>
+          <Text style={styles.tabDescription}>
+            Explora los resultados de las encuestas sobre servicios públicos y gestión municipal.
+            {surveys.length > 0 && ` (${surveys.length} encuestas disponibles)`}
+          </Text>
+        </View>
+
+        <View style={styles.chartsGrid}>
+          {surveys.map((survey) => (
+            <ChartCard
+              key={survey.id}
+              title={survey.title}
+              chartType={survey.chartType}
+              data={survey.data}
+              onPress={() => handleSurveyPress(survey)}
+            />
+          ))}
+        </View>
+      </>
+    );
   };
 
   return (
     <View style={styles.mainContainer}>
       <ScrollView style={styles.container}>
         <View style={styles.content}>
-          {/* Título de bienvenida */}
           <Text style={styles.welcomeTitle}>
             {isGuest ? 'Modo Invitado' : `Bienvenido${userEmail ? `, ${userEmail.split('@')[0]}` : ''}`}
           </Text>
           
-          {/* Descripción */}
           <Text style={styles.description}>
             {isGuest 
               ? 'Estás navegando como invitado. Tienes acceso limitado a las funciones de la aplicación.'
@@ -111,104 +137,29 @@ const Feed: React.FC<FeedProps> = ({
             }
           </Text>
           
-          {/* Información del tab activo */}
-          <View style={styles.tabInfo}>
-            <Text style={styles.tabInfoText}>
-              Tab activo: <Text style={styles.tabInfoValue}>{activeTab}</Text>
-            </Text>
-          </View>
-          
-          {/* Gráficas de demostración */}
-          <ChartCard
-            title="Actividad Mensual"
-            chartType="bar"
-            data={barChartData}
-            onPress={() => onChartPress && onChartPress(
-              "Satisfacción con Servicios Públicos por Mes", 
-              "bar", 
-              barChartData, 
-              "Servicios Públicos Generales", 
-              "¿Cómo calificaría la calidad general de los servicios públicos de su municipio?"
-            )}
-          />
+          {renderContent()}
 
-          <ChartCard
-            title="Distribución de Dispositivos"
-            chartType="pie"
-            data={pieChartData}
-            onPress={() => onChartPress && onChartPress(
-              "Acceso a Infraestructura Digital", 
-              "pie", 
-              pieChartData, 
-              "Infraestructura Digital", 
-              "¿Considera que su municipio cuenta con una infraestructura digital adecuada?"
-            )}
-          />
-
-          <ChartCard
-            title="Tendencia de Crecimiento"
-            chartType="line"
-            data={lineChartData}
-            onPress={() => onChartPress && onChartPress(
-              "Evolución de Mejoras en Infraestructura", 
-              "line", 
-              lineChartData, 
-              "Desarrollo Urbano", 
-              "¿Está satisfecho con las mejoras en infraestructura urbana realizadas el último año?"
-            )}
-          />
-
-          <ChartCard
-            title="Estado de Proyectos"
-            chartType="progress"
-            data={progressChartData}
-            onPress={() => onChartPress && onChartPress(
-              "Eficiencia en Proyectos Municipales", 
-              "progress", 
-              progressChartData, 
-              "Gestión Municipal", 
-              "¿Qué tan eficiente considera la ejecución de proyectos públicos en su municipio?"
-            )}
-          />
-
-          <ChartCard
-            title="Distribución de Equipos"
-            chartType="donut"
-            data={donutChartData}
-            onPress={() => onChartPress && onChartPress(
-              "Distribución de Recursos de Seguridad", 
-              "donut", 
-              donutChartData, 
-              "Seguridad Pública", 
-              "¿Cómo evalúa la distribución de recursos de seguridad en su zona?"
-            )}
-          />
-
-          {/* Botones de acción */}
           <View style={styles.buttonContainer}>
             {isGuest ? (
               <>
-                {/* Botón para crear cuenta */}
                 <TouchableOpacity
                   style={styles.createAccountButton}
-                  onPress={handleCreateAccount}
+                  onPress={onCreateAccount}
                 >
                   <Text style={styles.createAccountButtonText}>Crear Cuenta</Text>
                 </TouchableOpacity>
                 
-                {/* Botón para volver al login */}
                 <TouchableOpacity
                   style={styles.backButton}
-                  onPress={handleBackToLogin}
+                  onPress={onBackToLogin}
                 >
                   <Text style={styles.backButtonText}>Volver al Login</Text>
                 </TouchableOpacity>
               </>
             ) : (
-              /* Botón para cerrar sesión */
               <TouchableOpacity
                 style={styles.backButton}
-                onPress={handleLogout}
+                onPress={onLogout}
               >
                 <Text style={styles.backButtonText}>Cerrar Sesión</Text>
               </TouchableOpacity>
@@ -219,13 +170,12 @@ const Feed: React.FC<FeedProps> = ({
       
       <BottomNavigation 
         activeTab={activeTab}
-        onTabPress={handleTabPress}
+        onTabPress={setActiveTab}
       />
     </View>
   );
 };
 
-// Estilos del componente
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
@@ -238,7 +188,7 @@ const styles = StyleSheet.create({
   content: {
     padding: 20,
     paddingTop: 60,
-    paddingBottom: 100, // Extra padding for bottom navigation
+    paddingBottom: 100,
   },
   tabInfo: {
     backgroundColor: colors.surface,
@@ -248,14 +198,61 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  tabInfoText: {
-    fontSize: 16,
+  tabTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.textPrimary,
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  tabDescription: {
+    fontSize: 14,
     color: colors.textSecondary,
     textAlign: 'center',
+    lineHeight: 20,
   },
-  tabInfoValue: {
-    color: colors.primary,
-    fontWeight: 'bold',
+  chartsGrid: {
+    gap: 15,
+  },
+  loadingContainer: {
+    backgroundColor: colors.surface,
+    padding: 40,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: colors.textSecondary,
+    marginTop: 15,
+    textAlign: 'center',
+  },
+  errorContainer: {
+    backgroundColor: '#fff5f5',
+    padding: 20,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#fed7d7',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#e53e3e',
+    textAlign: 'center',
+    marginBottom: 15,
+  },
+  retryButton: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 6,
+  },
+  retryButtonText: {
+    color: colors.surface,
+    fontSize: 16,
+    fontWeight: '600',
   },
   welcomeTitle: {
     fontSize: 28,
@@ -272,66 +269,9 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     paddingHorizontal: 10,
   },
-  section: {
-    backgroundColor: colors.surface,
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 3,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.textPrimary,
-    marginBottom: 15,
-  },
-  featureList: {
-    paddingLeft: 10,
-  },
-  featureItem: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginBottom: 8,
-    lineHeight: 20,
-  },
-  restrictedItem: {
-    fontSize: 14,
-    color: colors.textDisabled,
-    marginBottom: 8,
-    lineHeight: 20,
-  },
-  placeholder: {
-    backgroundColor: colors.background,
-    padding: 25,
-    borderRadius: 12,
-    marginBottom: 30,
-    borderWidth: 2,
-    borderColor: colors.primary,
-    borderStyle: 'dashed',
-  },
-  placeholderText: {
-    fontSize: 16,
-    color: colors.textPrimary,
-    textAlign: 'center',
-    fontWeight: '600',
-    marginBottom: 10,
-  },
-  placeholderSubtext: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    fontStyle: 'italic',
-    lineHeight: 20,
-  },
   buttonContainer: {
     gap: 15,
+    marginTop: 20,
   },
   createAccountButton: {
     backgroundColor: colors.primary,
@@ -341,20 +281,20 @@ const styles = StyleSheet.create({
   createAccountButtonText: {
     color: colors.surface,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: 'bold',
     textAlign: 'center',
   },
   backButton: {
     backgroundColor: 'transparent',
     paddingVertical: 15,
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.textSecondary,
+    borderWidth: 2,
+    borderColor: colors.primary,
   },
   backButtonText: {
-    color: colors.textSecondary,
+    color: colors.primary,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: 'bold',
     textAlign: 'center',
   },
 });

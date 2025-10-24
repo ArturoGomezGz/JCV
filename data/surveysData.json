@@ -1,0 +1,174 @@
+{
+  "surveys": [
+    {
+      "id": "survey-001",
+      "title": "Satisfacción con Servicios Públicos por Mes",
+      "category": "Servicios Públicos Generales",
+      "question": "¿Cómo calificaría la calidad general de los servicios públicos de su municipio?",
+      "chartType": "bar",
+      "description": "Evolución mensual de la satisfacción ciudadana con los servicios públicos municipales",
+      "data": [
+        { "x": "Ene", "y": 13 },
+        { "x": "Feb", "y": 16 },
+        { "x": "Mar", "y": 14 },
+        { "x": "Abr", "y": 19 },
+        { "x": "May", "y": 22 },
+        { "x": "Jun", "y": 18 }
+      ],
+      "metadata": {
+        "totalResponses": 1250,
+        "averageScore": 17.0,
+        "lastUpdated": "2024-06-30"
+      }
+    },
+    {
+      "id": "survey-002",
+      "title": "Acceso a Infraestructura Digital",
+      "category": "Infraestructura Digital",
+      "question": "¿Considera que su municipio cuenta con una infraestructura digital adecuada?",
+      "chartType": "pie",
+      "description": "Distribución de la percepción ciudadana sobre la infraestructura digital municipal",
+      "data": [
+        { "label": "Excelente", "value": 45, "color": "#4CAF50" },
+        { "label": "Bueno", "value": 30, "color": "#FF9800" },
+        { "label": "Regular", "value": 25, "color": "#F44336" }
+      ],
+      "metadata": {
+        "totalResponses": 892,
+        "averageScore": 3.2,
+        "lastUpdated": "2024-06-28"
+      }
+    },
+    {
+      "id": "survey-003",
+      "title": "Evolución de Mejoras en Infraestructura",
+      "category": "Desarrollo Urbano",
+      "question": "¿Está satisfecho con las mejoras en infraestructura urbana realizadas el último año?",
+      "chartType": "line",
+      "description": "Tendencia de satisfacción con las mejoras en infraestructura urbana durante el último año",
+      "data": [
+        { "x": "Jul 2023", "y": 12 },
+        { "x": "Sep 2023", "y": 15 },
+        { "x": "Nov 2023", "y": 18 },
+        { "x": "Ene 2024", "y": 22 },
+        { "x": "Mar 2024", "y": 25 },
+        { "x": "May 2024", "y": 28 }
+      ],
+      "metadata": {
+        "totalResponses": 756,
+        "averageScore": 20.0,
+        "lastUpdated": "2024-05-31"
+      }
+    },
+    {
+      "id": "survey-004",
+      "title": "Eficiencia en Proyectos Municipales",
+      "category": "Gestión Municipal",
+      "question": "¿Qué tan eficiente considera la ejecución de proyectos públicos en su municipio?",
+      "chartType": "progress",
+      "description": "Evaluación del progreso y eficiencia en la ejecución de proyectos municipales",
+      "data": [
+        { "label": "Educación", "progress": 90 },
+        { "label": "Salud", "progress": 72 },
+        { "label": "Vialidad", "progress": 60 },
+        { "label": "Recreación", "progress": 45 }
+      ],
+      "metadata": {
+        "totalResponses": 1048,
+        "averageScore": 65.5,
+        "lastUpdated": "2024-06-25"
+      }
+    },
+    {
+      "id": "survey-005",
+      "title": "Distribución de Recursos de Seguridad",
+      "category": "Seguridad Pública",
+      "question": "¿Cómo evalúa la distribución de recursos de seguridad en su zona?",
+      "chartType": "donut",
+      "description": "Percepción ciudadana sobre la distribución de recursos de seguridad pública",
+      "data": [
+        { "label": "Adecuada", "value": 40, "color": "#4CAF50" },
+        { "label": "Insuficiente", "value": 35, "color": "#FF9800" },
+        { "label": "Muy Deficiente", "value": 25, "color": "#F44336" }
+      ],
+      "metadata": {
+        "totalResponses": 934,
+        "averageScore": 2.8,
+        "lastUpdated": "2024-06-20"
+      }
+    },
+    {
+      "id": "survey-006",
+      "title": "Satisfacción con Servicios de Salud",
+      "category": "Servicios de Salud",
+      "question": "¿Cómo califica la calidad de los servicios de salud pública en su municipio?",
+      "chartType": "bar",
+      "description": "Evaluación mensual de la satisfacción con servicios de salud pública",
+      "data": [
+        { "x": "Ene", "y": 18 },
+        { "x": "Feb", "y": 21 },
+        { "x": "Mar", "y": 19 },
+        { "x": "Abr", "y": 24 },
+        { "x": "May", "y": 26 },
+        { "x": "Jun", "y": 23 }
+      ],
+      "metadata": {
+        "totalResponses": 987,
+        "averageScore": 21.8,
+        "lastUpdated": "2024-06-30"
+      }
+    },
+    {
+      "id": "survey-007",
+      "title": "Calidad del Transporte Público",
+      "category": "Movilidad Urbana",
+      "question": "¿Está satisfecho con la calidad del transporte público en su municipio?",
+      "chartType": "pie",
+      "description": "Distribución de opiniones sobre la calidad del transporte público municipal",
+      "data": [
+        { "label": "Muy Satisfecho", "value": 20, "color": "#4CAF50" },
+        { "label": "Satisfecho", "value": 35, "color": "#8BC34A" },
+        { "label": "Neutral", "value": 25, "color": "#FF9800" },
+        { "label": "Insatisfecho", "value": 20, "color": "#F44336" }
+      ],
+      "metadata": {
+        "totalResponses": 1156,
+        "averageScore": 2.9,
+        "lastUpdated": "2024-06-27"
+      }
+    },
+    {
+      "id": "survey-008",
+      "title": "Evolución de Espacios Verdes",
+      "category": "Medio Ambiente",
+      "question": "¿Considera adecuado el mantenimiento de parques y espacios verdes en su zona?",
+      "chartType": "line",
+      "description": "Tendencia de satisfacción con el mantenimiento de espacios verdes municipales",
+      "data": [
+        { "x": "Ene", "y": 16 },
+        { "x": "Feb", "y": 18 },
+        { "x": "Mar", "y": 20 },
+        { "x": "Abr", "y": 22 },
+        { "x": "May", "y": 19 },
+        { "x": "Jun", "y": 21 }
+      ],
+      "metadata": {
+        "totalResponses": 823,
+        "averageScore": 19.3,
+        "lastUpdated": "2024-06-30"
+      }
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "lastSync": "2024-06-30T10:30:00Z",
+    "totalSurveys": 8,
+    "apiEndpoint": "https://api.satisfaccion-ciudadana.gob.mx/v1/surveys",
+    "notes": [
+      "TODO: Reemplazar este archivo JSON con llamadas a API real",
+      "TODO: Implementar sistema de caché para datos de encuestas",
+      "TODO: Agregar validación de esquemas para los datos",
+      "TODO: Implementar filtros por fecha, categoría y región"
+    ]
+  }
+}
