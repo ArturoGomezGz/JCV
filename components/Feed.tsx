@@ -20,7 +20,7 @@ interface FeedProps {
   onCreateAccount?: () => void;
   onLogout?: () => void;
   userEmail?: string;
-  onChartPress?: (title: string, chartType: 'bar' | 'pie' | 'line' | 'progress' | 'donut', data: any[]) => void;
+  onChartPress?: (title: string, chartType: 'bar' | 'pie' | 'line' | 'progress' | 'donut', data: any[], category: string, question: string) => void;
 }
 
 // Componente principal: Feed
@@ -123,35 +123,65 @@ const Feed: React.FC<FeedProps> = ({
             title="Actividad Mensual"
             chartType="bar"
             data={barChartData}
-            onPress={() => onChartPress && onChartPress("Actividad Mensual", "bar", barChartData)}
+            onPress={() => onChartPress && onChartPress(
+              "Satisfacción con Servicios Públicos por Mes", 
+              "bar", 
+              barChartData, 
+              "Servicios Públicos Generales", 
+              "¿Cómo calificaría la calidad general de los servicios públicos de su municipio?"
+            )}
           />
 
           <ChartCard
             title="Distribución de Dispositivos"
             chartType="pie"
             data={pieChartData}
-            onPress={() => onChartPress && onChartPress("Distribución de Dispositivos", "pie", pieChartData)}
+            onPress={() => onChartPress && onChartPress(
+              "Acceso a Infraestructura Digital", 
+              "pie", 
+              pieChartData, 
+              "Infraestructura Digital", 
+              "¿Considera que su municipio cuenta con una infraestructura digital adecuada?"
+            )}
           />
 
           <ChartCard
             title="Tendencia de Crecimiento"
             chartType="line"
             data={lineChartData}
-            onPress={() => onChartPress && onChartPress("Tendencia de Crecimiento", "line", lineChartData)}
+            onPress={() => onChartPress && onChartPress(
+              "Evolución de Mejoras en Infraestructura", 
+              "line", 
+              lineChartData, 
+              "Desarrollo Urbano", 
+              "¿Está satisfecho con las mejoras en infraestructura urbana realizadas el último año?"
+            )}
           />
 
           <ChartCard
             title="Estado de Proyectos"
             chartType="progress"
             data={progressChartData}
-            onPress={() => onChartPress && onChartPress("Estado de Proyectos", "progress", progressChartData)}
+            onPress={() => onChartPress && onChartPress(
+              "Eficiencia en Proyectos Municipales", 
+              "progress", 
+              progressChartData, 
+              "Gestión Municipal", 
+              "¿Qué tan eficiente considera la ejecución de proyectos públicos en su municipio?"
+            )}
           />
 
           <ChartCard
             title="Distribución de Equipos"
             chartType="donut"
             data={donutChartData}
-            onPress={() => onChartPress && onChartPress("Distribución de Equipos", "donut", donutChartData)}
+            onPress={() => onChartPress && onChartPress(
+              "Distribución de Recursos de Seguridad", 
+              "donut", 
+              donutChartData, 
+              "Seguridad Pública", 
+              "¿Cómo evalúa la distribución de recursos de seguridad en su zona?"
+            )}
           />
 
           {/* Botones de acción */}

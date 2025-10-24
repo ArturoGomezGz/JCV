@@ -12,6 +12,8 @@ export default function App() {
     title: string;
     chartType: 'bar' | 'pie' | 'line' | 'progress' | 'donut';
     data: any[];
+    category: string;
+    question: string;
     previousView: 'dashboard' | 'guest';
   } | null>(null);
 
@@ -49,12 +51,14 @@ export default function App() {
     setCurrentView('login');
   };
 
-  const handleChartPress = (title: string, chartType: 'bar' | 'pie' | 'line' | 'progress' | 'donut', data: any[]) => {
+  const handleChartPress = (title: string, chartType: 'bar' | 'pie' | 'line' | 'progress' | 'donut', data: any[], category: string, question: string) => {
     // Guardar los datos del contenido y la vista anterior
     setContentData({
       title,
       chartType,
       data,
+      category,
+      question,
       previousView: currentView === 'dashboard' ? 'dashboard' : 'guest'
     });
     setCurrentView('content');
@@ -117,6 +121,8 @@ export default function App() {
             title={contentData.title}
             chartType={contentData.chartType}
             data={contentData.data}
+            category={contentData.category}
+            question={contentData.question}
             onBack={handleBackFromContent}
             isGuest={contentData.previousView === 'guest'}
             userEmail={userEmail}

@@ -19,6 +19,8 @@ interface ContentProps {
   title: string;
   chartType: 'bar' | 'pie' | 'line' | 'progress' | 'donut';
   data: any[];
+  category: string;
+  question: string;
   onBack: () => void;
   isGuest?: boolean;
   userEmail?: string;
@@ -30,6 +32,8 @@ const Content: React.FC<ContentProps> = ({
   title,
   chartType,
   data,
+  category,
+  question,
   onBack,
   isGuest = false,
   userEmail,
@@ -54,7 +58,9 @@ const Content: React.FC<ContentProps> = ({
         const analysis = await generateChartAnalysis({
           chartType,
           title,
-          data
+          data,
+          category,
+          question
         });
         setGeneratedText(analysis);
       } catch (error) {
@@ -140,6 +146,18 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
           {/* Título de la gráfica */}
           <Text style={styles.title}>{title}</Text>
           
+          {/* Información de la encuesta */}
+          <View style={styles.surveyInfoContainer}>
+            <View style={styles.surveyInfoRow}>
+              <Text style={styles.surveyInfoLabel}>📊 Categoría:</Text>
+              <Text style={styles.surveyInfoValue}>{category}</Text>
+            </View>
+            <View style={styles.surveyInfoRow}>
+              <Text style={styles.surveyInfoLabel}>❓ Pregunta:</Text>
+              <Text style={styles.surveyInfoValue}>{question}</Text>
+            </View>
+          </View>
+          
           {/* Contenedor de la gráfica */}
           <View style={styles.chartContainer}>
             <ChartPreview 
@@ -177,7 +195,9 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
                         const analysis = await generateChartAnalysis({
                           chartType,
                           title,
-                          data
+                          data,
+                          category,
+                          question
                         });
                         setGeneratedText(analysis);
                         setHasError(false);
@@ -298,6 +318,38 @@ const styles = StyleSheet.create({
     color: colors.primary,
     textAlign: 'center',
     marginBottom: 30,
+  },
+  surveyInfoContainer: {
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 30,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 3,
+  },
+  surveyInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 15,
+  },
+  surveyInfoLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: colors.textPrimary,
+    minWidth: 100,
+    marginRight: 10,
+  },
+  surveyInfoValue: {
+    flex: 1,
+    fontSize: 16,
+    color: colors.textSecondary,
+    lineHeight: 22,
   },
   chartContainer: {
     backgroundColor: colors.surface,
