@@ -43,9 +43,7 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
     const survey = surveysData.surveys.find(s => s.chartType === chartType);
     return {
       title: survey?.title || 'Gráfico',
-      category: survey?.category || 'General',
-      totalResponses: survey?.metadata.totalResponses || 1000,
-      averageScore: survey?.metadata.averageScore || 50
+      category: survey?.category || 'General'
     };
   };
 
@@ -53,9 +51,15 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
 
   // Función para generar datos basados en la información del survey
   const generateChartData = (chartType: string) => {
-    const baseScore = surveyInfo.averageScore;
-    const responses = surveyInfo.totalResponses;
+    const survey = surveysData.surveys.find(s => s.chartType === chartType);
     
+    if (!survey || !survey.chartData) {
+      return null;
+    }
+
+    const data = survey.chartData as any;
+
+    // Adaptamos la estructura simple del JSON a los formatos requeridos por react-native-chart-kit
     switch (chartType) {
       case 'bar':
       case 'line':
@@ -63,84 +67,59 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
       case 'areaChart':
       case 'horizontalBar':
         return {
-          labels: ["Ene", "Feb", "Mar", "Abr", "May", "Jun"],
+          labels: data.labels,
           datasets: [
             {
-              data: [
-                Math.max(0, baseScore + (Math.random() - 0.5) * 20),
-                Math.max(0, baseScore + (Math.random() - 0.5) * 20),
-                Math.max(0, baseScore + (Math.random() - 0.5) * 20),
-                Math.max(0, baseScore + (Math.random() - 0.5) * 20),
-                Math.max(0, baseScore + (Math.random() - 0.5) * 20),
-                Math.max(0, baseScore + (Math.random() - 0.5) * 20),
-              ].map(val => Math.round(val))
+              data: data.values,
+              color: (opacity = 1) => `rgba(28, 54, 107, ${opacity})`,
+              strokeWidth: chartType === 'bezierLine' ? 4 : 3
             }
           ]
         };
-      
+
       case 'pie':
-        const total = 100;
-        const segments = [
-          { name: "Muy Satisfecho", percentage: Math.round(baseScore * 0.4) },
-          { name: "Satisfecho", percentage: Math.round(baseScore * 0.6) },
-          { name: "Neutral", percentage: Math.round((100 - baseScore) * 0.5) },
-          { name: "Insatisfecho", percentage: Math.round((100 - baseScore) * 0.3) },
-          { name: "Muy Insatisfecho", percentage: Math.round((100 - baseScore) * 0.2) }
-        ];
-        
-        // Ajustar para que sume 100
-        const sum = segments.reduce((acc, seg) => acc + seg.percentage, 0);
-        const factor = 100 / sum;
-        
-        return segments.map((seg, index) => ({
-          name: seg.name,
-          population: Math.round(seg.percentage * factor),
-          color: ["#1C366B", "#36A2EB", "#FFCE56", "#FF6384", "#FF9F40"][index],
-          legendFontColor: "#7F7F7F",
+        const colors = ['#1C366B', '#36A2EB', '#FFCE56', '#FF6384', '#FF9F40'];
+        return data.labels?.map((label: string, index: number) => ({
+          name: label,
+          population: data.values[index],
+          color: colors[index % colors.length],
+          legendFontColor: '#7F7F7F',
           legendFontSize: 15,
-        }));
-      
+        })) || [];
+
       case 'progress':
         return {
-          labels: ["Planificación", "Ejecución", "Evaluación", "Mejora"],
-          data: [
-            baseScore / 100,
-            Math.min(1, (baseScore + 10) / 100),
-            Math.min(1, (baseScore - 10) / 100),
-            Math.min(1, (baseScore + 5) / 100)
-          ]
+          labels: data.labels,
+          data: data.values?.map((value: number) => value / 100) || [] // Convertir a decimal
         };
-      
+
       case 'stackedBar':
         return {
-          labels: ["T1", "T2", "T3", "T4"],
-          legend: ["Positivas", "Neutrales", "Negativas"],
-          data: [
-            [baseScore * 0.6, baseScore * 0.3, baseScore * 0.1],
-            [baseScore * 0.7, baseScore * 0.2, baseScore * 0.1],
-            [baseScore * 0.5, baseScore * 0.4, baseScore * 0.1],
-            [baseScore * 0.8, baseScore * 0.15, baseScore * 0.05]
-          ],
-          barColors: ["#1C366B", "#36A2EB", "#FF6384"]
+          labels: data.labels,
+          legend: data.series,
+          data: data.values,
+          barColors: ['#9dcb74ff', '#36A2EB', '#FF6384'],
         };
-      
+
       case 'contribution':
-        const startDate = new Date(2024, 0, 1); // 1 enero 2024
-        const endDate = new Date(2024, 11, 31); // 31 diciembre 2024
+        // Generar fechas para el año basándose en los valores
+        const startDate = new Date(data.startDate || '2024-01-01');
+        const endDate = new Date(data.endDate || '2024-12-31');
         const values = [];
         
-        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-          const activity = Math.floor(Math.random() * 5); // 0-4 nivel de actividad
+        let valueIndex = 0;
+        for (let d = new Date(startDate); d <= endDate && valueIndex < (data.values?.length || 0); d.setDate(d.getDate() + 1)) {
           values.push({
-            date: new Date(d).toISOString().split('T')[0],
-            count: activity
+            date: d.toISOString().split('T')[0],
+            count: data.values[valueIndex % data.values.length]
           });
+          valueIndex++;
         }
         
         return values;
-      
+
       default:
-        return null;
+        return data;
     }
   };
 

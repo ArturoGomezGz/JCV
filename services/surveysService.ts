@@ -17,22 +17,11 @@ export interface SurveyData {
   question: string;
   chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar';
   description: string;
-  metadata: {
-    totalResponses: number;
-    averageScore: number;
-    lastUpdated: string;
-  };
+  chartData: any; // Estructura flexible para diferentes tipos de gráficos
 }
 
 export interface SurveysResponse {
   surveys: SurveyData[];
-  metadata: {
-    version: string;
-    lastSync: string;
-    totalSurveys: number;
-    apiEndpoint: string;
-    notes: string[];
-  };
 }
 
 /**
@@ -113,21 +102,10 @@ export const fetchSurveyStats = async () => {
   try {
     const surveys = await fetchSurveys();
     
-    const totalResponses = surveys.reduce((sum, survey) => 
-      sum + survey.metadata.totalResponses, 0
-    );
-    
-    const averageScore = surveys.reduce((sum, survey) => 
-      sum + survey.metadata.averageScore, 0
-    ) / surveys.length;
-    
     return {
       totalSurveys: surveys.length,
-      totalResponses,
-      averageScore: Math.round(averageScore * 10) / 10,
-      lastUpdate: Math.max(...surveys.map(s => 
-        new Date(s.metadata.lastUpdated).getTime()
-      ))
+      categories: [...new Set(surveys.map(s => s.category))].length,
+      chartTypes: [...new Set(surveys.map(s => s.chartType))].length
     };
   } catch (error) {
     console.error('Error calculando estadísticas:', error);
