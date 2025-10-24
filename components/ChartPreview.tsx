@@ -16,7 +16,7 @@ import {
   // Bezier Line Chart es una variante del LineChart
   // Area Chart se puede simular con LineChart
 } from 'react-native-chart-kit';
-import { colors } from '../constants/Colors';
+import { colors, generateChartColors, generateDatasetColors } from '../constants/Colors';
 import surveysData from '../data/surveysData.json';
 
 export interface ChartData {
@@ -38,54 +38,6 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
 }) => {
   const [containerWidth, setContainerWidth] = useState<number>(300);
   
-  // Paleta de colores predefinida y balanceada
-  const colorPalette = [
-    '#1C366B', // Azul primario
-    '#36A2EB', // Azul claro
-    '#FF6384', // Rosa/Rojo
-    '#FFCE56', // Amarillo
-    '#4BC0C0', // Turquesa
-    '#9966FF', // Púrpura
-    '#FF9F40', // Naranja
-    '#FF6B6B', // Rojo coral
-    '#4ECDC4', // Verde agua
-    '#45B7D1', // Azul cielo
-    '#96CEB4', // Verde menta
-    '#FECA57', // Amarillo dorado
-    '#FF9FF3', // Rosa claro
-    '#54A0FF', // Azul brillante
-    '#5F27CD', // Púrpura oscuro
-    '#00D2D3', // Cian
-    '#FF9F43', // Naranja claro
-    '#10AC84', // Verde esmeralda
-    '#EE5A24', // Naranja rojizo
-    '#0984E3'  // Azul intenso
-  ];
-
-  // Función para generar colores automáticamente según la cantidad de datos
-  const generateColors = (count: number): string[] => {
-    const colors: string[] = [];
-    for (let i = 0; i < count; i++) {
-      colors.push(colorPalette[i % colorPalette.length]);
-    }
-    return colors;
-  };
-
-  // Función para generar colores con opacidad para datasets
-  const generateDatasetColors = (count: number) => {
-    const baseColors = generateColors(count);
-    return baseColors.map(color => ({
-      color: (opacity = 1) => {
-        // Convertir hex a rgba
-        const r = parseInt(color.slice(1, 3), 16);
-        const g = parseInt(color.slice(3, 5), 16);
-        const b = parseInt(color.slice(5, 7), 16);
-        return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-      },
-      strokeWidth: 3
-    }));
-  };
-
   // Función para obtener datos y título del survey correspondiente
   const getSurveyData = (chartType: string) => {
     const survey = surveysData.surveys.find(s => s.chartType === chartType);
@@ -143,7 +95,7 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
 
       case 'pie':
         // Generar colores automáticamente según la cantidad de categorías
-        const pieColors = generateColors(data.labels?.length || 0);
+        const pieColors = generateChartColors(data.labels?.length || 0);
         return data.labels?.map((label: string, index: number) => ({
           name: label,
           population: data.values[index],
@@ -160,7 +112,7 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
 
       case 'stackedBar':
         // Generar colores automáticamente según la cantidad de series
-        const stackedColors = generateColors(data.series?.length || 3);
+        const stackedColors = generateChartColors(data.series?.length || 3);
         return {
           labels: data.labels,
           legend: data.series,
@@ -330,7 +282,7 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
     const data = chartData as any;
     
     // Generar colores automáticamente según la cantidad de elementos
-    const progressColors = generateColors(data.labels?.length || 4);
+    const progressColors = generateChartColors(data.labels?.length || 4);
 
     return (
       <View style={styles.chartContainer}>
