@@ -33,7 +33,16 @@
       "description": "Gráfico de líneas excelente para mostrar tendencias y cambios a lo largo del tiempo. Ideal para datos temporales y análisis de evolución o progreso.",
       "chartData": {
         "labels": ["Ene", "Feb", "Mar", "Abr", "May", "Jun"],
-        "values": [18, 22, 19, 25, 23, 20]
+        "datasets": [
+          {
+            "name": "2023",
+            "values": [18, 22, 19, 25, 23, 20]
+          },
+          {
+            "name": "2024", 
+            "values": [20, 24, 21, 27, 25, 22]
+          }
+        ]
       }
     },
     {

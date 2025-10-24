@@ -38,6 +38,54 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
 }) => {
   const [containerWidth, setContainerWidth] = useState<number>(300);
   
+  // Paleta de colores predefinida y balanceada
+  const colorPalette = [
+    '#1C366B', // Azul primario
+    '#36A2EB', // Azul claro
+    '#FF6384', // Rosa/Rojo
+    '#FFCE56', // Amarillo
+    '#4BC0C0', // Turquesa
+    '#9966FF', // Púrpura
+    '#FF9F40', // Naranja
+    '#FF6B6B', // Rojo coral
+    '#4ECDC4', // Verde agua
+    '#45B7D1', // Azul cielo
+    '#96CEB4', // Verde menta
+    '#FECA57', // Amarillo dorado
+    '#FF9FF3', // Rosa claro
+    '#54A0FF', // Azul brillante
+    '#5F27CD', // Púrpura oscuro
+    '#00D2D3', // Cian
+    '#FF9F43', // Naranja claro
+    '#10AC84', // Verde esmeralda
+    '#EE5A24', // Naranja rojizo
+    '#0984E3'  // Azul intenso
+  ];
+
+  // Función para generar colores automáticamente según la cantidad de datos
+  const generateColors = (count: number): string[] => {
+    const colors: string[] = [];
+    for (let i = 0; i < count; i++) {
+      colors.push(colorPalette[i % colorPalette.length]);
+    }
+    return colors;
+  };
+
+  // Función para generar colores con opacidad para datasets
+  const generateDatasetColors = (count: number) => {
+    const baseColors = generateColors(count);
+    return baseColors.map(color => ({
+      color: (opacity = 1) => {
+        // Convertir hex a rgba
+        const r = parseInt(color.slice(1, 3), 16);
+        const g = parseInt(color.slice(3, 5), 16);
+        const b = parseInt(color.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+      },
+      strokeWidth: 3
+    }));
+  };
+
   // Función para obtener datos y título del survey correspondiente
   const getSurveyData = (chartType: string) => {
     const survey = surveysData.surveys.find(s => s.chartType === chartType);
@@ -66,23 +114,40 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
       case 'bezierLine':
       case 'areaChart':
       case 'horizontalBar':
-        return {
-          labels: data.labels,
-          datasets: [
-            {
-              data: data.values,
-              color: (opacity = 1) => `rgba(28, 54, 107, ${opacity})`,
+        // Manejar tanto datasets únicos como múltiples
+        if (data.datasets && Array.isArray(data.datasets)) {
+          // Múltiples datasets
+          const datasetColors = generateDatasetColors(data.datasets.length);
+          return {
+            labels: data.labels,
+            datasets: data.datasets.map((dataset: any, index: number) => ({
+              data: dataset.values,
+              color: datasetColors[index].color,
               strokeWidth: chartType === 'bezierLine' ? 4 : 3
-            }
-          ]
-        };
+            }))
+          };
+        } else {
+          // Dataset único (formato anterior)
+          const datasetColors = generateDatasetColors(1);
+          return {
+            labels: data.labels,
+            datasets: [
+              {
+                data: data.values,
+                color: datasetColors[0].color,
+                strokeWidth: chartType === 'bezierLine' ? 4 : 3
+              }
+            ]
+          };
+        }
 
       case 'pie':
-        const colors = ['#1C366B', '#36A2EB', '#FFCE56', '#FF6384', '#FF9F40'];
+        // Generar colores automáticamente según la cantidad de categorías
+        const pieColors = generateColors(data.labels?.length || 0);
         return data.labels?.map((label: string, index: number) => ({
           name: label,
           population: data.values[index],
-          color: colors[index % colors.length],
+          color: pieColors[index],
           legendFontColor: '#7F7F7F',
           legendFontSize: 15,
         })) || [];
@@ -94,11 +159,13 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
         };
 
       case 'stackedBar':
+        // Generar colores automáticamente según la cantidad de series
+        const stackedColors = generateColors(data.series?.length || 3);
         return {
           labels: data.labels,
           legend: data.series,
           data: data.values,
-          barColors: ['#9dcb74ff', '#36A2EB', '#FF6384'],
+          barColors: stackedColors
         };
 
       case 'contribution':
@@ -261,6 +328,9 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
   // 📊 Gráfico de Progreso
   const renderProgressChart = () => {
     const data = chartData as any;
+    
+    // Generar colores automáticamente según la cantidad de elementos
+    const progressColors = generateColors(data.labels?.length || 4);
 
     return (
       <View style={styles.chartContainer}>
@@ -274,13 +344,13 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
           chartConfig={{
             ...chartConfig,
             color: (opacity = 1, _index?: number) => {
-              const colors = [
-                `rgba(28, 54, 107, ${opacity})`,
-                `rgba(255, 99, 132, ${opacity})`,
-                `rgba(54, 162, 235, ${opacity})`,
-                `rgba(255, 206, 86, ${opacity})`
-              ];
-              return colors[_index || 0];
+              const colorIndex = _index || 0;
+              const hexColor = progressColors[colorIndex % progressColors.length];
+              // Convertir hex a rgba
+              const r = parseInt(hexColor.slice(1, 3), 16);
+              const g = parseInt(hexColor.slice(3, 5), 16);
+              const b = parseInt(hexColor.slice(5, 7), 16);
+              return `rgba(${r}, ${g}, ${b}, ${opacity})`;
             }
           }}
           hideLegend={false}
