@@ -118,6 +118,9 @@ export default function App() {
             chartType={contentData.chartType}
             data={contentData.data}
             onBack={handleBackFromContent}
+            isGuest={contentData.previousView === 'guest'}
+            userEmail={userEmail}
+            onCreateAccount={handleCreateAccountNavigation}
           />
         ) : null;
       

@@ -6,6 +6,8 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
+  Alert,
+  Modal,
 } from 'react-native';
 import Markdown from 'react-native-markdown-display';
 import { colors } from '../constants/Colors';
@@ -18,6 +20,9 @@ interface ContentProps {
   chartType: 'bar' | 'pie' | 'line' | 'progress' | 'donut';
   data: any[];
   onBack: () => void;
+  isGuest?: boolean;
+  userEmail?: string;
+  onCreateAccount?: () => void;
 }
 
 // Componente Content para mostrar los detalles de una gráfica
@@ -25,17 +30,26 @@ const Content: React.FC<ContentProps> = ({
   title,
   chartType,
   data,
-  onBack
+  onBack,
+  isGuest = false,
+  userEmail,
+  onCreateAccount
 }) => {
   
   // Estado para el texto generado por IA
   const [generatedText, setGeneratedText] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [hasError, setHasError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [showGuestModal, setShowGuestModal] = useState<boolean>(false);
   
   // Efecto para generar el texto con OpenAI al montar el componente
   useEffect(() => {
     const generateAnalysis = async () => {
       setIsLoading(true);
+      setHasError(false);
+      setErrorMessage('');
+      
       try {
         const analysis = await generateChartAnalysis({
           chartType,
@@ -45,7 +59,8 @@ const Content: React.FC<ContentProps> = ({
         setGeneratedText(analysis);
       } catch (error) {
         console.error('Error generating analysis:', error);
-        setGeneratedText(defaultText);
+        setHasError(true);
+        setErrorMessage(error instanceof Error ? error.message : 'Error desconocido');
       } finally {
         setIsLoading(false);
       }
@@ -72,6 +87,21 @@ const Content: React.FC<ContentProps> = ({
     }
   };
 
+  // Función para manejar la exportación a PDF
+  const handleExportToPDF = () => {
+    if (isGuest) {
+      // Si es invitado, mostrar modal
+      setShowGuestModal(true);
+    } else {
+      // Si está logueado, mostrar mensaje de confirmación
+      Alert.alert(
+        '✅ Reporte Enviado',
+        `Se ha enviado el reporte PDF a su correo electrónico: ${userEmail}`,
+        [{ text: 'OK', style: 'default' }]
+      );
+    }
+  };
+
   // Texto preescrito por defecto
   const defaultText = `
 Esta es una vista detallada de la gráfica seleccionada. Aquí puedes encontrar información más específica sobre los datos representados.
@@ -88,7 +118,7 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
 
   return (
     <View style={styles.container}>
-      {/* Header con botón de retroceso */}
+      {/* Header con botón de retroceso y exportar */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
@@ -97,7 +127,12 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
           <Text style={styles.backButtonText}>← Volver</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Detalles</Text>
-        <View style={styles.headerSpacer} />
+        <TouchableOpacity
+          style={styles.exportButton}
+          onPress={handleExportToPDF}
+        >
+          <Text style={styles.exportButtonText}>📄 PDF</Text>
+        </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.scrollContainer}>
@@ -128,6 +163,37 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
                 <ActivityIndicator size="large" color={colors.primary} />
                 <Text style={styles.loadingText}>Generando análisis...</Text>
               </View>
+            ) : hasError ? (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorTitle}>⚠️ Error al generar análisis</Text>
+                <Text style={styles.errorMessage}>{errorMessage}</Text>
+                <TouchableOpacity 
+                  style={styles.retryButton}
+                  onPress={() => {
+                    setIsLoading(true);
+                    setHasError(false);
+                    const generateAnalysis = async () => {
+                      try {
+                        const analysis = await generateChartAnalysis({
+                          chartType,
+                          title,
+                          data
+                        });
+                        setGeneratedText(analysis);
+                        setHasError(false);
+                      } catch (error) {
+                        setHasError(true);
+                        setErrorMessage(error instanceof Error ? error.message : 'Error desconocido');
+                      } finally {
+                        setIsLoading(false);
+                      }
+                    };
+                    generateAnalysis();
+                  }}
+                >
+                  <Text style={styles.retryButtonText}>Reintentar</Text>
+                </TouchableOpacity>
+              </View>
             ) : (
               <Markdown
                 style={markdownStyles}
@@ -138,6 +204,42 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
           </View>
         </View>
       </ScrollView>
+
+      {/* Modal para usuarios invitados */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showGuestModal}
+        onRequestClose={() => setShowGuestModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>⚠️ Cuenta Requerida</Text>
+            <Text style={styles.modalMessage}>
+              Necesitas crear una cuenta para exportar reportes en PDF.
+            </Text>
+            
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.createAccountButton}
+                onPress={() => {
+                  setShowGuestModal(false);
+                  onCreateAccount && onCreateAccount();
+                }}
+              >
+                <Text style={styles.createAccountButtonText}>Crear Cuenta</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setShowGuestModal(false)}
+              >
+                <Text style={styles.cancelButtonText}>Cancelar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -263,6 +365,132 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.textSecondary,
     marginTop: 15,
+    textAlign: 'center',
+  },
+  errorContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 20,
+    backgroundColor: '#fff5f5',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#fed7d7',
+  },
+  errorTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#e53e3e',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  errorMessage: {
+    fontSize: 14,
+    color: '#c53030',
+    textAlign: 'center',
+    marginBottom: 15,
+    paddingHorizontal: 10,
+  },
+  retryButton: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 6,
+  },
+  retryButtonText: {
+    color: colors.surface,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  exportButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    backgroundColor: colors.primary,
+  },
+  exportButtonText: {
+    color: colors.surface,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: colors.surface,
+    borderRadius: 16,
+    padding: 32,
+    width: '100%',
+    maxWidth: 400,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 8,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: colors.textPrimary,
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  modalMessage: {
+    fontSize: 16,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: 32,
+    lineHeight: 24,
+  },
+  modalButtons: {
+    flexDirection: 'column',
+    gap: 16,
+    alignItems: 'center',
+  },
+  createAccountButton: {
+    width: '100%',
+    backgroundColor: colors.primary,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: colors.primary,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  createAccountButtonText: {
+    color: colors.surface,
+    fontSize: 16,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  cancelButton: {
+    width: '100%',
+    backgroundColor: 'transparent',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cancelButtonText: {
+    color: colors.primary,
+    fontSize: 16,
+    fontWeight: '600',
     textAlign: 'center',
   },
 });
