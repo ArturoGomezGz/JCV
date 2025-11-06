@@ -10,15 +10,13 @@ import ChartPreview from './ChartPreview';
 
 interface ChartCardProps {
     title: string;
-    chartType: 'bar' | 'pie' | 'line' | 'progress' | 'donut';
-    data: any[];
+    chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar';
     onPress?: () => void;
 }
 
 const ChartCard: React.FC<ChartCardProps> = ({
     title,
     chartType,
-    data,
     onPress
 }) => {
     const handlePress = () => {
@@ -40,7 +38,6 @@ const ChartCard: React.FC<ChartCardProps> = ({
         <View style={styles.chartContainer}>
             <ChartPreview 
             type={chartType}
-            data={data}
             />
         </View>
         

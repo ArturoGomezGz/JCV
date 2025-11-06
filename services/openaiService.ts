@@ -7,22 +7,24 @@ const openai = new OpenAI({
 });
 
 export interface ChartAnalysisParams {
-  chartType: 'bar' | 'pie' | 'line' | 'progress' | 'donut';
+  chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar';
   title: string;
-  data: any[];
+  category: string;
+  question: string;
 }
 
 export const generateChartAnalysis = async ({
   chartType,
   title,
-  data
+  category,
+  question
 }: ChartAnalysisParams): Promise<string> => {
   // Verificar si el modo AI está habilitado
   const aiModeEnabled = process.env.EXPO_PUBLIC_AI_MODE_ENABLED === 'true';
   
   // Si el modo AI está deshabilitado, devolver texto predeterminado
   if (!aiModeEnabled) {
-    return getDefaultText(title, chartType);
+    return getDefaultText(title, chartType, category, question);
   }
 
   try {
@@ -35,19 +37,24 @@ export const generateChartAnalysis = async ({
     const model = process.env.EXPO_PUBLIC_OPENAI_MODEL || 'gpt-3.5-turbo';
 
     const prompt = `
-Genera un análisis detallado en español para una gráfica con las siguientes características:
+Genera un análisis detallado en español para una gráfica de satisfacción ciudadana con las siguientes características:
 
 Título: ${title}
+Categoría: ${category}
+Pregunta de la encuesta: ${question}
 Tipo de gráfica: ${chartType}
-Datos: ${JSON.stringify(data, null, 2)}
+
+CONTEXTO IMPORTANTE: 
+Esta gráfica forma parte de un sistema de medición de satisfacción ciudadana. La categoría "${category}" agrupa preguntas relacionadas, y esta visualización específica responde a la pregunta: "${question}".
 
 IMPORTANTE: La respuesta debe estar en formato Markdown válido.
 
 El análisis debe incluir:
-1. Una descripción de lo que muestra la gráfica
-2. Insights y patrones identificados en los datos
-3. Recomendaciones basadas en la información
-4. Conclusiones relevantes para la toma de decisiones
+1. Interpretación de los resultados de satisfacción ciudadana
+2. Análisis específico de la pregunta "${question}" dentro de la categoría "${category}"
+3. Insights y patrones identificados en los datos de la encuesta
+4. Recomendaciones para mejorar la satisfacción ciudadana basadas en estos resultados
+5. Conclusiones relevantes para la administración pública
 
 Estructura sugerida en Markdown:
 - Usar encabezados (##, ###) para organizar las secciones
@@ -63,7 +70,7 @@ El texto debe ser profesional, informativo y estar en español. Debe tener entre
       messages: [
         {
           role: 'system',
-          content: 'Eres un analista de datos experto que genera análisis claros y útiles de gráficas y visualizaciones de datos en español.'
+          content: 'Eres un analista de datos especializado en encuestas de satisfacción ciudadana y administración pública. Generas análisis claros y útiles de gráficas que miden la percepción ciudadana sobre servicios públicos.'
         },
         {
           role: 'user',
@@ -84,25 +91,34 @@ El texto debe ser profesional, informativo y estar en español. Debe tener entre
 };
 
 // Función para obtener texto predeterminado (modo sin IA)
-const getDefaultText = (title: string, chartType: string): string => {
+const getDefaultText = (title: string, chartType: string, category: string, question: string): string => {
   return `
-## Análisis de la Gráfica: ${title}
+## Análisis de Satisfacción Ciudadana: ${title}
 
-Esta es una vista detallada de la gráfica seleccionada. Los datos presentados proporcionan información valiosa para el análisis y la toma de decisiones.
+### Información de la Encuesta
+
+**Categoría:** ${category}  
+**Pregunta:** ${question}
+
+Esta visualización presenta los resultados de satisfacción ciudadana para la pregunta específica dentro de la categoría evaluada. Los datos proporcionan información valiosa sobre la percepción ciudadana de los servicios públicos.
 
 ### Características de la Visualización
 
-La visualización de tipo **${chartType}** permite identificar patrones, tendencias y oportunidades de mejora en los datos. Esta información es fundamental para:
+La visualización de tipo **${chartType}** permite identificar el nivel de satisfacción ciudadana y áreas de oportunidad. Esta información es fundamental para:
 
-- **Comprender** el comportamiento de los datos a lo largo del tiempo
-- **Identificar** áreas de oportunidad y mejora  
-- **Tomar decisiones** informadas basadas en evidencia
-- **Monitorear** el progreso y rendimiento
+- **Evaluar** la percepción ciudadana sobre servicios públicos
+- **Identificar** áreas prioritarias de mejora en la administración
+- **Monitorear** la evolución de la satisfacción a lo largo del tiempo
+- **Tomar decisiones** informadas para mejorar la gestión pública
+
+### Contextualización
+
+Los resultados de esta pregunta dentro de la categoría **"${category}"** reflejan aspectos específicos de la experiencia ciudadana que requieren atención y seguimiento continuo.
 
 ### Actualización de Datos
 
-Los datos se actualizan *dinámicamente* y reflejan la información más reciente disponible en el sistema.
+Los datos de satisfacción ciudadana se actualizan *dinámicamente* y reflejan las respuestas más recientes de las encuestas aplicadas.
 
-> **Nota:** Este análisis utiliza contenido predeterminado. Para obtener análisis personalizados con IA, habilita el modo AI en la configuración.
+> **Nota:** Este análisis utiliza contenido predeterminado. Para obtener análisis personalizados con IA que profundicen en los patrones específicos de satisfacción ciudadana, habilita el modo AI en la configuración.
   `;
 };

@@ -10,8 +10,9 @@ export default function App() {
   const [userEmail, setUserEmail] = useState<string>('');
   const [contentData, setContentData] = useState<{
     title: string;
-    chartType: 'bar' | 'pie' | 'line' | 'progress' | 'donut';
-    data: any[];
+    chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar';
+    category: string;
+    question: string;
     previousView: 'dashboard' | 'guest';
   } | null>(null);
 
@@ -49,12 +50,13 @@ export default function App() {
     setCurrentView('login');
   };
 
-  const handleChartPress = (title: string, chartType: 'bar' | 'pie' | 'line' | 'progress' | 'donut', data: any[]) => {
+  const handleChartPress = (title: string, chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar', category: string, question: string) => {
     // Guardar los datos del contenido y la vista anterior
     setContentData({
       title,
       chartType,
-      data,
+      category,
+      question,
       previousView: currentView === 'dashboard' ? 'dashboard' : 'guest'
     });
     setCurrentView('content');
@@ -116,7 +118,8 @@ export default function App() {
           <Content
             title={contentData.title}
             chartType={contentData.chartType}
-            data={contentData.data}
+            category={contentData.category}
+            question={contentData.question}
             onBack={handleBackFromContent}
             isGuest={contentData.previousView === 'guest'}
             userEmail={userEmail}

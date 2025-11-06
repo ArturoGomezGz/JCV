@@ -13,12 +13,14 @@ import Markdown from 'react-native-markdown-display';
 import { colors } from '../constants/Colors';
 import ChartPreview from './ChartPreview';
 import { generateChartAnalysis } from '../services';
+import surveysData from '../data/surveysData.json';
 
 // Definición de la interfaz TypeScript para las props del componente
 interface ContentProps {
   title: string;
-  chartType: 'bar' | 'pie' | 'line' | 'progress' | 'donut';
-  data: any[];
+  chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar';
+  category: string;
+  question: string;
   onBack: () => void;
   isGuest?: boolean;
   userEmail?: string;
@@ -29,7 +31,8 @@ interface ContentProps {
 const Content: React.FC<ContentProps> = ({
   title,
   chartType,
-  data,
+  category,
+  question,
   onBack,
   isGuest = false,
   userEmail,
@@ -54,7 +57,8 @@ const Content: React.FC<ContentProps> = ({
         const analysis = await generateChartAnalysis({
           chartType,
           title,
-          data
+          category,
+          question
         });
         setGeneratedText(analysis);
       } catch (error) {
@@ -67,24 +71,12 @@ const Content: React.FC<ContentProps> = ({
     };
 
     generateAnalysis();
-  }, [chartType, title, data]);
+  }, [chartType, title]);
   
   // Función para obtener la descripción según el tipo de gráfica
   const getChartDescription = (type: string) => {
-    switch (type) {
-      case 'bar':
-        return 'Esta gráfica de barras muestra la evolución de datos a lo largo del tiempo. Cada barra representa un período específico y su altura indica el valor correspondiente.';
-      case 'pie':
-        return 'Esta gráfica circular representa la distribución proporcional de diferentes categorías. Cada sector muestra el porcentaje que representa cada categoría del total.';
-      case 'line':
-        return 'Esta gráfica de líneas muestra las tendencias y cambios de datos a través del tiempo. Las líneas conectan puntos de datos para revelar patrones y tendencias.';
-      case 'progress':
-        return 'Esta gráfica de progreso muestra el avance o completitud de diferentes proyectos o tareas. Cada barra indica el porcentaje de progreso alcanzado.';
-      case 'donut':
-        return 'Esta gráfica de dona es similar a la circular pero con un espacio central vacío. Muestra la distribución de datos de forma clara y visualmente atractiva.';
-      default:
-        return 'Esta gráfica presenta información importante de manera visual y fácil de interpretar.';
-    }
+    const survey = surveysData.surveys.find(survey => survey.chartType === type);
+    return survey ? survey.description : 'Esta gráfica presenta información importante de manera visual y fácil de interpretar.';
   };
 
   // Función para manejar la exportación a PDF
@@ -140,11 +132,22 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
           {/* Título de la gráfica */}
           <Text style={styles.title}>{title}</Text>
           
+          {/* Información de la encuesta */}
+          <View style={styles.surveyInfoContainer}>
+            <View style={styles.surveyInfoRow}>
+              <Text style={styles.surveyInfoLabel}>📊 Categoría:</Text>
+              <Text style={styles.surveyInfoValue}>{category}</Text>
+            </View>
+            <View style={styles.surveyInfoRow}>
+              <Text style={styles.surveyInfoLabel}>❓ Pregunta:</Text>
+              <Text style={styles.surveyInfoValue}>{question}</Text>
+            </View>
+          </View>
+          
           {/* Contenedor de la gráfica */}
           <View style={styles.chartContainer}>
             <ChartPreview 
               type={chartType}
-              data={data}
             />
           </View>
           
@@ -177,7 +180,8 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
                         const analysis = await generateChartAnalysis({
                           chartType,
                           title,
-                          data
+                          category,
+                          question
                         });
                         setGeneratedText(analysis);
                         setHasError(false);
@@ -298,6 +302,38 @@ const styles = StyleSheet.create({
     color: colors.primary,
     textAlign: 'center',
     marginBottom: 30,
+  },
+  surveyInfoContainer: {
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 30,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 3,
+  },
+  surveyInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 15,
+  },
+  surveyInfoLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: colors.textPrimary,
+    minWidth: 100,
+    marginRight: 10,
+  },
+  surveyInfoValue: {
+    flex: 1,
+    fontSize: 16,
+    color: colors.textSecondary,
+    lineHeight: 22,
   },
   chartContainer: {
     backgroundColor: colors.surface,

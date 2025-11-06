@@ -1,0 +1,115 @@
+{
+  "surveys": [
+    {
+      "id": "survey-001",
+      "title": "Satisfacción con Servicios Públicos por Mes",
+      "category": "Servicios Públicos Generales",
+      "question": "¿Cómo calificaría la calidad general de los servicios públicos de su municipio?",
+      "chartType": "bar",
+      "description": "Gráfico de barras ideal para comparar valores entre diferentes categorías o períodos. Perfecto para mostrar datos categóricos y facilitar comparaciones visuales rápidas.",
+      "chartData": {
+        "labels": ["Ene", "Feb", "Mar", "Abr", "May", "Jun"],
+        "values": [12, 19, 15, 22, 18, 17]
+      }
+    },
+    {
+      "id": "survey-002",
+      "title": "Acceso a Infraestructura Digital",
+      "category": "Infraestructura Digital",
+      "question": "¿Considera que su municipio cuenta con una infraestructura digital adecuada?",
+      "chartType": "pie",
+      "description": "Gráfico circular perfecto para mostrar proporciones y porcentajes de un total. Ideal cuando necesitas visualizar cómo se distribuye un conjunto de datos en partes de un todo.",
+      "chartData": {
+        "labels": ["Excelente", "Bueno", "Regular", "Malo"],
+        "values": [28, 32, 25, 15]
+      }
+    },
+    {
+      "id": "survey-003",
+      "title": "Evolución de Mejoras en Infraestructura",
+      "category": "Desarrollo Urbano",
+      "question": "¿Está satisfecho con las mejoras en infraestructura urbana realizadas el último año?",
+      "chartType": "line",
+      "description": "Gráfico de líneas excelente para mostrar tendencias y cambios a lo largo del tiempo. Ideal para datos temporales y análisis de evolución o progreso.",
+      "chartData": {
+        "labels": ["Ene", "Feb", "Mar", "Abr", "May", "Jun"],
+        "datasets": [
+          {
+            "name": "2023",
+            "values": [18, 22, 19, 25, 23, 20]
+          },
+          {
+            "name": "2024", 
+            "values": [20, 24, 21, 27, 25, 22]
+          }
+        ]
+      }
+    },
+    {
+      "id": "survey-004",
+      "title": "Eficiencia en Proyectos Municipales",
+      "category": "Gestión Municipal",
+      "question": "¿Qué tan eficiente considera la ejecución de proyectos públicos en su municipio?",
+      "chartType": "progress",
+      "description": "Gráfico de progreso circular ideal para mostrar porcentajes de completitud o avance. Perfecto para KPIs, metas cumplidas y estados de progreso en múltiples categorías.",
+      "chartData": {
+        "labels": ["Planificación", "Ejecución", "Evaluación", "Mejora"],
+        "values": [75, 68, 58, 82]
+      }
+    },
+    {
+      "id": "survey-005",
+      "title": "Distribución de Presupuesto por Área",
+      "category": "Gestión Financiera",
+      "question": "¿Cómo evalúa la distribución del presupuesto municipal por áreas?",
+      "chartType": "stackedBar",
+      "description": "Gráfico de barras apiladas perfecto para mostrar composición de datos en múltiples categorías. Ideal para comparar totales y sus componentes internos simultáneamente.",
+      "chartData": {
+        "labels": ["T1", "T2", "T3", "T4"],
+        "series": ["Infraestructura", "Servicios", "Administración"],
+        "values": [
+          [45, 25, 15],
+          [50, 30, 20],
+          [42, 28, 18],
+          [48, 32, 22]
+        ]
+      }
+    },
+    {
+      "id": "survey-006",
+      "title": "Tendencia de Satisfacción Ciudadana",
+      "category": "Análisis Temporal",
+      "question": "¿Cómo ha evolucionado su satisfacción general con la gestión municipal?",
+      "chartType": "bezierLine",
+      "description": "Gráfico de líneas suaves que resalta tendencias y flujos naturales en los datos. Ideal para mostrar progresiones orgánicas y suavizar fluctuaciones menores en series temporales.",
+      "chartData": {
+        "labels": ["Ene", "Feb", "Mar", "Abr", "May", "Jun"],
+        "values": [3.8, 4.1, 4.0, 4.5, 4.3, 4.2]
+      }
+    },
+    {
+      "id": "survey-007",
+      "title": "Impacto de Políticas Públicas",
+      "category": "Efectividad Gubernamental",
+      "question": "¿Qué impacto han tenido las nuevas políticas públicas en su comunidad?",
+      "chartType": "areaChart",
+      "description": "Gráfico de área que enfatiza el volumen y la magnitud de los datos a lo largo del tiempo. Perfecto para mostrar acumulación, impacto total y áreas de influencia.",
+      "chartData": {
+        "labels": ["Ene", "Feb", "Mar", "Abr", "May", "Jun"],
+        "values": [3.5, 3.8, 3.7, 4.0, 3.9, 3.8]
+      }
+    },
+    {
+      "id": "survey-008",
+      "title": "Evaluación por Departamentos Municipales",
+      "category": "Gestión por Áreas",
+      "question": "¿Cómo califica el desempeño de cada departamento municipal?",
+      "chartType": "horizontalBar",
+      "description": "Gráfico de barras especializado para comparar múltiples departamentos o categorías con nombres largos. Ideal para rankings, evaluaciones comparativas y datos categóricos extensos.",
+      "chartData": {
+        "labels": ["Obras Públicas", "Servicios Sociales", "Hacienda", "Seguridad", "Ambiente"],
+        "values": [4.2, 3.8, 3.5, 4.0, 3.9]
+      }
+    }
+  ]
+}
