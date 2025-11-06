@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
   // Contenedor principal: posicionado en la parte inferior
   container: {
     position: 'absolute',
+    zIndex: 10,
     bottom: 0, // Separación del borde inferior
     left: 0,
     right: 0,
