@@ -4,7 +4,7 @@ import { Feed } from '../../components';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function DashboardScreen() {
-  const { userEmail, logout } = useAuth();
+  const { userEmail, userName, logout } = useAuth();
 
   const handleLogout = () => {
     logout();
@@ -35,6 +35,7 @@ export default function DashboardScreen() {
     <Feed
       isGuest={false}
       userEmail={userEmail}
+      userName={userName}
       onLogout={handleLogout}
       onChartPress={handleChartPress}
     />

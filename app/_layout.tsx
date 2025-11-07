@@ -1,5 +1,7 @@
 import { Stack } from 'expo-router';
 import { AuthProvider } from '../contexts/AuthContext';
+// Initialize Firebase
+import '../services/firebaseConfig';
 
 export default function RootLayout() {
   return (

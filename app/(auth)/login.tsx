@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Alert } from 'react-native';
 import { router } from 'expo-router';
 import { LoginForm } from '../../components';
 import { useAuth } from '../../contexts/AuthContext';
@@ -10,10 +11,15 @@ export default function LoginScreen() {
   const handleLogin = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      await login(email, password);
-      router.replace('/(tabs)');
+      const result = await login(email, password);
+      if (result.success) {
+        router.replace('/(tabs)');
+      } else {
+        Alert.alert(result.error || 'Error desconocido');
+      }
     } catch (error) {
       console.error('Login error:', error);
+      Alert.alert('Error', 'Ocurrió un error inesperado');
     } finally {
       setIsLoading(false);
     }

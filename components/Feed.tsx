@@ -23,6 +23,7 @@ interface FeedProps {
   onCreateAccount?: () => void;
   onLogout?: () => void;
   userEmail?: string;
+  userName?: string;
   onChartPress?: (title: string, chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar', category: string, question: string) => void;
 }
 
@@ -32,6 +33,7 @@ const Feed: React.FC<FeedProps> = ({
   onCreateAccount,
   onLogout,
   userEmail,
+  userName,
   onChartPress
 }) => {
   const [activeTab, setActiveTab] = useState('chat');
@@ -125,7 +127,7 @@ const Feed: React.FC<FeedProps> = ({
       <ScrollView style={styles.container}>
         <View style={styles.content}>
           <Text style={styles.welcomeTitle}>
-            {isGuest ? 'Modo Invitado' : `Bienvenido${userEmail ? `, ${userEmail.split('@')[0]}` : ''}`}
+            {isGuest ? 'Modo Invitado' : `Bienvenido${userName ? `, ${userName}` : ''}`}
           </Text>
           
           <Text style={styles.description}>
