@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 20,
     paddingVertical: 10,
-    zIndex: 1000, // Asegurar que esté por encima de otros elementos
+    zIndex: 10, // Asegurar que esté por encima de otros elementos
     backgroundColor: 'rgba(255, 255, 255, 0.1)', // Fondo semi-transparente para debug
   },
   // Estilo de la imagen del logo

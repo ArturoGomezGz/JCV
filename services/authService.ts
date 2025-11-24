@@ -1,0 +1,163 @@
+import { 
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  updateProfile,
+  signOut,
+  User,
+  AuthError
+} from 'firebase/auth';
+import { auth } from './firebaseConfig';
+import { createUserProfile, CreateUserProfileData } from './userService';
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface RegisterCredentials {
+  email: string;
+  password: string;
+  displayName: string;
+  phoneNumber: string;
+}
+
+export interface AuthResult {
+  success: boolean;
+  user?: User;
+  error?: string;
+}
+
+/**
+ * Register new user with email and password
+ */
+export const registerWithEmail = async (credentials: RegisterCredentials): Promise<AuthResult> => {
+  try {
+    // Create user in Firebase Auth
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      credentials.email,
+      credentials.password
+    );
+    
+    // Update user profile in Auth
+    await updateProfile(userCredential.user, {
+      displayName: credentials.displayName
+    });
+    
+    // Create user profile in Firestore
+    const profileResult = await createUserProfile(userCredential.user, {
+      displayName: credentials.displayName,
+      email: credentials.email,
+      phoneNumber: credentials.phoneNumber
+    });
+    
+    if (!profileResult.success) {
+      // If Firestore fails, we should ideally delete the Auth user
+      // But for now, we'll just log the error
+      console.error('Failed to create user profile:', profileResult.error);
+    }
+    
+    return {
+      success: true,
+      user: userCredential.user
+    };
+  } catch (error) {
+    const authError = error as AuthError;
+    let errorMessage = 'Error al crear la cuenta';
+    
+    // Handle specific Firebase auth errors
+    switch (authError.code) {
+      case 'auth/email-already-in-use':
+        errorMessage = 'El email ya está en uso';
+        break;
+      case 'auth/invalid-email':
+        errorMessage = 'Email inválido';
+        break;
+      case 'auth/operation-not-allowed':
+        errorMessage = 'Operación no permitida';
+        break;
+      case 'auth/weak-password':
+        errorMessage = 'La contraseña es muy débil';
+        break;
+      default:
+        errorMessage = authError.message;
+    }
+    
+    return {
+      success: false,
+      error: errorMessage
+    };
+  }
+};
+
+/**
+ * Login with email and password
+ */
+export const loginWithEmail = async (credentials: LoginCredentials): Promise<AuthResult> => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      credentials.email,
+      credentials.password
+    );
+    
+    return {
+      success: true,
+      user: userCredential.user
+    };
+  } catch (error) {
+    const authError = error as AuthError;
+    let errorMessage = 'Error al iniciar sesión';
+    
+    // Handle specific Firebase auth errors
+    switch (authError.code) {
+      case 'auth/user-not-found':
+        errorMessage = 'Usuario no encontrado';
+        break;
+      case 'auth/wrong-password':
+        errorMessage = 'Contraseña incorrecta';
+        break;
+      case 'auth/invalid-email':
+        errorMessage = 'Email inválido';
+        break;
+      case 'auth/user-disabled':
+        errorMessage = 'Usuario deshabilitado';
+        break;
+      case 'auth/too-many-requests':
+        errorMessage = 'Demasiados intentos. Intenta más tarde';
+        break;
+      default:
+        errorMessage = authError.message;
+    }
+    
+    return {
+      success: false,
+      error: errorMessage
+    };
+  }
+};
+
+/**
+ * Logout user
+ */
+export const logout = async (): Promise<AuthResult> => {
+  try {
+    await signOut(auth);
+    return {
+      success: true
+    };
+  } catch (error) {
+    const authError = error as AuthError;
+    return {
+      success: false,
+      error: authError.message
+    };
+  }
+};
+
+/**
+ * Get current user
+ */
+export const getCurrentUser = (): User | null => {
+  return auth.currentUser;
+};

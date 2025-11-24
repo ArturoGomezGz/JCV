@@ -8,4 +8,24 @@ export {
   fetchCategories, 
   fetchSurveyStats 
 } from './surveysService';
+
+// Export Firebase configuration
+export { app as firebaseApp, auth, db } from './firebaseConfig';
+
+// Export Auth service
+export { 
+  loginWithEmail, 
+  registerWithEmail,
+  logout, 
+  getCurrentUser 
+} from './authService';
+export type { LoginCredentials, RegisterCredentials, AuthResult } from './authService';
+
+// Export User service
+export { 
+  createUserProfile, 
+  getUserProfile, 
+  updateUserProfile 
+} from './userService';
+export type { UserProfile, CreateUserProfileData } from './userService';
 export type { SurveyData, SurveysResponse } from './surveysService';
