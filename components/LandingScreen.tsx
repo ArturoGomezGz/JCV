@@ -1,7 +1,18 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Dimensions,
+  Linking,
+  Alert,
+} from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { FontAwesome, Entypo } from '@expo/vector-icons';
+import colors from '../constants/Colors';
 
 const { width } = Dimensions.get('window');
 
@@ -13,10 +24,10 @@ export default function LandingScreen() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <LinearGradient
-        colors={['#0066cc', '#004d99', '#003366']}
+      colors={[colors.primaryLight, colors.primary, colors.primaryDark]}
         style={styles.header}
       >
-        <Text style={styles.logo}>JCV Analytics</Text>
+      <Text style={styles.logo}>Jalisco Cómo Vamos</Text>
         <Text style={styles.tagline}>Transforma datos en decisiones inteligentes</Text>
       </LinearGradient>
 
@@ -30,91 +41,15 @@ export default function LandingScreen() {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.statsSection}>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>10K+</Text>
-          <Text style={styles.statLabel}>Usuarios Activos</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>98%</Text>
-          <Text style={styles.statLabel}>Satisfacción</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>24/7</Text>
-          <Text style={styles.statLabel}>Soporte</Text>
-        </View>
-      </View>
+      {/* Sección reemplazada: explicación del proyecto según solicitud
+          Aquí eliminamos métricas y testimonios y mostramos el texto descriptivo */}
+      <View style={styles.aboutSection}>
+        <Text style={styles.sectionTitle}>¿Qué es Cómo Vamos Jalisco?</Text>
+        <Text style={styles.aboutText}>
+          {`Cómo Vamos Jalisco es una plataforma ciudadana que reúne y visualiza datos sobre el desarrollo social, económico y ambiental del estado. Su objetivo es acercar la información pública a todas las personas, promoviendo la transparencia, la participación ciudadana y el análisis basado en evidencia.
 
-      <View style={styles.featuresSection}>
-        <Text style={styles.sectionTitle}>¿Por qué JCV Analytics?</Text>
-        
-        <View style={styles.featureCard}>
-          <View style={styles.featureIcon}>
-            <Text style={styles.featureIconText}>📊</Text>
-          </View>
-          <View style={styles.featureContent}>
-            <Text style={styles.featureTitle}>Dashboards Inteligentes</Text>
-            <Text style={styles.featureDescription}>
-              Visualiza tus datos en tiempo real con gráficos interactivos y personalizables
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.featureCard}>
-          <View style={styles.featureIcon}>
-            <Text style={styles.featureIconText}>🤖</Text>
-          </View>
-          <View style={styles.featureContent}>
-            <Text style={styles.featureTitle}>Análisis con IA</Text>
-            <Text style={styles.featureDescription}>
-              Obtén insights automáticos y predicciones basadas en machine learning
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.featureCard}>
-          <View style={styles.featureIcon}>
-            <Text style={styles.featureIconText}>🔒</Text>
-          </View>
-          <View style={styles.featureContent}>
-            <Text style={styles.featureTitle}>Seguridad Garantizada</Text>
-            <Text style={styles.featureDescription}>
-              Tus datos protegidos con encriptación de nivel empresarial
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.featureCard}>
-          <View style={styles.featureIcon}>
-            <Text style={styles.featureIconText}>⚡</Text>
-          </View>
-          <View style={styles.featureContent}>
-            <Text style={styles.featureTitle}>Velocidad Increíble</Text>
-            <Text style={styles.featureDescription}>
-              Procesa millones de datos en segundos con nuestra infraestructura cloud
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      <View style={styles.testimonialsSection}>
-        <Text style={styles.sectionTitle}>Lo que dicen nuestros clientes</Text>
-        
-        <View style={styles.testimonialCard}>
-          <Text style={styles.testimonialText}>
-            "JCV Analytics transformó completamente nuestra forma de analizar datos. 
-            Increíblemente intuitivo y potente."
-          </Text>
-          <Text style={styles.testimonialAuthor}>- María González, CEO TechCorp</Text>
-        </View>
-
-        <View style={styles.testimonialCard}>
-          <Text style={styles.testimonialText}>
-            "La mejor plataforma de análisis que hemos usado. El soporte es excepcional 
-            y los resultados hablan por sí mismos."
-          </Text>
-          <Text style={styles.testimonialAuthor}>- Carlos Rodríguez, Director de Datos</Text>
-        </View>
+A través de gráficas interactivas, indicadores y comparativas municipales, la app permite conocer cómo avanza Jalisco en temas como seguridad, educación, salud, medio ambiente y movilidad, impulsando una ciudadanía más informada y comprometida con su entorno.`}
+        </Text>
       </View>
 
       <View style={styles.ctaSection}>
@@ -128,7 +63,35 @@ export default function LandingScreen() {
       </View>
 
       <View style={styles.footer}>
-        <Text style={styles.footerText}>© 2025 JCV Analytics. Todos los derechos reservados.</Text>
+        <View style={styles.socialRowFooter}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://jaliscocomovamos.org/')} style={styles.socialIcon}>
+            <Entypo name="link" size={18} color="#1a1a1a" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => Linking.openURL('https://www.facebook.com/jaliscomovamos')} style={styles.socialIcon}>
+            <FontAwesome name="facebook-square" size={20} color="#3b5998" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => Linking.openURL('https://x.com/jaliscomovamos')} style={styles.socialIcon}>
+            <FontAwesome name="twitter" size={20} color="#1DA1F2" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => Linking.openURL('https://www.instagram.com/jaliscomovamos/')} style={styles.socialIcon}>
+            <FontAwesome name="instagram" size={20} color="#C13584" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => Linking.openURL('https://www.youtube.com/channel/UCn1zLVu1oCAcXzlhMEMgE2w')} style={styles.socialIcon}>
+            <FontAwesome name="youtube-play" size={20} color="#FF0000" />
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity
+          onPress={() => {
+            // Placeholder: sustituir por el enlace real de Google Drive si se dispone
+            const avisoUrl = 'https://drive.google.com';
+            Linking.openURL(avisoUrl).catch(() => Alert.alert('No se pudo abrir el aviso de privacidad'));
+          }}
+        >
+          <Text style={styles.privacyLink}>Aviso de Privacidad integral (Google Drive)</Text>
+        </TouchableOpacity>
+
+        <Text style={styles.footerText}>© 2025 JALISCO CÓMO VAMOS. Todos los derechos reservados.</Text>
       </View>
     </ScrollView>
   );
@@ -137,7 +100,7 @@ export default function LandingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
   },
   contentContainer: {
     flexGrow: 1,
@@ -156,7 +119,7 @@ const styles = StyleSheet.create({
   },
   tagline: {
     fontSize: 16,
-    color: '#e6f2ff',
+    color: '#FFFFFF',
     textAlign: 'center',
   },
   heroSection: {
@@ -166,28 +129,28 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
+    fontWeight: '700',
+    color: colors.textPrimary,
     textAlign: 'center',
     marginBottom: 15,
   },
   heroSubtitle: {
     fontSize: 16,
-    color: '#666',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 30,
     lineHeight: 24,
   },
   ctaButton: {
-    backgroundColor: '#0066cc',
+    backgroundColor: colors.primary,
     paddingVertical: 16,
     paddingHorizontal: 60,
     borderRadius: 30,
     elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
   },
   ctaButtonText: {
     color: '#fff',
@@ -199,20 +162,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     paddingVertical: 30,
     paddingHorizontal: 20,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: colors.background,
   },
   statCard: {
     alignItems: 'center',
   },
   statNumber: {
     fontSize: 32,
-    fontWeight: 'bold',
-    color: '#0066cc',
+    fontWeight: '700',
+    color: colors.primary,
     marginBottom: 5,
   },
   statLabel: {
     fontSize: 14,
-    color: '#666',
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   featuresSection: {
@@ -221,28 +184,28 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
+    fontWeight: '700',
+    color: colors.textPrimary,
     marginBottom: 30,
     textAlign: 'center',
   },
   featureCard: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
     padding: 20,
     borderRadius: 12,
     marginBottom: 15,
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
   },
   featureIcon: {
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: '#e6f2ff',
+    backgroundColor: colors.background,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 15,
@@ -255,69 +218,69 @@ const styles = StyleSheet.create({
   },
   featureTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
+    fontWeight: '700',
+    color: colors.textPrimary,
     marginBottom: 5,
   },
   featureDescription: {
     fontSize: 14,
-    color: '#666',
+    color: colors.textSecondary,
     lineHeight: 20,
   },
   testimonialsSection: {
     paddingVertical: 40,
     paddingHorizontal: 20,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: colors.background,
   },
   testimonialCard: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
     padding: 20,
     borderRadius: 12,
     marginBottom: 15,
     borderLeftWidth: 4,
-    borderLeftColor: '#0066cc',
+    borderLeftColor: colors.primary,
   },
   testimonialText: {
     fontSize: 15,
-    color: '#333',
+    color: colors.textPrimary,
     lineHeight: 22,
     marginBottom: 10,
     fontStyle: 'italic',
   },
   testimonialAuthor: {
     fontSize: 14,
-    color: '#0066cc',
+    color: colors.primary,
     fontWeight: '600',
   },
   ctaSection: {
     paddingVertical: 50,
     paddingHorizontal: 20,
     alignItems: 'center',
-    backgroundColor: '#e6f2ff',
+    backgroundColor: colors.background,
   },
   ctaSectionTitle: {
     fontSize: 26,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
+    fontWeight: '700',
+    color: colors.textPrimary,
     marginBottom: 10,
     textAlign: 'center',
   },
   ctaSectionSubtitle: {
     fontSize: 16,
-    color: '#666',
+    color: colors.textSecondary,
     marginBottom: 25,
     textAlign: 'center',
   },
   ctaSecondaryButton: {
-    backgroundColor: '#0066cc',
+    backgroundColor: colors.primary,
     paddingVertical: 16,
     paddingHorizontal: 50,
     borderRadius: 30,
     elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
   },
   ctaSecondaryButtonText: {
     color: '#fff',
@@ -328,10 +291,37 @@ const styles = StyleSheet.create({
     paddingVertical: 30,
     paddingHorizontal: 20,
     alignItems: 'center',
-    backgroundColor: '#1a1a1a',
+    backgroundColor: colors.surface,
   },
   footerText: {
     fontSize: 12,
-    color: '#999',
+    color: colors.textSecondary,
+  },
+  aboutSection: {
+    paddingVertical: 24,
+    paddingHorizontal: 20,
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    marginHorizontal: 20,
+    marginBottom: 20,
+  },
+  aboutText: {
+    fontSize: 15,
+    color: colors.textPrimary,
+    lineHeight: 22,
+  },
+  socialRowFooter: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  socialIcon: {
+    marginHorizontal: 8,
+  },
+  privacyLink: {
+    color: colors.link,
+    textDecorationLine: 'underline',
+    marginBottom: 8,
   },
 });
