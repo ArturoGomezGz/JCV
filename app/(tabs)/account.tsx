@@ -29,7 +29,7 @@ export default function AccountScreen() {
   const handleSave = async (name: string, phone: string, password: string) => {
     setIsSaving(true);
     try {
-      const result = await updateProfile(name, phone, password || undefined);
+      const result = await updateProfile(name, phone, password);
       
       if (result.success) {
         Alert.alert(

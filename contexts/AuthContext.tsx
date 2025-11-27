@@ -159,10 +159,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     phone: string, 
     password?: string
   ): Promise<AuthResult> => {
+    // Trim password early to avoid unnecessary processing
+    const trimmedPassword = password?.trim();
+    
     setLoading(true);
     try {
       if (!user) {
-        setLoading(false);
         return {
           success: false,
           error: 'No hay usuario autenticado'
@@ -176,7 +178,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
 
       if (!profileResult.success) {
-        setLoading(false);
         return {
           success: false,
           error: profileResult.error || 'Error al actualizar el perfil'
@@ -184,10 +185,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       // Update password if provided
-      if (password && password.trim()) {
-        const passwordResult = await updateUserPassword(password);
+      if (trimmedPassword) {
+        const passwordResult = await updateUserPassword(trimmedPassword);
         if (!passwordResult.success) {
-          setLoading(false);
           return {
             success: false,
             error: passwordResult.error || 'Error al actualizar la contraseña'
@@ -198,14 +198,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Reload user profile to reflect changes
       await loadUserProfile(user.uid);
       
-      setLoading(false);
       return { success: true };
     } catch (error) {
-      setLoading(false);
       return {
         success: false,
         error: 'Error inesperado al actualizar el perfil'
       };
+    } finally {
+      setLoading(false);
     }
   };
 
