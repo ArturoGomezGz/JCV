@@ -15,6 +15,11 @@ export default function GuestScreen() {
     router.push('/(auth)/create-account');
   };
 
+  const handleProfilePress = () => {
+    // Guest users should be redirected to create account
+    router.push('/(auth)/create-account');
+  };
+
   const handleChartPress = (
     title: string, 
     chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar', 
@@ -40,6 +45,7 @@ export default function GuestScreen() {
       onBackToLogin={handleBackToLogin}
       onCreateAccount={handleCreateAccount}
       onChartPress={handleChartPress}
+      onProfilePress={handleProfilePress}
     />
   );
 }

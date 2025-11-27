@@ -25,6 +25,7 @@ interface FeedProps {
   userEmail?: string;
   userName?: string;
   onChartPress?: (title: string, chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar', category: string, question: string) => void;
+  onProfilePress?: () => void;
 }
 
 const Feed: React.FC<FeedProps> = ({ 
@@ -34,7 +35,8 @@ const Feed: React.FC<FeedProps> = ({
   onLogout,
   userEmail,
   userName,
-  onChartPress
+  onChartPress,
+  onProfilePress
 }) => {
   const [activeTab, setActiveTab] = useState('chat');
   const [surveys, setSurveys] = useState<SurveyData[]>([]);
@@ -170,7 +172,12 @@ const Feed: React.FC<FeedProps> = ({
       
       <BottomNavigation 
         activeTab={activeTab}
-        onTabPress={setActiveTab}
+        onTabPress={(tabName) => {
+          setActiveTab(tabName);
+          if (tabName === 'profile' && onProfilePress) {
+            onProfilePress();
+          }
+        }}
       />
     </View>
   );

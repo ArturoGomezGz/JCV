@@ -11,6 +11,10 @@ export default function DashboardScreen() {
     router.replace('/(auth)/login');
   };
 
+  const handleProfilePress = () => {
+    router.push('/(tabs)/account');
+  };
+
   const handleChartPress = (
     title: string, 
     chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar', 
@@ -38,6 +42,7 @@ export default function DashboardScreen() {
       userName={userName}
       onLogout={handleLogout}
       onChartPress={handleChartPress}
+      onProfilePress={handleProfilePress}
     />
   );
 }
