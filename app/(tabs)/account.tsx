@@ -35,6 +35,8 @@ export default function AccountScreen() {
   const handleTabPress = (tabName: string) => {
     if (tabName === 'home') {
       router.replace('/(tabs)');
+    } else if (tabName === 'chat') {
+      router.push('/(tabs)/forum');
     }
     // Other tabs can be added here as needed
   };
