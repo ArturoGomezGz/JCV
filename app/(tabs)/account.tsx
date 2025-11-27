@@ -18,7 +18,7 @@ export default function AccountScreen() {
   // Redirect to create account if not authenticated or is guest
   React.useEffect(() => {
     if (!isAuthenticated || isGuest) {
-      router.replace('/(auth)/create-account');
+      router.replace('/(auth)/login');
     }
   }, [isAuthenticated, isGuest]);
 
