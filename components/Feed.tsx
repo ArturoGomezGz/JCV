@@ -176,7 +176,10 @@ const Feed: React.FC<FeedProps> = ({
         activeTab={activeTab}
         onTabPress={(tabName) => {
           setActiveTab(tabName);
-          if (tabName === 'profile' && onProfilePress) {
+          if (tabName === 'home') {
+            // If already on feed (home), refresh the surveys
+            loadSurveys();
+          } else if (tabName === 'profile' && onProfilePress) {
             onProfilePress();
           } else if (tabName === 'chat' && onForumPress) {
             onForumPress();

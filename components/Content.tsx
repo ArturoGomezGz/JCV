@@ -12,6 +12,7 @@ import {
 import Markdown from 'react-native-markdown-display';
 import { colors } from '../constants/Colors';
 import ChartPreview from './ChartPreview';
+import BottomNavigation from './BottomNavigation';
 import { generateChartAnalysis } from '../services';
 import surveysData from '../data/surveysData.json';
 
@@ -25,6 +26,7 @@ interface ContentProps {
   isGuest?: boolean;
   userEmail?: string;
   onCreateAccount?: () => void;
+  onHomePress?: () => void;
 }
 
 // Componente Content para mostrar los detalles de una gráfica
@@ -36,7 +38,8 @@ const Content: React.FC<ContentProps> = ({
   onBack,
   isGuest = false,
   userEmail,
-  onCreateAccount
+  onCreateAccount,
+  onHomePress
 }) => {
   
   // Estado para el texto generado por IA
@@ -244,6 +247,15 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
           </View>
         </View>
       </Modal>
+
+      <BottomNavigation 
+        activeTab=""
+        onTabPress={(tabName) => {
+          if (tabName === 'home' && onHomePress) {
+            onHomePress();
+          }
+        }}
+      />
     </View>
   );
 };
