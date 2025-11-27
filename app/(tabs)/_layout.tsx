@@ -6,6 +6,7 @@ export default function TabsLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="guest" />
       <Stack.Screen name="account" />
+      <Stack.Screen name="forum" />
     </Stack>
   );
 }

@@ -15,6 +15,10 @@ export default function DashboardScreen() {
     router.push('/(tabs)/account');
   };
 
+  const handleForumPress = () => {
+    router.push('/(tabs)/forum');
+  };
+
   const handleChartPress = (
     title: string, 
     chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar', 
@@ -43,6 +47,7 @@ export default function DashboardScreen() {
       onLogout={handleLogout}
       onChartPress={handleChartPress}
       onProfilePress={handleProfilePress}
+      onForumPress={handleForumPress}
     />
   );
 }

@@ -20,6 +20,10 @@ export default function GuestScreen() {
     router.push('/(auth)/create-account');
   };
 
+  const handleForumPress = () => {
+    router.push('/(tabs)/forum');
+  };
+
   const handleChartPress = (
     title: string, 
     chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar', 
@@ -46,6 +50,7 @@ export default function GuestScreen() {
       onCreateAccount={handleCreateAccount}
       onChartPress={handleChartPress}
       onProfilePress={handleProfilePress}
+      onForumPress={handleForumPress}
     />
   );
 }

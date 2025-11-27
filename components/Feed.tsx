@@ -26,6 +26,7 @@ interface FeedProps {
   userName?: string;
   onChartPress?: (title: string, chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar', category: string, question: string) => void;
   onProfilePress?: () => void;
+  onForumPress?: () => void;
 }
 
 const Feed: React.FC<FeedProps> = ({ 
@@ -36,9 +37,10 @@ const Feed: React.FC<FeedProps> = ({
   userEmail,
   userName,
   onChartPress,
-  onProfilePress
+  onProfilePress,
+  onForumPress
 }) => {
-  const [activeTab, setActiveTab] = useState('chat');
+  const [activeTab, setActiveTab] = useState('home');
   const [surveys, setSurveys] = useState<SurveyData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hasError, setHasError] = useState<boolean>(false);
@@ -176,6 +178,8 @@ const Feed: React.FC<FeedProps> = ({
           setActiveTab(tabName);
           if (tabName === 'profile' && onProfilePress) {
             onProfilePress();
+          } else if (tabName === 'chat' && onForumPress) {
+            onForumPress();
           }
         }}
       />
