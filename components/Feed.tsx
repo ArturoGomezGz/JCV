@@ -185,6 +185,10 @@ const Feed: React.FC<FeedProps> = ({
             onProfilePress();
           } else if (tabName === 'chat' && onForumPress) {
             onForumPress();
+          } else if (tabName === 'stats') {
+            // Navigate to search screen
+            const { router } = require('expo-router');
+            router.push('/(tabs)/search');
           }
         }}
       />

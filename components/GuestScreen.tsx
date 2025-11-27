@@ -88,7 +88,13 @@ const Feed: React.FC<FeedProps> = ({
 
   const handleTabPress = (tabName: string) => {
     setActiveTab(tabName);
-    console.log('Tab pressed:', tabName);
+    if (tabName === 'stats') {
+      // Navigate to search screen
+      const { router } = require('expo-router');
+      router.push('/(tabs)/search');
+    } else {
+      console.log('Tab pressed:', tabName);
+    }
   };
 
   return (

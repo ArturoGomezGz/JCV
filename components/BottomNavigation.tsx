@@ -52,7 +52,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
           activeOpacity={0.7}
         >
           <Ionicons
-            name="bar-chart-outline"
+            name="search-outline"
             size={26}
             color={activeTab === 'stats' ? colors.primary : colors.textSecondary}
           />

@@ -21,6 +21,8 @@ export default function ForumScreen() {
       } else {
         router.push('/(tabs)/account');
       }
+    } else if (tabName === 'stats') {
+      router.push('/(tabs)/search');
     }
     // 'chat' tab is the current screen (forum)
   };

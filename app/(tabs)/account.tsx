@@ -37,6 +37,8 @@ export default function AccountScreen() {
       router.replace('/(tabs)');
     } else if (tabName === 'chat') {
       router.push('/(tabs)/forum');
+    } else if (tabName === 'stats') {
+      router.push('/(tabs)/search');
     }
     // Other tabs can be added here as needed
   };
