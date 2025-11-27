@@ -24,7 +24,7 @@ export default function GuestScreen() {
   };
 
   const handleForumPress = () => {
-    // Show popup instead of redirecting directly for chat/messages
+    // Show popup instead of redirecting directly for forum/chat access
     setModalMessage('Necesitas crear una cuenta para acceder a los mensajes.');
     setShowGuestModal(true);
   };
