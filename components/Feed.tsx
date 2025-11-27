@@ -174,6 +174,8 @@ const Feed: React.FC<FeedProps> = ({
       
       <BottomNavigation 
         activeTab={activeTab}
+        isGuest={isGuest}
+        onCreateAccountPress={onCreateAccount}
         onTabPress={(tabName) => {
           setActiveTab(tabName);
           if (tabName === 'home') {

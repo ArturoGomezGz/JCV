@@ -25,6 +25,10 @@ export default function ForumScreen() {
     // 'chat' tab is the current screen (forum)
   };
 
+  const handleCreateAccount = () => {
+    router.push('/(auth)/create-account');
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
@@ -41,6 +45,8 @@ export default function ForumScreen() {
       </ScrollView>
       <BottomNavigation 
         activeTab="chat"
+        isGuest={isGuest}
+        onCreateAccountPress={handleCreateAccount}
         onTabPress={handleTabPress}
       />
     </View>

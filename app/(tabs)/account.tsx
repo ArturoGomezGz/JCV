@@ -57,6 +57,7 @@ export default function AccountScreen() {
       />
       <BottomNavigation 
         activeTab="profile"
+        isGuest={false}
         onTabPress={handleTabPress}
       />
     </View>

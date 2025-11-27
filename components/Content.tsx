@@ -250,6 +250,8 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
 
       <BottomNavigation 
         activeTab=""
+        isGuest={isGuest}
+        onCreateAccountPress={onCreateAccount}
         onTabPress={(tabName) => {
           if (tabName === 'home' && onHomePress) {
             onHomePress();

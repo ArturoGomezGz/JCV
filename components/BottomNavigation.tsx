@@ -11,11 +11,15 @@ import { colors } from '../constants/Colors';
 interface BottomNavigationProps {
   activeTab?: string;
   onTabPress?: (tabName: string) => void;
+  isGuest?: boolean;
+  onCreateAccountPress?: () => void;
 }
 
 const BottomNavigation: React.FC<BottomNavigationProps> = ({
   activeTab = 'home',
-  onTabPress
+  onTabPress,
+  isGuest = false,
+  onCreateAccountPress
 }) => {
 
   const handleTabPress = (tabName: string) => {
@@ -57,7 +61,13 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
         {/* Tab derecha 1 */}
         <TouchableOpacity
           style={styles.tabButton}
-          onPress={() => handleTabPress('chat')}
+          onPress={() => {
+            if (isGuest && onCreateAccountPress) {
+              onCreateAccountPress();
+            } else {
+              handleTabPress('chat');
+            }
+          }}
           activeOpacity={0.7}
         >
           <Ionicons
