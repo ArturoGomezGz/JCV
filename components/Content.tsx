@@ -249,6 +249,7 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
       </Modal>
 
       <BottomNavigation 
+        activeTab=""
         onTabPress={(tabName) => {
           if (tabName === 'home' && onHomePress) {
             onHomePress();
