@@ -9,3 +9,4 @@ export { default as ChartCard } from './ChartCard';
 export { default as ChartPreview } from './ChartPreview';
 export { default as Content } from './Content';
 export { default as LandingScreen } from './LandingScreen';
+export { default as AccountSettingsForm } from './AccountSettingsForm';

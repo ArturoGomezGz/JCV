@@ -17,7 +17,8 @@ export {
   loginWithEmail, 
   registerWithEmail,
   logout, 
-  getCurrentUser 
+  getCurrentUser,
+  updateUserPassword 
 } from './authService';
 export type { LoginCredentials, RegisterCredentials, AuthResult } from './authService';
 

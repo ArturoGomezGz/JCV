@@ -25,6 +25,8 @@ interface FeedProps {
   userEmail?: string;
   userName?: string;
   onChartPress?: (title: string, chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar', category: string, question: string) => void;
+  onProfilePress?: () => void;
+  onForumPress?: () => void;
 }
 
 const Feed: React.FC<FeedProps> = ({ 
@@ -34,9 +36,11 @@ const Feed: React.FC<FeedProps> = ({
   onLogout,
   userEmail,
   userName,
-  onChartPress
+  onChartPress,
+  onProfilePress,
+  onForumPress
 }) => {
-  const [activeTab, setActiveTab] = useState('chat');
+  const [activeTab, setActiveTab] = useState('home');
   const [surveys, setSurveys] = useState<SurveyData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hasError, setHasError] = useState<boolean>(false);
@@ -170,7 +174,23 @@ const Feed: React.FC<FeedProps> = ({
       
       <BottomNavigation 
         activeTab={activeTab}
-        onTabPress={setActiveTab}
+        isGuest={isGuest}
+        onCreateAccountPress={onCreateAccount}
+        onTabPress={(tabName) => {
+          setActiveTab(tabName);
+          if (tabName === 'home') {
+            // If already on feed (home), refresh the surveys
+            loadSurveys();
+          } else if (tabName === 'profile' && onProfilePress) {
+            onProfilePress();
+          } else if (tabName === 'chat' && onForumPress) {
+            onForumPress();
+          } else if (tabName === 'stats') {
+            // Navigate to search screen
+            const { router } = require('expo-router');
+            router.push('/(tabs)/search');
+          }
+        }}
       />
     </View>
   );

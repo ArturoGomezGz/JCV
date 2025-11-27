@@ -43,7 +43,7 @@ export default function CreateAccountScreen() {
   };
 
   const handleBackToLogin = () => {
-    router.back();
+    router.push('/(auth)/login');
   };
 
   return (
