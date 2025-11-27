@@ -6,6 +6,8 @@ import {
   registerWithEmail, 
   logout as firebaseLogout, 
   getUserProfile,
+  updateUserProfile as updateUserProfileService,
+  updateUserPassword,
   LoginCredentials, 
   RegisterCredentials, 
   AuthResult,
@@ -21,6 +23,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<AuthResult>;
   register: (name: string, email: string, phone: string, password: string) => Promise<AuthResult>;
   logout: () => Promise<void>;
+  updateProfile: (name: string, phone: string, password?: string) => Promise<AuthResult>;
   isGuest: boolean;
   setGuestMode: (isGuest: boolean) => void;
   loading: boolean;
@@ -151,6 +154,61 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const updateProfile = async (
+    name: string, 
+    phone: string, 
+    password?: string
+  ): Promise<AuthResult> => {
+    setLoading(true);
+    try {
+      if (!user) {
+        setLoading(false);
+        return {
+          success: false,
+          error: 'No hay usuario autenticado'
+        };
+      }
+
+      // Update profile data in Firestore
+      const profileResult = await updateUserProfileService(user.uid, {
+        displayName: name,
+        phoneNumber: phone
+      });
+
+      if (!profileResult.success) {
+        setLoading(false);
+        return {
+          success: false,
+          error: profileResult.error || 'Error al actualizar el perfil'
+        };
+      }
+
+      // Update password if provided
+      if (password && password.trim()) {
+        const passwordResult = await updateUserPassword(password);
+        if (!passwordResult.success) {
+          setLoading(false);
+          return {
+            success: false,
+            error: passwordResult.error || 'Error al actualizar la contraseña'
+          };
+        }
+      }
+
+      // Reload user profile to reflect changes
+      await loadUserProfile(user.uid);
+      
+      setLoading(false);
+      return { success: true };
+    } catch (error) {
+      setLoading(false);
+      return {
+        success: false,
+        error: 'Error inesperado al actualizar el perfil'
+      };
+    }
+  };
+
   const setGuestMode = (guestMode: boolean) => {
     setIsGuest(guestMode);
     if (guestMode) {
@@ -169,6 +227,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         login,
         register,
         logout,
+        updateProfile,
         isGuest,
         setGuestMode,
         loading,

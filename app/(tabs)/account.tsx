@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { AccountSettingsForm, BottomNavigation } from '../../components';
 import { useAuth } from '../../contexts/AuthContext';
@@ -12,8 +12,12 @@ export default function AccountScreen() {
     userName, 
     userEmail, 
     userProfile, 
-    logout 
+    logout,
+    updateProfile,
+    loading 
   } = useAuth();
+
+  const [isSaving, setIsSaving] = useState(false);
 
   // Redirect to create account if not authenticated or is guest
   React.useEffect(() => {
@@ -22,9 +26,33 @@ export default function AccountScreen() {
     }
   }, [isAuthenticated, isGuest]);
 
-  const handleSave = (name: string, phone: string, password: string) => {
-    // TODO: Implement save functionality
-    console.log('Save account settings:', { name, phone, password });
+  const handleSave = async (name: string, phone: string, password: string) => {
+    setIsSaving(true);
+    try {
+      const result = await updateProfile(name, phone, password || undefined);
+      
+      if (result.success) {
+        Alert.alert(
+          'Éxito',
+          'Tu perfil ha sido actualizado correctamente',
+          [{ text: 'OK' }]
+        );
+      } else {
+        Alert.alert(
+          'Error',
+          result.error || 'No se pudo actualizar el perfil',
+          [{ text: 'OK' }]
+        );
+      }
+    } catch (error) {
+      Alert.alert(
+        'Error',
+        'Ocurrió un error inesperado al actualizar el perfil',
+        [{ text: 'OK' }]
+      );
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleLogout = async () => {
@@ -56,6 +84,7 @@ export default function AccountScreen() {
         userPhone={userProfile?.phoneNumber || ''}
         onSave={handleSave}
         onLogout={handleLogout}
+        isLoading={isSaving || loading}
       />
       <BottomNavigation 
         activeTab="profile"

@@ -2,6 +2,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   updateProfile,
+  updatePassword,
   signOut,
   User,
   AuthError
@@ -160,4 +161,43 @@ export const logout = async (): Promise<AuthResult> => {
  */
 export const getCurrentUser = (): User | null => {
   return auth.currentUser;
+};
+
+/**
+ * Update user password
+ */
+export const updateUserPassword = async (newPassword: string): Promise<AuthResult> => {
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      return {
+        success: false,
+        error: 'No hay usuario autenticado'
+      };
+    }
+    
+    await updatePassword(user, newPassword);
+    return {
+      success: true
+    };
+  } catch (error) {
+    const authError = error as AuthError;
+    let errorMessage = 'Error al actualizar la contraseña';
+    
+    switch (authError.code) {
+      case 'auth/weak-password':
+        errorMessage = 'La contraseña es muy débil';
+        break;
+      case 'auth/requires-recent-login':
+        errorMessage = 'Por seguridad, debes volver a iniciar sesión para cambiar tu contraseña';
+        break;
+      default:
+        errorMessage = authError.message;
+    }
+    
+    return {
+      success: false,
+      error: errorMessage
+    };
+  }
 };
