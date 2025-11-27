@@ -38,7 +38,7 @@ const Feed: React.FC<FeedProps> = ({
   onChartPress,
   onProfilePress
 }) => {
-  const [activeTab, setActiveTab] = useState('chat');
+  const [activeTab, setActiveTab] = useState('home');
   const [surveys, setSurveys] = useState<SurveyData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hasError, setHasError] = useState<boolean>(false);
@@ -174,7 +174,10 @@ const Feed: React.FC<FeedProps> = ({
         activeTab={activeTab}
         onTabPress={(tabName) => {
           setActiveTab(tabName);
-          if (tabName === 'profile' && onProfilePress) {
+          if (tabName === 'home') {
+            // If already on feed (home), refresh the surveys
+            loadSurveys();
+          } else if (tabName === 'profile' && onProfilePress) {
             onProfilePress();
           }
         }}

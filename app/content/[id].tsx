@@ -22,6 +22,15 @@ export default function ContentScreen() {
     router.push('/(auth)/create-account');
   };
 
+  const handleHomePress = () => {
+    // Navigate to the feed (home) screen
+    if (isGuest) {
+      router.replace('/(tabs)/guest');
+    } else {
+      router.replace('/(tabs)');
+    }
+  };
+
   return (
     <Content
       title={title}
@@ -32,6 +41,7 @@ export default function ContentScreen() {
       isGuest={isGuest}
       userEmail={isGuest ? '' : (paramUserEmail || userEmail)}
       onCreateAccount={handleCreateAccount}
+      onHomePress={handleHomePress}
     />
   );
 }
