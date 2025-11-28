@@ -8,20 +8,42 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { colors } from '../../constants/Colors';
-import BottomNavigation from '../../components/BottomNavigation';
+import { BottomNavigation, GuestModal } from '../../components';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function SearchScreen() {
+  const { isGuest } = useAuth();
   const [activeTab, setActiveTab] = useState('stats');
+  const [showGuestModal, setShowGuestModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   const handleTabPress = (tabName: string) => {
     setActiveTab(tabName);
     if (tabName === 'home') {
-      router.back();
+      if (isGuest) {
+        router.replace('/(tabs)/guest');
+      } else {
+        router.replace('/(tabs)');
+      }
     } else if (tabName === 'profile') {
-      router.push('/(tabs)/account');
+      if (isGuest) {
+        setModalMessage('Necesitas crear una cuenta para acceder a la configuración de tu perfil.');
+        setShowGuestModal(true);
+      } else {
+        router.push('/(tabs)/account');
+      }
     } else if (tabName === 'chat') {
-      router.push('/(tabs)/forum');
+      if (isGuest) {
+        setModalMessage('Necesitas crear una cuenta para acceder al foro de discusión.');
+        setShowGuestModal(true);
+      } else {
+        router.push('/(tabs)/forum');
+      }
     }
+  };
+
+  const handleCreateAccount = () => {
+    router.push('/(auth)/create-account');
   };
 
   return (
@@ -43,7 +65,14 @@ export default function SearchScreen() {
       
       <BottomNavigation 
         activeTab={activeTab}
+        isGuest={isGuest}
         onTabPress={handleTabPress}
+      />
+      <GuestModal
+        visible={showGuestModal}
+        onClose={() => setShowGuestModal(false)}
+        onCreateAccount={handleCreateAccount}
+        message={modalMessage}
       />
     </SafeAreaView>
   );

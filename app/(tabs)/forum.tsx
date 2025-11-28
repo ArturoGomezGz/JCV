@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { router } from 'expo-router';
-import { BottomNavigation } from '../../components';
+import { BottomNavigation, GuestModal } from '../../components';
 import { useAuth } from '../../contexts/AuthContext';
 import { colors } from '../../constants/Colors';
 
 export default function ForumScreen() {
   const { isAuthenticated, isGuest } = useAuth();
+  const [showGuestModal, setShowGuestModal] = useState(false);
 
   const handleTabPress = (tabName: string) => {
     if (tabName === 'home') {
@@ -17,7 +18,8 @@ export default function ForumScreen() {
       }
     } else if (tabName === 'profile') {
       if (isGuest) {
-        router.push('/(auth)/create-account');
+        // Show popup instead of redirecting directly
+        setShowGuestModal(true);
       } else {
         router.push('/(tabs)/account');
       }
@@ -50,6 +52,12 @@ export default function ForumScreen() {
         isGuest={isGuest}
         onCreateAccountPress={handleCreateAccount}
         onTabPress={handleTabPress}
+      />
+      <GuestModal
+        visible={showGuestModal}
+        onClose={() => setShowGuestModal(false)}
+        onCreateAccount={handleCreateAccount}
+        message="Necesitas crear una cuenta para acceder a la configuración de tu perfil."
       />
     </View>
   );

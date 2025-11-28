@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { router } from 'expo-router';
-import { Feed } from '../../components';
+import { Feed, GuestModal } from '../../components';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function GuestScreen() {
   const { logout } = useAuth();
+  const [showGuestModal, setShowGuestModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   const handleBackToLogin = () => {
     logout();
@@ -16,12 +18,15 @@ export default function GuestScreen() {
   };
 
   const handleProfilePress = () => {
-    // Guest users should be redirected to create account
-    router.push('/(auth)/create-account');
+    // Show popup instead of redirecting directly
+    setModalMessage('Necesitas crear una cuenta para acceder a la configuración de tu perfil.');
+    setShowGuestModal(true);
   };
 
   const handleForumPress = () => {
-    router.push('/(tabs)/forum');
+    // Show popup instead of redirecting directly for forum/chat access
+    setModalMessage('Necesitas crear una cuenta para acceder a los mensajes.');
+    setShowGuestModal(true);
   };
 
   const handleChartPress = (
@@ -44,13 +49,21 @@ export default function GuestScreen() {
   };
 
   return (
-    <Feed
-      isGuest={true}
-      onBackToLogin={handleBackToLogin}
-      onCreateAccount={handleCreateAccount}
-      onChartPress={handleChartPress}
-      onProfilePress={handleProfilePress}
-      onForumPress={handleForumPress}
-    />
+    <>
+      <Feed
+        isGuest={true}
+        onBackToLogin={handleBackToLogin}
+        onCreateAccount={handleCreateAccount}
+        onChartPress={handleChartPress}
+        onProfilePress={handleProfilePress}
+        onForumPress={handleForumPress}
+      />
+      <GuestModal
+        visible={showGuestModal}
+        onClose={() => setShowGuestModal(false)}
+        onCreateAccount={handleCreateAccount}
+        message={modalMessage}
+      />
+    </>
   );
 }

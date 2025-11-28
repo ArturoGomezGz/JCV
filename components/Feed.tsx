@@ -175,7 +175,8 @@ const Feed: React.FC<FeedProps> = ({
       <BottomNavigation 
         activeTab={activeTab}
         isGuest={isGuest}
-        onCreateAccountPress={onCreateAccount}
+        // For guest users, the chat button should show the popup via onForumPress
+        onCreateAccountPress={onForumPress}
         onTabPress={(tabName) => {
           setActiveTab(tabName);
           if (tabName === 'home') {
