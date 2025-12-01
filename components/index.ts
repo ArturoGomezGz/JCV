@@ -11,3 +11,4 @@ export { default as Content } from './Content';
 export { default as LandingScreen } from './LandingScreen';
 export { default as AccountSettingsForm } from './AccountSettingsForm';
 export { default as GuestModal } from './GuestModal';
+export { default as FilterModal } from './FilterModal';

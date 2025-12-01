@@ -30,3 +30,11 @@ export {
 } from './userService';
 export type { UserProfile, CreateUserProfileData } from './userService';
 export type { SurveyData, SurveysResponse } from './surveysService';
+
+// Export SPSS API service
+export {
+  fetchCategorias,
+  fetchPreguntasByCategoria,
+  fetchRespuestasConFiltros
+} from './spssApiService';
+export type { Categoria, Pregunta, Filtros, Respuesta } from './spssApiService';
