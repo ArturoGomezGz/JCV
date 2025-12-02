@@ -30,3 +30,21 @@ export {
 } from './userService';
 export type { UserProfile, CreateUserProfileData } from './userService';
 export type { SurveyData, SurveysResponse } from './surveysService';
+
+// Export Mini SPSS API service
+export {
+  fetchCategorias,
+  fetchPreguntasPorCategoria,
+  fetchRespuestasConFiltros,
+  fetchTodasLasPreguntas,
+  FILTER_LABELS
+} from './miniSpssApiService';
+export type {
+  Categoria,
+  OpcionRespuesta,
+  Pregunta,
+  RangoEdad,
+  Filtros,
+  RespuestaItem,
+  RespuestasResponse
+} from './miniSpssApiService';
