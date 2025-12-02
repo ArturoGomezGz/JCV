@@ -30,3 +30,11 @@ export {
 } from './userService';
 export type { UserProfile, CreateUserProfileData } from './userService';
 export type { SurveyData, SurveysResponse } from './surveysService';
+
+// Export API service
+export {
+  fetchCategorias,
+  fetchPreguntasByCategoria,
+  fetchRespuestasConFiltros
+} from './apiService';
+export type { Categoria, Pregunta, Filtros, RespuestasResult, RangoEdad, Respuesta } from './apiService';
