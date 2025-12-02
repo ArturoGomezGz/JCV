@@ -278,12 +278,6 @@ export default function SearchScreen() {
               {selectedPregunta ? selectedPregunta.pregunta : selectedCategoriaId ? selectedCategoriaNombre : 'Categorías disponibles'}
             </Text>
           </View>
-          {!selectedPregunta && (
-            <TouchableOpacity style={styles.filterButton} onPress={() => setShowFilterModal(true)}>
-              <Ionicons name="filter" size={24} color="#FFFFFF" />
-              <Text style={styles.filterButtonText}>Filtros</Text>
-            </TouchableOpacity>
-          )}
         </View>
 
         {loading && (
@@ -341,29 +335,27 @@ export default function SearchScreen() {
                 </Text>
               </View>
 
-              <ScrollView style={styles.respuestasScrollContainer}>
-                {respuestasData.respuestas.map((item, index) => {
-                  const porcentaje = (item.cantidad || 0) / respuestasData.total_respuestas * 100;
-                  return (
-                    <View key={index} style={styles.respuestaItem}>
-                      <View style={styles.respuestaRow}>
-                        <Text style={styles.respuestaLabel}>{item.etiqueta}</Text>
-                        <Text style={styles.respuestaCount}>
-                          {item.cantidad} ({porcentaje.toFixed(1)}%)
-                        </Text>
-                      </View>
-                      <View style={styles.barContainer}>
-                        <View
-                          style={[
-                            styles.bar,
-                            { width: `${porcentaje}%` },
-                          ]}
-                        />
-                      </View>
+              {respuestasData.respuestas.map((item, index) => {
+                const porcentaje = (item.cantidad || 0) / respuestasData.total_respuestas * 100;
+                return (
+                  <View key={index} style={styles.respuestaItem}>
+                    <View style={styles.respuestaRow}>
+                      <Text style={styles.respuestaLabel}>{item.etiqueta}</Text>
+                      <Text style={styles.respuestaCount}>
+                        {item.cantidad} ({porcentaje.toFixed(1)}%)
+                      </Text>
                     </View>
-                  );
-                })}
-              </ScrollView>
+                    <View style={styles.barContainer}>
+                      <View
+                        style={[
+                          styles.bar,
+                          { width: `${porcentaje}%` },
+                        ]}
+                      />
+                    </View>
+                  </View>
+                );
+              })}
             </View>
           </View>
         )}
@@ -380,6 +372,15 @@ export default function SearchScreen() {
           </View>
         )}
       </ScrollView>
+
+      {!selectedPregunta && (
+        <TouchableOpacity 
+          style={styles.floatingFilterButton} 
+          onPress={() => setShowFilterModal(true)}
+        >
+          <Ionicons name="filter" size={20} color="#FFFFFF" />
+        </TouchableOpacity>
+      )}
       
       <BottomNavigation 
         activeTab={activeTab}
@@ -652,10 +653,9 @@ const styles = StyleSheet.create({
   },
   topBar: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'flex-start',
     marginBottom: 20,
-    gap: 12,
   },
   headerContainer: {
     flex: 1,
@@ -674,6 +674,23 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  floatingFilterButton: {
+    position: 'absolute',
+    bottom: 90,
+    right: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+    zIndex: 10,
   },
   filterButtonText: {
     color: '#FFFFFF',
@@ -903,7 +920,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 20,
-    maxHeight: 600,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -911,7 +927,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   respuestasScrollContainer: {
-    maxHeight: 450,
+    // Removido maxHeight para permitir scroll completo
   },
   respuestasHeader: {
     backgroundColor: '#F5F5F5',
