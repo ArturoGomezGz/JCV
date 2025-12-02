@@ -353,26 +353,28 @@ export default function SearchScreen() {
                   style={styles.ageInput}
                   placeholder="Mín"
                   keyboardType="numeric"
-                  value={filtros.edad?.min?.toString() || ''}
-                  onChangeText={(text) =>
+                  value={filtros.edad?.min?.toString() ?? ''}
+                  onChangeText={(text) => {
+                    const parsed = text ? parseInt(text, 10) : null;
                     setFiltros({
                       ...filtros,
-                      edad: { ...filtros.edad, min: text ? parseInt(text) : null },
-                    })
-                  }
+                      edad: { ...filtros.edad, min: parsed !== null && !Number.isNaN(parsed) ? parsed : null },
+                    });
+                  }}
                 />
                 <Text style={styles.ageInputSeparator}>-</Text>
                 <TextInput
                   style={styles.ageInput}
                   placeholder="Máx"
                   keyboardType="numeric"
-                  value={filtros.edad?.max?.toString() || ''}
-                  onChangeText={(text) =>
+                  value={filtros.edad?.max?.toString() ?? ''}
+                  onChangeText={(text) => {
+                    const parsed = text ? parseInt(text, 10) : null;
                     setFiltros({
                       ...filtros,
-                      edad: { ...filtros.edad, max: text ? parseInt(text) : null },
-                    })
-                  }
+                      edad: { ...filtros.edad, max: parsed !== null && !Number.isNaN(parsed) ? parsed : null },
+                    });
+                  }}
                 />
               </View>
 
@@ -563,7 +565,7 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   selectedOptionText: {
-    color: colors.surface,
+    color: '#FFFFFF',
     fontWeight: '600',
   },
   resultsContainer: {
