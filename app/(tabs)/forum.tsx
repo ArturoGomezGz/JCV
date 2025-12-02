@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#E8E8E8',
   },
   bottomSpacer: {
-    height: 70,
+    height: 87,
   },
   loadingContainer: {
     flex: 1,
