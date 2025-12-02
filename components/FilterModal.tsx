@@ -45,17 +45,32 @@ export default function FilterModal({
   const handleApply = () => {
     const filtros: Filtros = {};
 
-    if (calidadVida) filtros.calidad_vida = parseInt(calidadVida);
-    if (municipio) filtros.municipio = parseInt(municipio);
-    if (sexo) filtros.sexo = parseInt(sexo);
-    if (edadMin || edadMax) {
+    // Parse and validate numeric inputs
+    const parseNumber = (value: string): number | undefined => {
+      if (!value) return undefined;
+      const parsed = parseInt(value, 10);
+      return isNaN(parsed) ? undefined : parsed;
+    };
+
+    const calidadVidaNum = parseNumber(calidadVida);
+    const municipioNum = parseNumber(municipio);
+    const sexoNum = parseNumber(sexo);
+    const edadMinNum = parseNumber(edadMin);
+    const edadMaxNum = parseNumber(edadMax);
+    const escolaridadNum = parseNumber(escolaridad);
+    const nseNum = parseNumber(nse);
+
+    if (calidadVidaNum !== undefined) filtros.calidad_vida = calidadVidaNum;
+    if (municipioNum !== undefined) filtros.municipio = municipioNum;
+    if (sexoNum !== undefined) filtros.sexo = sexoNum;
+    if (edadMinNum !== undefined || edadMaxNum !== undefined) {
       filtros.edad = {
-        min: edadMin ? parseInt(edadMin) : 0,
-        max: edadMax ? parseInt(edadMax) : 0,
+        min: edadMinNum ?? 0,
+        max: edadMaxNum ?? 0,
       };
     }
-    if (escolaridad) filtros.escolaridad = parseInt(escolaridad);
-    if (nse) filtros.nse = parseInt(nse);
+    if (escolaridadNum !== undefined) filtros.escolaridad = escolaridadNum;
+    if (nseNum !== undefined) filtros.nse = nseNum;
 
     onApplyFilters(filtros);
     onClose();

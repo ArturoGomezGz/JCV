@@ -33,7 +33,7 @@ export interface Filtros {
 
 export interface Respuesta {
   pregunta_id: number;
-  datos: any;
+  datos: unknown; // Using unknown for type-safe handling of dynamic API responses
   filtros_aplicados?: Filtros;
 }
 
