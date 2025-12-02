@@ -142,33 +142,6 @@ const Feed: React.FC<FeedProps> = ({
           </Text>
           
           {renderContent()}
-
-          <View style={styles.buttonContainer}>
-            {isGuest ? (
-              <>
-                <TouchableOpacity
-                  style={styles.createAccountButton}
-                  onPress={onCreateAccount}
-                >
-                  <Text style={styles.createAccountButtonText}>Crear Cuenta</Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity
-                  style={styles.backButton}
-                  onPress={onBackToLogin}
-                >
-                  <Text style={styles.backButtonText}>Volver al Login</Text>
-                </TouchableOpacity>
-              </>
-            ) : (
-              <TouchableOpacity
-                style={styles.backButton}
-                onPress={onLogout}
-              >
-                <Text style={styles.backButtonText}>Cerrar Sesión</Text>
-              </TouchableOpacity>
-            )}
-          </View>
         </View>
       </ScrollView>
       
@@ -289,34 +262,6 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     lineHeight: 22,
     paddingHorizontal: 10,
-  },
-  buttonContainer: {
-    gap: 15,
-    marginTop: 20,
-  },
-  createAccountButton: {
-    backgroundColor: colors.primary,
-    paddingVertical: 15,
-    borderRadius: 8,
-  },
-  createAccountButtonText: {
-    color: colors.surface,
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  backButton: {
-    backgroundColor: 'transparent',
-    paddingVertical: 15,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: colors.primary,
-  },
-  backButtonText: {
-    color: colors.primary,
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
   },
 });
 
