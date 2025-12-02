@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   },
   categoryCardSelected: {
     borderColor: colors.primary,
-    backgroundColor: colors.primaryLight + '10',
+    backgroundColor: 'rgba(58, 92, 168, 0.06)', // primaryLight with 6% opacity
   },
   categoryName: {
     fontSize: 16,
@@ -133,6 +133,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   categoryDescriptionSelected: {
-    color: colors.primaryLight,
+    color: colors.primaryDark, // Using darker shade for better contrast
   },
 });

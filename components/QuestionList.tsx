@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   },
   questionCardSelected: {
     borderColor: colors.primary,
-    backgroundColor: colors.primaryLight + '10',
+    backgroundColor: 'rgba(58, 92, 168, 0.06)', // primaryLight with 6% opacity
   },
   questionHeader: {
     flexDirection: 'row',
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   categoryBadge: {
     fontSize: 11,
     color: colors.primary,
-    backgroundColor: colors.primaryLight + '20',
+    backgroundColor: 'rgba(58, 92, 168, 0.12)', // primaryLight with 12% opacity
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 4,
