@@ -11,7 +11,7 @@ import {
   Modal,
 } from 'react-native';
 import { router } from 'expo-router';
-import { colors } from '../../constants/Colors';
+import { colors, semanticColors } from '../../constants/Colors';
 import { BottomNavigation, GuestModal } from '../../components';
 import { useAuth } from '../../contexts/AuthContext';
 import {
@@ -51,6 +51,13 @@ export default function SearchScreen() {
 
   // State for results
   const [resultados, setResultados] = useState<RespuestasResult | null>(null);
+
+  // Helper function to parse age input safely
+  const parseAgeInput = (text: string): number | null => {
+    if (!text) return null;
+    const parsed = parseInt(text, 10);
+    return !Number.isNaN(parsed) ? parsed : null;
+  };
 
   // Load categories on mount
   useEffect(() => {
@@ -354,13 +361,12 @@ export default function SearchScreen() {
                   placeholder="Mín"
                   keyboardType="numeric"
                   value={filtros.edad?.min?.toString() ?? ''}
-                  onChangeText={(text) => {
-                    const parsed = text ? parseInt(text, 10) : null;
+                  onChangeText={(text) =>
                     setFiltros({
                       ...filtros,
-                      edad: { ...filtros.edad, min: parsed !== null && !Number.isNaN(parsed) ? parsed : null },
-                    });
-                  }}
+                      edad: { ...filtros.edad, min: parseAgeInput(text) },
+                    })
+                  }
                 />
                 <Text style={styles.ageInputSeparator}>-</Text>
                 <TextInput
@@ -368,13 +374,12 @@ export default function SearchScreen() {
                   placeholder="Máx"
                   keyboardType="numeric"
                   value={filtros.edad?.max?.toString() ?? ''}
-                  onChangeText={(text) => {
-                    const parsed = text ? parseInt(text, 10) : null;
+                  onChangeText={(text) =>
                     setFiltros({
                       ...filtros,
-                      edad: { ...filtros.edad, max: parsed !== null && !Number.isNaN(parsed) ? parsed : null },
-                    });
-                  }}
+                      edad: { ...filtros.edad, max: parseAgeInput(text) },
+                    })
+                  }
                 />
               </View>
 
@@ -387,7 +392,7 @@ export default function SearchScreen() {
                   ]}
                   onPress={() => setFiltros({ ...filtros, escolaridad: 1 })}
                 >
-                  <Text style={styles.filterOptionText}>Sec&lt;</Text>
+                  <Text style={styles.filterOptionText}>Sec{'<'}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[
@@ -526,11 +531,11 @@ const styles = StyleSheet.create({
   errorContainer: {
     margin: 20,
     padding: 15,
-    backgroundColor: '#fee',
+    backgroundColor: '#FFEBE9',
     borderRadius: 8,
   },
   errorText: {
-    color: '#c00',
+    color: semanticColors.error,
     textAlign: 'center',
   },
   loadingContainer: {
@@ -565,7 +570,7 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   selectedOptionText: {
-    color: '#FFFFFF',
+    color: colors.surface,
     fontWeight: '600',
   },
   resultsContainer: {
