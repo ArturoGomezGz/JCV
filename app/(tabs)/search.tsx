@@ -24,10 +24,29 @@ interface Categoria {
 }
 
 interface Pregunta {
-  id: number;
+  id?: number;
+  identificador: string;
   pregunta: string;
   descripcion?: string;
-  categoria_id: number;
+  categoria_id?: number;
+  categoria?: { id: number; nombre: string };
+  opciones?: Array<{ valor: number; etiqueta: string }>;
+}
+
+interface RespuestaItem {
+  valor: number;
+  etiqueta: string;
+  cantidad?: number;
+  porcentaje?: number;
+}
+
+interface RespuestasData {
+  identificador: string;
+  pregunta: string;
+  tipo_respuesta: string;
+  respuestas: RespuestaItem[];
+  total_respuestas: number;
+  filtros_aplicados: Record<string, unknown>;
 }
 
 interface Filtros {
@@ -64,6 +83,10 @@ export default function SearchScreen() {
   const [edadMax, setEdadMax] = useState<number>(100);
   const [escolaridad, setEscolaridad] = useState<number | null>(null);
   const [nse, setNse] = useState<number | null>(null);
+
+  // Estados para respuestas
+  const [selectedPregunta, setSelectedPregunta] = useState<Pregunta | null>(null);
+  const [respuestasData, setRespuestasData] = useState<RespuestasData | null>(null);
 
   useEffect(() => {
     fetchCategorias();
@@ -161,6 +184,46 @@ export default function SearchScreen() {
     setFiltros({});
   };
 
+  const fetchRespuestas = async (pregunta: Pregunta) => {
+    try {
+      setLoading(true);
+      setError('');
+      setSelectedPregunta(pregunta);
+      
+      const response = await fetch(
+        `https://mini-spss-production.up.railway.app/respuestas/${pregunta.identificador}/filtros`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify(filtros),
+        }
+      );
+      
+      if (!response.ok) {
+        throw new Error(`Error HTTP: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setRespuestasData(data);
+      console.log('Respuestas:', data);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+      setError(errorMessage);
+      console.error('Error fetching respuestas:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBackToPreguntas = () => {
+    setSelectedPregunta(null);
+    setRespuestasData(null);
+    setError('');
+  };
+
   const handleTabPress = (tabName: string) => {
     setActiveTab(tabName);
     if (tabName === 'home') {
@@ -195,23 +258,32 @@ export default function SearchScreen() {
       <ScrollView 
         style={styles.content}
         contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={true}
       >
+        <View style={styles.topSpacer} />
         <View style={styles.topBar}>
           <View style={styles.headerContainer}>
             <Text style={styles.title}>Búsqueda</Text>
-            {selectedCategoriaId && (
+            {selectedPregunta && (
+              <TouchableOpacity onPress={handleBackToPreguntas} style={styles.backButton}>
+                <Text style={styles.backButtonText}>← Volver a preguntas</Text>
+              </TouchableOpacity>
+            )}
+            {selectedCategoriaId && !selectedPregunta && (
               <TouchableOpacity onPress={handleBackToCategories} style={styles.backButton}>
                 <Text style={styles.backButtonText}>← Volver a categorías</Text>
               </TouchableOpacity>
             )}
             <Text style={styles.description}>
-              {selectedCategoriaId ? selectedCategoriaNombre : 'Categorías disponibles'}
+              {selectedPregunta ? selectedPregunta.pregunta : selectedCategoriaId ? selectedCategoriaNombre : 'Categorías disponibles'}
             </Text>
           </View>
-          <TouchableOpacity style={styles.filterButton} onPress={() => setShowFilterModal(true)}>
-            <Ionicons name="filter" size={24} color="#FFFFFF" />
-            <Text style={styles.filterButtonText}>Filtros</Text>
-          </TouchableOpacity>
+          {!selectedPregunta && (
+            <TouchableOpacity style={styles.filterButton} onPress={() => setShowFilterModal(true)}>
+              <Ionicons name="filter" size={24} color="#FFFFFF" />
+              <Text style={styles.filterButtonText}>Filtros</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {loading && (
@@ -242,16 +314,57 @@ export default function SearchScreen() {
           </View>
         )}
 
-        {!loading && selectedCategoriaId && preguntas.length > 0 && (
+        {!loading && selectedCategoriaId && preguntas.length > 0 && !selectedPregunta && (
           <View style={styles.listContainer}>
             {preguntas.map((pregunta) => (
-              <View key={pregunta.id} style={styles.preguntaCard}>
+              <TouchableOpacity 
+                key={pregunta.identificador} 
+                style={styles.preguntaCard}
+                onPress={() => fetchRespuestas(pregunta)}
+              >
                 <Text style={styles.preguntaText}>{pregunta.pregunta}</Text>
-                {pregunta.descripcion && (
-                  <Text style={styles.preguntaDescripcion}>{pregunta.descripcion}</Text>
-                )}
-              </View>
+              </TouchableOpacity>
             ))}
+          </View>
+        )}
+
+        {!loading && selectedPregunta && respuestasData && (
+          <View style={styles.listContainer}>
+            <View style={styles.respuestasContainer}>
+              <View style={styles.respuestasHeader}>
+                <Text style={styles.respuestasTitle}>Resultados</Text>
+                <Text style={styles.respuestasInfo}>
+                  Total de respuestas: {respuestasData.total_respuestas}
+                </Text>
+                <Text style={styles.respuestasInfo}>
+                  Tipo: {respuestasData.tipo_respuesta}
+                </Text>
+              </View>
+
+              <ScrollView style={styles.respuestasScrollContainer}>
+                {respuestasData.respuestas.map((item, index) => {
+                  const porcentaje = (item.cantidad || 0) / respuestasData.total_respuestas * 100;
+                  return (
+                    <View key={index} style={styles.respuestaItem}>
+                      <View style={styles.respuestaRow}>
+                        <Text style={styles.respuestaLabel}>{item.etiqueta}</Text>
+                        <Text style={styles.respuestaCount}>
+                          {item.cantidad} ({porcentaje.toFixed(1)}%)
+                        </Text>
+                      </View>
+                      <View style={styles.barContainer}>
+                        <View
+                          style={[
+                            styles.bar,
+                            { width: `${porcentaje}%` },
+                          ]}
+                        />
+                      </View>
+                    </View>
+                  );
+                })}
+              </ScrollView>
+            </View>
           </View>
         )}
 
@@ -532,6 +645,10 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: 20,
+    paddingBottom: 100,
+  },
+  topSpacer: {
+    height: 24,
   },
   topBar: {
     flexDirection: 'row',
@@ -584,11 +701,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   description: {
-    fontSize: 16,
+    fontSize: 14,
     color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 10,
-    lineHeight: 24,
+    lineHeight: 20,
+    maxWidth: '90%',
   },
   centerContainer: {
     alignItems: 'center',
@@ -778,5 +896,92 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
+  },
+  // Respuestas
+  respuestasContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    maxHeight: 600,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  respuestasScrollContainer: {
+    maxHeight: 450,
+  },
+  respuestasHeader: {
+    backgroundColor: '#F5F5F5',
+    borderRadius: 8,
+    padding: 14,
+    marginBottom: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.primary,
+  },
+  respuestasTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.textPrimary,
+    marginBottom: 8,
+  },
+  respuestasInfo: {
+    fontSize: 13,
+    color: colors.textSecondary,
+    marginBottom: 4,
+  },
+  respuestaItem: {
+    marginBottom: 14,
+    paddingHorizontal: 8,
+  },
+  respuestaRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  respuestaLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.textPrimary,
+    flex: 1,
+  },
+  respuestaCount: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.primary,
+    marginLeft: 12,
+  },
+  barContainer: {
+    height: 20,
+    backgroundColor: '#E8E8E8',
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  bar: {
+    height: '100%',
+    backgroundColor: colors.primary,
+  },
+  jsonSection: {
+    backgroundColor: '#F5F5F5',
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 20,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+  },
+  jsonTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: colors.textPrimary,
+    marginBottom: 8,
+  },
+  jsonContent: {
+    fontSize: 10,
+    color: colors.textSecondary,
+    fontFamily: 'monospace',
+    lineHeight: 14,
   },
 });
