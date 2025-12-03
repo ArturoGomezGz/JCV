@@ -7,9 +7,10 @@ import {
   TouchableOpacity,
   Dimensions,
   Linking,
+  ImageBackground,
+  Image,
 } from 'react-native';
 import { router } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesome, Entypo } from '@expo/vector-icons';
 import colors from '../constants/Colors';
 import { showErrorAlert } from '../utils/alertUtils';
@@ -23,13 +24,14 @@ export default function LandingScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <LinearGradient
-      colors={[colors.primaryLight, colors.primary, colors.primaryDark]}
+      <ImageBackground
+        source={require('../assets/header-background.png')}
         style={styles.header}
+        imageStyle={styles.headerImage}
       >
-      <Text style={styles.logo}>Jalisco Cómo Vamos</Text>
-        <Text style={styles.tagline}>Transforma datos en decisiones inteligentes</Text>
-      </LinearGradient>
+        <View style={styles.headerOverlay} />
+        <Image source={require('../assets/logo.png')} style={styles.logo} />
+      </ImageBackground>
 
       <View style={styles.heroSection}>
         <Text style={styles.heroTitle}>Bienvenido a la Nueva Era del Análisis</Text>
@@ -111,16 +113,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignItems: 'center',
   },
-  logo: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 10,
+  headerImage: {
+    resizeMode: 'cover',
   },
-  tagline: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    textAlign: 'center',
+  headerOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.55)',
+  },
+  logo: {
+    width: 200,
+    height: 80,
+    resizeMode: 'contain',
+    marginBottom: 10,
   },
   heroSection: {
     paddingHorizontal: 20,

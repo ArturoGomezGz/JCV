@@ -24,6 +24,8 @@ export const colors = {
   // Elementos complementarios
   border: '#E0E0E0',         // Bordes sutiles
   link: '#0066CC',           // Enlaces o botones informativos
+
+  logoGreen: '#d5e14d', // Verde del logo
 } as const;
 
 // Tipo TypeScript derivado para autocompletado y validación
