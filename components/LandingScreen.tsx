@@ -34,7 +34,7 @@ export default function LandingScreen() {
       </ImageBackground>
 
       <View style={styles.heroSection}>
-        <Text style={styles.heroTitle}>Bienvenido a la Nueva Era del Análisis</Text>
+        <Text style={styles.heroTitle}>Se parte del cambio en Jalisco</Text>
         <TouchableOpacity style={styles.ctaButton} onPress={handleAccess}>
           <Text style={styles.ctaButtonText}>Accede</Text>
         </TouchableOpacity>
@@ -54,7 +54,7 @@ A través de gráficas interactivas, indicadores y comparativas municipales, la 
       <View style={styles.ctaSection}>
         <Text style={styles.ctaSectionTitle}>¿Listo para empezar?</Text>
         <Text style={styles.ctaSectionSubtitle}>
-          Se parte de la comunidad que impulsa el cambio en Jalisco.
+          Únete a nuestra comunidad y contribuye al desarrollo de Jalisco.
         </Text>
         <TouchableOpacity style={styles.ctaSecondaryButton} onPress={handleAccess}>
           <Text style={styles.ctaSecondaryButtonText}>Comenzar Ahora</Text>
