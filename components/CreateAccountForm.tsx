@@ -11,6 +11,17 @@ import {
   Platform,
 } from 'react-native';
 import { colors, semanticColors } from '../constants/Colors';
+import InfoModal from './InfoModal';
+import { 
+  sanitizeName, 
+  sanitizeEmail, 
+  sanitizePhone, 
+  isValidEmail,
+  isValidPhone,
+  isValidName,
+  isValidPassword,
+  hasNoDangerousChars
+} from '../utils/inputSanitization';
 
 // Definición de la interfaz TypeScript para las props del componente
 interface CreateAccountFormProps {
@@ -38,30 +49,41 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
     const newErrors = { name: '', email: '', phone: '', password: '', confirmPassword: '' };
     let isValid = true;
 
+    // Sanitizar inputs (excepto contraseñas)
+    const sanitizedName = sanitizeName(name);
+    const sanitizedEmail = sanitizeEmail(email);
+    const sanitizedPhone = sanitizePhone(phone);
+
     // Validar nombre (obligatorio)
-    if (!name.trim()) {
+    if (!sanitizedName.trim()) {
       newErrors.name = 'El nombre es requerido';
+      isValid = false;
+    } else if (!isValidName(sanitizedName)) {
+      newErrors.name = 'El nombre contiene caracteres no permitidos';
       isValid = false;
     }
 
     // Validar email
-    if (!email.trim()) {
+    if (!sanitizedEmail.trim()) {
       newErrors.email = 'El email es requerido';
       isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
+    } else if (!isValidEmail(sanitizedEmail)) {
       newErrors.email = 'Ingresa un email válido';
       isValid = false;
     }
 
     // Validar teléfono (opcional, pero si se proporciona debe ser válido)
-    if (phone.trim() && !/^\d{10}$/.test(phone.replace(/\s+/g, ''))) {
-      newErrors.phone = 'Ingresa un teléfono válido (10 dígitos)';
+    if (sanitizedPhone.trim() && !isValidPhone(sanitizedPhone)) {
+      newErrors.phone = 'Ingresa un teléfono válido (10-15 dígitos)';
       isValid = false;
     }
 
-    // Validar contraseña
+    // Validar contraseña (sin sanitizar, solo validar)
     if (!password.trim()) {
       newErrors.password = 'La contraseña es requerida';
+      isValid = false;
+    } else if (!hasNoDangerousChars(password)) {
+      newErrors.password = 'La contraseña contiene caracteres no permitidos (comillas, llaves, etc.)';
       isValid = false;
     } else if (password.length < 6) {
       newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
@@ -84,10 +106,15 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
   // Manejador para crear cuenta
   const handleCreateAccount = () => {
     if (validateForm()) {
+      // Sanitizar inputs de texto antes de enviar (no contraseñas)
+      const sanitizedName = sanitizeName(name);
+      const sanitizedEmail = sanitizeEmail(email);
+      const sanitizedPhone = sanitizePhone(phone);
+      
       if (onCreateAccount) {
-        onCreateAccount(name, email, phone, password, confirmPassword);
+        onCreateAccount(sanitizedName, sanitizedEmail, sanitizedPhone, password, confirmPassword);
       } else {
-        Alert.alert('Cuenta Creada', `Cuenta creada para: ${name} (${email})`);
+        Alert.alert('Cuenta Creada', `Cuenta creada para: ${sanitizedName} (${sanitizedEmail})`);
       }
     }
   };
@@ -110,17 +137,23 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
         
         {/* Campo Nombre */}
         <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>
-            Nombre <Text style={styles.requiredMark}>*</Text>
-          </Text>
+          <View style={styles.labelContainer}>
+            <Text style={styles.inputLabel}>
+              Nombre <Text style={styles.requiredMark}>*</Text>
+            </Text>
+            <InfoModal 
+              title="¿Por qué pedimos tu nombre?"
+              message="Nos gustaría conocer cómo prefieres que te llamemos. Por seguridad, tu nombre no incluirá espacios para proteger tus datos. Tu privacidad es importante: solo nosotros veremos este dato, nunca lo compartiremos públicamente."
+            />
+          </View>
           <TextInput
             style={[
               styles.input,
               errors.name ? styles.inputError : null
             ]}
-            placeholder="Nombre completo"
+            placeholder="Nombre"
             value={name}
-            onChangeText={setName}
+            onChangeText={(text) => setName(sanitizeName(text))}
             autoCapitalize="words"
             autoCorrect={false}
             editable={!isLoading}
@@ -142,7 +175,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
             ]}
             placeholder="correo@ejemplo.com"
             value={email}
-            onChangeText={setEmail}
+            onChangeText={(text) => setEmail(sanitizeEmail(text))}
             keyboardType="email-address"
             autoCapitalize="none"
             autoCorrect={false}
@@ -163,7 +196,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
             ]}
             placeholder="1234567890"
             value={phone}
-            onChangeText={setPhone}
+            onChangeText={(text) => setPhone(sanitizePhone(text))}
             keyboardType="phone-pad"
             autoCapitalize="none"
             autoCorrect={false}
@@ -287,11 +320,16 @@ const styles = StyleSheet.create({
   inputContainer: {
     marginBottom: 15,
   },
+  labelContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
   inputLabel: {
     fontSize: 14,
     fontWeight: '500',
     color: colors.textPrimary,
-    marginBottom: 5,
   },
   requiredMark: {
     color: semanticColors.error,

@@ -14,6 +14,15 @@ import {
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { colors, semanticColors } from '../constants/Colors';
+import InfoModal from './InfoModal';
+import { 
+  sanitizeName, 
+  sanitizePhone, 
+  isValidPhone,
+  isValidName,
+  isValidPassword,
+  hasNoDangerousChars
+} from '../utils/inputSanitization';
 
 interface AccountSettingsFormProps {
   userName?: string;
@@ -42,21 +51,31 @@ const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({
     const newErrors = { name: '', phone: '', password: '', confirmPassword: '' };
     let isValid = true;
 
+    // Sanitizar inputs (excepto contraseñas)
+    const sanitizedName = sanitizeName(name);
+    const sanitizedPhone = sanitizePhone(phone);
+
     // Validar nombre (obligatorio)
-    if (!name.trim()) {
+    if (!sanitizedName.trim()) {
       newErrors.name = 'El nombre es requerido';
+      isValid = false;
+    } else if (!isValidName(sanitizedName)) {
+      newErrors.name = 'El nombre contiene caracteres no permitidos';
       isValid = false;
     }
 
     // Validar teléfono (opcional, pero si se proporciona debe ser válido)
-    if (phone.trim() && !/^\d{10}$/.test(phone.replace(/\s+/g, ''))) {
-      newErrors.phone = 'Ingresa un teléfono válido (10 dígitos)';
+    if (sanitizedPhone.trim() && !isValidPhone(sanitizedPhone)) {
+      newErrors.phone = 'Ingresa un teléfono válido (10-15 dígitos)';
       isValid = false;
     }
 
     // Validar contraseña (opcional, pero si se proporciona debe cumplir requisitos)
     if (password.trim()) {
-      if (password.length < 6) {
+      if (!hasNoDangerousChars(password)) {
+        newErrors.password = 'La contraseña contiene caracteres no permitidos (comillas, llaves, etc.)';
+        isValid = false;
+      } else if (password.length < 6) {
         newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
         isValid = false;
       } else if (password !== confirmPassword) {
@@ -71,8 +90,12 @@ const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({
 
   const handleSave = () => {
     if (validateForm()) {
+      // Sanitizar inputs de texto antes de enviar (no contraseña)
+      const sanitizedName = sanitizeName(name);
+      const sanitizedPhone = sanitizePhone(phone);
+      
       if (onSave) {
-        onSave(name, phone, password);
+        onSave(sanitizedName, sanitizedPhone, password);
       }
     }
   };
@@ -124,17 +147,23 @@ const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({
 
           {/* Campo Nombre */}
           <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>
-              <Ionicons name="person-outline" size={14} color={colors.textSecondary} /> Nombre
-            </Text>
+            <View style={styles.labelContainer}>
+              <Text style={styles.inputLabel}>
+                <Ionicons name="person-outline" size={14} color={colors.textSecondary} /> Nombre
+              </Text>
+              <InfoModal 
+                title="¿Por qué pedimos tu nombre?"
+                message="Nos gustaría conocer cómo prefieres que te llamemos. Por seguridad, tu nombre no incluirá espacios para proteger tus datos. Tu privacidad es importante: solo nosotros veremos este dato, nunca lo compartiremos públicamente."
+              />
+            </View>
             <TextInput
               style={[
                 styles.input,
                 errors.name ? styles.inputError : null
               ]}
-              placeholder="Nombre completo"
+              placeholder="Nombre"
               value={name}
-              onChangeText={setName}
+              onChangeText={(text) => setName(sanitizeName(text))}
               autoCapitalize="words"
               autoCorrect={false}
               editable={!isLoading}
@@ -156,7 +185,7 @@ const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({
               ]}
               placeholder="1234567890"
               value={phone}
-              onChangeText={setPhone}
+              onChangeText={(text) => setPhone(sanitizePhone(text))}
               keyboardType="phone-pad"
               autoCapitalize="none"
               autoCorrect={false}
@@ -313,11 +342,16 @@ const styles = StyleSheet.create({
   inputContainer: {
     marginBottom: 16,
   },
+  labelContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   inputLabel: {
     fontSize: 14,
     fontWeight: '500',
     color: colors.textPrimary,
-    marginBottom: 8,
   },
   input: {
     borderWidth: 1,
