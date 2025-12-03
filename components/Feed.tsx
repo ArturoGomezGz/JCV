@@ -10,12 +10,12 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { colors } from '../constants/Colors';
 import BottomNavigation from './BottomNavigation';
 import ChartCard from './ChartCard';
 import { fetchSurveys, SurveyData } from '../services/surveysService';
+import { showErrorAlert } from '../utils/alertUtils';
 
 interface FeedProps {
   isGuest?: boolean;
@@ -60,10 +60,9 @@ const Feed: React.FC<FeedProps> = ({
     } catch (error) {
       console.error('Error cargando encuestas:', error);
       setHasError(true);
-      Alert.alert(
-        'Error',
+      showErrorAlert(
         'No se pudieron cargar las encuestas. Por favor, intenta de nuevo.',
-        [{ text: 'OK' }]
+        { buttons: [{ text: 'OK' }] }
       );
     } finally {
       setIsLoading(false);

@@ -7,12 +7,12 @@ import {
   TouchableOpacity,
   Dimensions,
   Linking,
-  Alert,
 } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesome, Entypo } from '@expo/vector-icons';
 import colors from '../constants/Colors';
+import { showErrorAlert } from '../utils/alertUtils';
 
 const { width } = Dimensions.get('window');
 
@@ -85,7 +85,7 @@ A través de gráficas interactivas, indicadores y comparativas municipales, la 
           onPress={() => {
             // Placeholder: sustituir por el enlace real de Google Drive si se dispone
             const avisoUrl = 'https://drive.google.com';
-            Linking.openURL(avisoUrl).catch(() => Alert.alert('No se pudo abrir el aviso de privacidad'));
+            Linking.openURL(avisoUrl).catch(() => showErrorAlert('No se pudo abrir el aviso de privacidad'));
           }}
         >
           <Text style={styles.privacyLink}>Aviso de Privacidad integral (Google Drive)</Text>

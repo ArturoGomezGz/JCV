@@ -6,7 +6,6 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
-  Alert,
   Modal,
 } from 'react-native';
 import Markdown from 'react-native-markdown-display';
@@ -15,6 +14,7 @@ import ChartPreview from './ChartPreview';
 import BottomNavigation from './BottomNavigation';
 import { generateChartAnalysis } from '../services';
 import surveysData from '../data/surveysData.json';
+import { showSuccessAlert } from '../utils/alertUtils';
 
 // Definición de la interfaz TypeScript para las props del componente
 interface ContentProps {
@@ -89,10 +89,12 @@ const Content: React.FC<ContentProps> = ({
       setShowGuestModal(true);
     } else {
       // Si está logueado, mostrar mensaje de confirmación
-      Alert.alert(
-        '✅ Reporte Enviado',
+      showSuccessAlert(
         `Se ha enviado el reporte PDF a su correo electrónico: ${userEmail}`,
-        [{ text: 'OK', style: 'default' }]
+        {
+          title: 'Reporte Enviado',
+          buttons: [{ text: 'OK', style: 'default' }]
+        }
       );
     }
   };

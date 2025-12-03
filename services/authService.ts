@@ -70,29 +70,11 @@ export const registerWithEmail = async (credentials: RegisterCredentials): Promi
     };
   } catch (error) {
     const authError = error as AuthError;
-    let errorMessage = 'Error al crear la cuenta';
     
-    // Handle specific Firebase auth errors
-    switch (authError.code) {
-      case 'auth/email-already-in-use':
-        errorMessage = 'El email ya está en uso';
-        break;
-      case 'auth/invalid-email':
-        errorMessage = 'Email inválido';
-        break;
-      case 'auth/operation-not-allowed':
-        errorMessage = 'Operación no permitida';
-        break;
-      case 'auth/weak-password':
-        errorMessage = 'La contraseña es muy débil';
-        break;
-      default:
-        errorMessage = authError.message;
-    }
-    
+    // Return the error code or message for the alert utility to handle
     return {
       success: false,
-      error: errorMessage
+      error: authError.code || authError.message
     };
   }
 };
@@ -117,32 +99,11 @@ export const loginWithEmail = async (credentials: LoginCredentials): Promise<Aut
     };
   } catch (error) {
     const authError = error as AuthError;
-    let errorMessage = 'Error al iniciar sesión';
     
-    // Handle specific Firebase auth errors
-    switch (authError.code) {
-      case 'auth/user-not-found':
-        errorMessage = 'Usuario no encontrado';
-        break;
-      case 'auth/wrong-password':
-        errorMessage = 'Contraseña incorrecta';
-        break;
-      case 'auth/invalid-email':
-        errorMessage = 'Email inválido';
-        break;
-      case 'auth/user-disabled':
-        errorMessage = 'Usuario deshabilitado';
-        break;
-      case 'auth/too-many-requests':
-        errorMessage = 'Demasiados intentos. Intenta más tarde';
-        break;
-      default:
-        errorMessage = authError.message;
-    }
-    
+    // Return the error code or message for the alert utility to handle
     return {
       success: false,
-      error: errorMessage
+      error: authError.code || authError.message
     };
   }
 };
@@ -192,22 +153,11 @@ export const updateUserPassword = async (newPassword: string): Promise<AuthResul
     };
   } catch (error) {
     const authError = error as AuthError;
-    let errorMessage = 'Error al actualizar la contraseña';
     
-    switch (authError.code) {
-      case 'auth/weak-password':
-        errorMessage = 'La contraseña es muy débil';
-        break;
-      case 'auth/requires-recent-login':
-        errorMessage = 'Por seguridad, debes volver a iniciar sesión para cambiar tu contraseña';
-        break;
-      default:
-        errorMessage = authError.message;
-    }
-    
+    // Return the error code or message for the alert utility to handle
     return {
       success: false,
-      error: errorMessage
+      error: authError.code || authError.message
     };
   }
 };

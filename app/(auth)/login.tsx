@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Alert } from 'react-native';
 import { router } from 'expo-router';
 import { LoginForm } from '../../components';
 import { useAuth } from '../../contexts/AuthContext';
+import { showErrorAlert } from '../../utils/alertUtils';
 
 export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
@@ -15,11 +15,11 @@ export default function LoginScreen() {
       if (result.success) {
         router.replace('/(tabs)');
       } else {
-        Alert.alert(result.error || 'Error desconocido');
+        showErrorAlert(result.error || 'Error desconocido');
       }
     } catch (error) {
       console.error('Login error:', error);
-      Alert.alert('Error', 'Ocurrió un error inesperado');
+      showErrorAlert(error);
     } finally {
       setIsLoading(false);
     }
