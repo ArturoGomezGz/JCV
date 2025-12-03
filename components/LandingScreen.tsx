@@ -35,9 +35,6 @@ export default function LandingScreen() {
 
       <View style={styles.heroSection}>
         <Text style={styles.heroTitle}>Bienvenido a la Nueva Era del Análisis</Text>
-        <Text style={styles.heroSubtitle}>
-          Potencia tu negocio con insights basados en IA y visualizaciones en tiempo real
-        </Text>
         <TouchableOpacity style={styles.ctaButton} onPress={handleAccess}>
           <Text style={styles.ctaButtonText}>Accede</Text>
         </TouchableOpacity>
@@ -57,7 +54,7 @@ A través de gráficas interactivas, indicadores y comparativas municipales, la 
       <View style={styles.ctaSection}>
         <Text style={styles.ctaSectionTitle}>¿Listo para empezar?</Text>
         <Text style={styles.ctaSectionSubtitle}>
-          Únete a miles de empresas que ya confían en JCV Analytics
+          Se parte de la comunidad que impulsa el cambio en Jalisco.
         </Text>
         <TouchableOpacity style={styles.ctaSecondaryButton} onPress={handleAccess}>
           <Text style={styles.ctaSecondaryButtonText}>Comenzar Ahora</Text>
@@ -137,13 +134,6 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     textAlign: 'center',
     marginBottom: 15,
-  },
-  heroSubtitle: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: 30,
-    lineHeight: 24,
   },
   ctaButton: {
     backgroundColor: colors.primary,
