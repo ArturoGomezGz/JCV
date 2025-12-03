@@ -5,8 +5,9 @@ let openaiClient: OpenAI | null = null;
 
 const getOpenAIClient = (): OpenAI => {
   if (!openaiClient) {
+    const apiKey = process.env.EXPO_PUBLIC_OPENAI_API_KEY || 'sk-dummy-key-for-initialization';
     openaiClient = new OpenAI({
-      apiKey: process.env.EXPO_PUBLIC_OPENAI_API_KEY || '',
+      apiKey: apiKey,
       dangerouslyAllowBrowser: true, // Necesario para uso en React Native/Expo
     });
   }
