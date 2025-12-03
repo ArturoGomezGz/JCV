@@ -7,18 +7,14 @@
 
 /**
  * Caracteres peligrosos que pueden ser usados para SQL injection u otros ataques
+ * Incluye: comillas simples y dobles, backticks, punto y coma, llaves, pipes, menor/mayor que, backslash
  */
-const DANGEROUS_CHARS = /['"`;{}|<>\\]/g;
+const DANGEROUS_CHARS = /['"`;{}|<>\\`]/g;
 
 /**
  * Patrón para validar emails
  */
 const EMAIL_PATTERN = /^[a-zA-Z0-9._+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-/**
- * Patrón para números de teléfono (solo dígitos, espacios y guiones)
- */
-const PHONE_PATTERN = /^[\d\s-]+$/;
 
 /**
  * Sanitiza un string removiendo caracteres peligrosos que puedan causar SQL injection
@@ -74,21 +70,6 @@ export const sanitizePhone = (phone: string): string => {
 };
 
 /**
- * Sanitiza una contraseña removiendo caracteres extremadamente peligrosos
- * que puedan ser usados para SQL injection u otros ataques
- * @param password - Contraseña a sanitizar
- * @returns Contraseña sanitizada
- */
-export const sanitizePassword = (password: string): string => {
-  if (!password) return '';
-  // Remueve todos los caracteres peligrosos definidos en DANGEROUS_CHARS
-  // Esto incluye comillas, punto y coma, llaves, etc.
-  return password
-    .replace(DANGEROUS_CHARS, '')
-    .slice(0, 128); // Limita longitud máxima razonable
-};
-
-/**
  * Valida si un email tiene formato correcto
  * @param email - Email a validar
  * @returns true si el email es válido
@@ -100,7 +81,7 @@ export const isValidEmail = (email: string): boolean => {
 };
 
 /**
- * Valida si un número de teléfono tiene formato correcto (10 dígitos)
+ * Valida si un número de teléfono tiene formato correcto (10-15 dígitos)
  * @param phone - Teléfono a validar
  * @returns true si el teléfono es válido
  */
