@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { colors, semanticColors } from '../constants/Colors';
+import InfoModal from './InfoModal';
 import { 
   sanitizeName, 
   sanitizePhone, 
@@ -146,15 +147,21 @@ const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({
 
           {/* Campo Nombre */}
           <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>
-              <Ionicons name="person-outline" size={14} color={colors.textSecondary} /> Nombre
-            </Text>
+            <View style={styles.labelContainer}>
+              <Text style={styles.inputLabel}>
+                <Ionicons name="person-outline" size={14} color={colors.textSecondary} /> Nombre
+              </Text>
+              <InfoModal 
+                title="¿Por qué pedimos tu nombre?"
+                message="Nos gustaría conocer cómo prefieres que te llamemos. Por seguridad, tu nombre no incluirá espacios para proteger tus datos. Tu privacidad es importante: solo nosotros veremos este dato, nunca lo compartiremos públicamente."
+              />
+            </View>
             <TextInput
               style={[
                 styles.input,
                 errors.name ? styles.inputError : null
               ]}
-              placeholder="Nombre completo"
+              placeholder="Nombre"
               value={name}
               onChangeText={(text) => setName(sanitizeName(text))}
               autoCapitalize="words"
@@ -335,11 +342,16 @@ const styles = StyleSheet.create({
   inputContainer: {
     marginBottom: 16,
   },
+  labelContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   inputLabel: {
     fontSize: 14,
     fontWeight: '500',
     color: colors.textPrimary,
-    marginBottom: 8,
   },
   input: {
     borderWidth: 1,

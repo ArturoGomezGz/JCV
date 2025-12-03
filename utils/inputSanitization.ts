@@ -35,6 +35,7 @@ export const sanitizeName = (name: string): string => {
   if (!name) return '';
   // Permite letras (incluyendo acentos), números, espacios y guiones
   // Remueve caracteres peligrosos incluyendo comillas simples y apóstrofes
+  // NOTA: Los espacios son permitidos en nombres
   return name
     .replace(DANGEROUS_CHARS, '')
     .replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ0-9\s-]/g, '')
