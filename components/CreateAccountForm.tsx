@@ -213,7 +213,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
             ]}
             placeholder="Contraseña"
             value={password}
-            onChangeText={setPassword}
+            onChangeText={(text) => setPassword(sanitizePassword(text))}
             secureTextEntry
             autoCapitalize="none"
             autoCorrect={false}
@@ -236,7 +236,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
             ]}
             placeholder="Confirmar Contraseña"
             value={confirmPassword}
-            onChangeText={setConfirmPassword}
+            onChangeText={(text) => setConfirmPassword(sanitizePassword(text))}
             secureTextEntry
             autoCapitalize="none"
             autoCorrect={false}

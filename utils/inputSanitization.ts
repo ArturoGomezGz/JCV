@@ -37,11 +37,11 @@ export const sanitizeGenericInput = (input: string): string => {
  */
 export const sanitizeName = (name: string): string => {
   if (!name) return '';
-  // Permite letras (incluyendo acentos), números, espacios, guiones y apóstrofes
-  // Remueve caracteres peligrosos y limita a caracteres seguros
+  // Permite letras (incluyendo acentos), números, espacios y guiones
+  // Remueve caracteres peligrosos incluyendo comillas simples y apóstrofes
   return name
     .replace(DANGEROUS_CHARS, '')
-    .replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ0-9\s'-]/g, '')
+    .replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ0-9\s-]/g, '')
     .trim()
     .slice(0, 100); // Limita longitud máxima
 };
@@ -75,16 +75,16 @@ export const sanitizePhone = (phone: string): string => {
 
 /**
  * Sanitiza una contraseña removiendo caracteres extremadamente peligrosos
- * pero permitiendo caracteres especiales comunes en contraseñas seguras
+ * que puedan ser usados para SQL injection u otros ataques
  * @param password - Contraseña a sanitizar
  * @returns Contraseña sanitizada
  */
 export const sanitizePassword = (password: string): string => {
   if (!password) return '';
-  // Solo remueve caracteres que definitivamente no deberían estar en una contraseña
-  // y que podrían causar problemas de seguridad
+  // Remueve todos los caracteres peligrosos definidos en DANGEROUS_CHARS
+  // Esto incluye comillas, punto y coma, llaves, etc.
   return password
-    .replace(/[<>{}|\\]/g, '')
+    .replace(DANGEROUS_CHARS, '')
     .slice(0, 128); // Limita longitud máxima razonable
 };
 

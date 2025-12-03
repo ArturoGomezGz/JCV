@@ -177,7 +177,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
             ]}
             placeholder="Contraseña"
             value={password}
-            onChangeText={setPassword}
+            onChangeText={(text) => setPassword(sanitizePassword(text))}
             secureTextEntry
             autoCapitalize="none"
             autoCorrect={false}
