@@ -291,6 +291,7 @@ const styles = StyleSheet.create({
     marginTop: 45,
   },
   formContainer: {
+    zIndex: 20,
     position: 'relative',
     top: 10,
     backgroundColor: colors.surface,

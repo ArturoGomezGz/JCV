@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { router } from 'expo-router';
-import { CreateAccountForm } from '../../components';
+import { CreateAccountForm, HeaderLogo, FooterLogo } from '../../components';
 import { useAuth } from '../../contexts/AuthContext';
 import { showErrorAlert, showSuccessAlert } from '../../utils/alertUtils';
 
@@ -49,10 +49,14 @@ export default function CreateAccountScreen() {
   };
 
   return (
-    <CreateAccountForm
-      onCreateAccount={handleCreateAccount}
-      onBackToLogin={handleBackToLogin}
-      isLoading={isLoading}
-    />
+    <>
+      <HeaderLogo />
+      <CreateAccountForm
+        onCreateAccount={handleCreateAccount}
+        onBackToLogin={handleBackToLogin}
+        isLoading={isLoading}
+      />
+      <FooterLogo />
+    </>
   );
 }

@@ -246,6 +246,7 @@ const styles = StyleSheet.create({
   },
   // Contenedor del formulario: tarjeta con sombra y bordes redondeados
   formContainer: {
+    zIndex: 20,
     position: 'relative',
     top: 10,
     backgroundColor: colors.surface,

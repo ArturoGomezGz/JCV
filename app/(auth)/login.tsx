@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { router } from 'expo-router';
-import { LoginForm } from '../../components';
+import { LoginForm, FooterLogo, HeaderLogo } from '../../components';
 import { useAuth } from '../../contexts/AuthContext';
 import { showErrorAlert } from '../../utils/alertUtils';
 
@@ -35,11 +35,15 @@ export default function LoginScreen() {
   };
 
   return (
-    <LoginForm 
-      onLogin={handleLogin}
-      onCreateAccount={handleCreateAccount}
-      onGuestAccess={handleGuestAccess}
-      isLoading={isLoading}
-    />
+    <>
+      <HeaderLogo />
+      <LoginForm 
+        onLogin={handleLogin}
+        onCreateAccount={handleCreateAccount}
+        onGuestAccess={handleGuestAccess}
+        isLoading={isLoading}
+      />
+      <FooterLogo />
+    </>
   );
 }
