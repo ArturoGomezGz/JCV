@@ -9,6 +9,7 @@ import {
 } from 'firebase/auth';
 import { auth } from './firebaseConfig';
 import { createUserProfile, CreateUserProfileData } from './userService';
+import { sanitizeEmail, sanitizePassword, sanitizeName, sanitizePhone } from '../utils/inputSanitization';
 
 export interface LoginCredentials {
   email: string;
@@ -33,23 +34,29 @@ export interface AuthResult {
  */
 export const registerWithEmail = async (credentials: RegisterCredentials): Promise<AuthResult> => {
   try {
+    // Sanitizar inputs antes de procesarlos
+    const sanitizedEmail = sanitizeEmail(credentials.email);
+    const sanitizedPassword = sanitizePassword(credentials.password);
+    const sanitizedDisplayName = sanitizeName(credentials.displayName);
+    const sanitizedPhoneNumber = sanitizePhone(credentials.phoneNumber);
+    
     // Create user in Firebase Auth
     const userCredential = await createUserWithEmailAndPassword(
       auth,
-      credentials.email,
-      credentials.password
+      sanitizedEmail,
+      sanitizedPassword
     );
     
     // Update user profile in Auth
     await updateProfile(userCredential.user, {
-      displayName: credentials.displayName
+      displayName: sanitizedDisplayName
     });
     
     // Create user profile in Firestore
     const profileResult = await createUserProfile(userCredential.user, {
-      displayName: credentials.displayName,
-      email: credentials.email,
-      phoneNumber: credentials.phoneNumber
+      displayName: sanitizedDisplayName,
+      email: sanitizedEmail,
+      phoneNumber: sanitizedPhoneNumber
     });
     
     if (!profileResult.success) {
@@ -96,10 +103,14 @@ export const registerWithEmail = async (credentials: RegisterCredentials): Promi
  */
 export const loginWithEmail = async (credentials: LoginCredentials): Promise<AuthResult> => {
   try {
+    // Sanitizar inputs antes de procesarlos
+    const sanitizedEmail = sanitizeEmail(credentials.email);
+    const sanitizedPassword = sanitizePassword(credentials.password);
+    
     const userCredential = await signInWithEmailAndPassword(
       auth,
-      credentials.email,
-      credentials.password
+      sanitizedEmail,
+      sanitizedPassword
     );
     
     return {
@@ -176,7 +187,10 @@ export const updateUserPassword = async (newPassword: string): Promise<AuthResul
       };
     }
     
-    await updatePassword(user, newPassword);
+    // Sanitizar contraseña antes de actualizar
+    const sanitizedPassword = sanitizePassword(newPassword);
+    
+    await updatePassword(user, sanitizedPassword);
     return {
       success: true
     };

@@ -8,6 +8,7 @@ import {
 } from 'firebase/firestore';
 import { db } from './firebaseConfig';
 import { User } from 'firebase/auth';
+import { sanitizeName, sanitizeEmail, sanitizePhone } from '../utils/inputSanitization';
 
 export interface UserProfile {
   uid: string;
@@ -35,13 +36,18 @@ export const createUserProfile = async (
     console.log('Creating user profile for:', user.uid);
     console.log('Additional data:', additionalData);
     
+    // Sanitizar todos los datos antes de guardar en Firestore
+    const sanitizedDisplayName = sanitizeName(additionalData.displayName);
+    const sanitizedEmail = sanitizeEmail(additionalData.email);
+    const sanitizedPhoneNumber = sanitizePhone(additionalData.phoneNumber);
+    
     const userDocRef = doc(db, 'users', user.uid);
     
     const userData: UserProfile = {
       uid: user.uid,
-      displayName: additionalData.displayName,
-      email: additionalData.email,
-      phoneNumber: additionalData.phoneNumber,
+      displayName: sanitizedDisplayName,
+      email: sanitizedEmail,
+      phoneNumber: sanitizedPhoneNumber,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     };
@@ -91,8 +97,23 @@ export const updateUserProfile = async (
   try {
     const userDocRef = doc(db, 'users', uid);
     
+    // Sanitizar los datos de actualización
+    const sanitizedData: any = {};
+    
+    if (updateData.displayName !== undefined) {
+      sanitizedData.displayName = sanitizeName(updateData.displayName);
+    }
+    
+    if (updateData.email !== undefined) {
+      sanitizedData.email = sanitizeEmail(updateData.email);
+    }
+    
+    if (updateData.phoneNumber !== undefined) {
+      sanitizedData.phoneNumber = sanitizePhone(updateData.phoneNumber);
+    }
+    
     await updateDoc(userDocRef, {
-      ...updateData,
+      ...sanitizedData,
       updatedAt: serverTimestamp(),
     });
     
