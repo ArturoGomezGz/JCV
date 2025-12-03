@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
     alignItems: 'center',
-    paddingBottom: Platform.OS === 'ios' ? 22 : 10,
+    paddingBottom: Platform.OS === 'ios' ? 25 : 35,
   },
   container: {
     flexDirection: 'row',
