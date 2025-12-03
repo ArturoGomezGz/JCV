@@ -31,9 +31,6 @@ const ChartCard: React.FC<ChartCardProps> = ({
         onPress={handlePress}
         activeOpacity={0.7}
         >
-        <View style={styles.header}>
-            <Text style={styles.title}>{title}</Text>
-        </View>
         
         <View style={styles.chartContainer}>
             <ChartPreview 

@@ -115,7 +115,7 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
 
   return (
     <View style={styles.container}>
-      {/* Header con botón de retroceso y exportar */}
+      {/* Header con botón de retroceso */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
@@ -124,12 +124,7 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
           <Text style={styles.backButtonText}>← Volver</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Detalles</Text>
-        <TouchableOpacity
-          style={styles.exportButton}
-          onPress={handleExportToPDF}
-        >
-          <Text style={styles.exportButtonText}>📄 PDF</Text>
-        </TouchableOpacity>
+        <View style={styles.headerSpacer} />
       </View>
 
       <ScrollView style={styles.scrollContainer}>
@@ -451,17 +446,6 @@ const styles = StyleSheet.create({
   retryButtonText: {
     color: colors.surface,
     fontSize: 16,
-    fontWeight: '600',
-  },
-  exportButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    backgroundColor: colors.primary,
-  },
-  exportButtonText: {
-    color: colors.surface,
-    fontSize: 14,
     fontWeight: '600',
   },
   modalOverlay: {
