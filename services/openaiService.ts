@@ -1,10 +1,17 @@
 import OpenAI from 'openai';
 
-// Configuración del cliente OpenAI
-const openai = new OpenAI({
-  apiKey: process.env.EXPO_PUBLIC_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true, // Necesario para uso en React Native/Expo
-});
+// Configuración del cliente OpenAI (lazy initialization)
+let openaiClient: OpenAI | null = null;
+
+const getOpenAIClient = (): OpenAI => {
+  if (!openaiClient) {
+    openaiClient = new OpenAI({
+      apiKey: process.env.EXPO_PUBLIC_OPENAI_API_KEY || '',
+      dangerouslyAllowBrowser: true, // Necesario para uso en React Native/Expo
+    });
+  }
+  return openaiClient;
+};
 
 export interface ChartAnalysisParams {
   chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar';
@@ -65,6 +72,7 @@ Estructura sugerida en Markdown:
 El texto debe ser profesional, informativo y estar en español. Debe tener entre 200-300 palabras.
     `;
 
+    const openai = getOpenAIClient();
     const response = await openai.chat.completions.create({
       model: model,
       messages: [
