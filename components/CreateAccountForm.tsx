@@ -15,7 +15,6 @@ import {
   sanitizeName, 
   sanitizeEmail, 
   sanitizePhone, 
-  sanitizePassword,
   isValidEmail,
   isValidPhone,
   isValidName,

@@ -17,7 +17,6 @@ import { colors, semanticColors } from '../constants/Colors';
 import { 
   sanitizeName, 
   sanitizePhone, 
-  sanitizePassword,
   isValidPhone,
   isValidName,
   isValidPassword,

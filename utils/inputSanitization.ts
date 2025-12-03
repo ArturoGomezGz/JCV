@@ -145,8 +145,9 @@ export const isValidPassword = (password: string, minLength: number = 6): boolea
 
 /**
  * Valida y sanitiza un objeto con datos de usuario
+ * Nota: No sanitiza contraseñas, solo las valida
  * @param data - Objeto con datos a sanitizar
- * @returns Objeto con datos sanitizados
+ * @returns Objeto con datos sanitizados (excepto password que debe validarse por separado)
  */
 export interface UserInputData {
   name?: string;
@@ -170,8 +171,9 @@ export const sanitizeUserInput = (data: UserInputData): UserInputData => {
     sanitized.phone = sanitizePhone(data.phone);
   }
   
+  // No sanitizar contraseñas - devolverlas tal cual para validación posterior
   if (data.password !== undefined) {
-    sanitized.password = sanitizePassword(data.password);
+    sanitized.password = data.password;
   }
   
   return sanitized;
