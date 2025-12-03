@@ -301,8 +301,11 @@ export default function SearchScreen() {
                 style={styles.categoriaCard}
                 onPress={() => fetchPreguntas(categoria.id, categoria.nombre)}
               >
-                <Text style={styles.categoriaNombre}>{categoria.nombre}</Text>
-                <Text style={styles.categoriaDescripcion}>{categoria.descripcion}</Text>
+                <View style={styles.categoriTextContainer}>
+                  <Text style={styles.categoriaNombre}>{categoria.nombre}</Text>
+                  <Text style={styles.categoriaDescripcion}>{categoria.descripcion}</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={24} color={colors.primary} />
               </TouchableOpacity>
             ))}
           </View>
@@ -754,26 +757,34 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   categoriaCard: {
-    backgroundColor: colors.primary,
-    borderRadius: 8,
+    backgroundColor: colors.surface,
+    borderRadius: 12,
     padding: 16,
     marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: colors.border,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  categoriTextContainer: {
+    flex: 1,
   },
   categoriaNombre: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#FFFFFF',
-    marginBottom: 8,
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.primary,
+    marginBottom: 4,
   },
   categoriaDescripcion: {
-    fontSize: 14,
-    color: '#F0F0F0',
-    lineHeight: 20,
+    fontSize: 13,
+    color: colors.textSecondary,
+    lineHeight: 18,
   },
   preguntaCard: {
     backgroundColor: '#E8F0FE',
