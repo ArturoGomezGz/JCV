@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     zIndex: 10,
-    bottom: 0, // Separación del borde inferior
+    bottom: -30, // Separación del borde inferior
     left: 0,
     right: 0,
     alignItems: 'center',
