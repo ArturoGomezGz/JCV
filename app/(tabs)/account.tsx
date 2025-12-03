@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import { AccountSettingsForm, BottomNavigation } from '../../components';
 import { useAuth } from '../../contexts/AuthContext';
 import { colors } from '../../constants/Colors';
+import { showSuccessAlert, showErrorAlert } from '../../utils/alertUtils';
 
 export default function AccountScreen() {
   const { 
@@ -32,23 +33,20 @@ export default function AccountScreen() {
       const result = await updateProfile(name, phone, password);
       
       if (result.success) {
-        Alert.alert(
-          'Éxito',
+        showSuccessAlert(
           'Tu perfil ha sido actualizado correctamente',
-          [{ text: 'OK' }]
+          { buttons: [{ text: 'OK' }] }
         );
       } else {
-        Alert.alert(
-          'Error',
+        showErrorAlert(
           result.error || 'No se pudo actualizar el perfil',
-          [{ text: 'OK' }]
+          { buttons: [{ text: 'OK' }] }
         );
       }
     } catch (error) {
-      Alert.alert(
-        'Error',
-        'Ocurrió un error inesperado al actualizar el perfil',
-        [{ text: 'OK' }]
+      showErrorAlert(
+        error,
+        { buttons: [{ text: 'OK' }] }
       );
     } finally {
       setIsSaving(false);
