@@ -28,13 +28,13 @@ export default function LandingScreen() {
         style={styles.header}
       >
       <Text style={styles.logo}>Jalisco Cómo Vamos</Text>
-        <Text style={styles.tagline}>Transforma datos en decisiones inteligentes</Text>
+        <Text style={styles.tagline}>Información ciudadana para un mejor Jalisco</Text>
       </LinearGradient>
 
       <View style={styles.heroSection}>
-        <Text style={styles.heroTitle}>Bienvenido a la Nueva Era del Análisis</Text>
+        <Text style={styles.heroTitle}>Datos Abiertos para una Ciudadanía Informada</Text>
         <Text style={styles.heroSubtitle}>
-          Potencia tu negocio con insights basados en IA y visualizaciones en tiempo real
+          Accede a información actualizada sobre el desarrollo de Jalisco con visualizaciones claras y análisis basados en datos
         </Text>
         <TouchableOpacity style={styles.ctaButton} onPress={handleAccess}>
           <Text style={styles.ctaButtonText}>Accede</Text>
@@ -55,7 +55,7 @@ A través de gráficas interactivas, indicadores y comparativas municipales, la 
       <View style={styles.ctaSection}>
         <Text style={styles.ctaSectionTitle}>¿Listo para empezar?</Text>
         <Text style={styles.ctaSectionSubtitle}>
-          Únete a miles de empresas que ya confían en JCV Analytics
+          Únete a miles de ciudadanos que ya utilizan Jalisco Cómo Vamos
         </Text>
         <TouchableOpacity style={styles.ctaSecondaryButton} onPress={handleAccess}>
           <Text style={styles.ctaSecondaryButtonText}>Comenzar Ahora</Text>
