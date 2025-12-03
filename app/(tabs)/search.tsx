@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
-import { colors } from '../../constants/Colors';
+import { colors, chartColorPalette } from '../../constants/Colors';
 import { BottomNavigation, GuestModal } from '../../components';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -337,20 +337,22 @@ export default function SearchScreen() {
 
               {respuestasData.respuestas.map((item, index) => {
                 const porcentaje = (item.cantidad || 0) / respuestasData.total_respuestas * 100;
+                const barColor = chartColorPalette[index % chartColorPalette.length];
                 return (
                   <View key={index} style={styles.respuestaItem}>
                     <View style={styles.respuestaRow}>
                       <Text style={styles.respuestaLabel}>{item.etiqueta}</Text>
-                      <Text style={styles.respuestaCount}>
+                      <Text style={[styles.respuestaCount, { color: barColor }]}>
                         {item.cantidad} ({porcentaje.toFixed(1)}%)
                       </Text>
                     </View>
                     <View style={styles.barContainer}>
                       <View
-                        style={[
-                          styles.bar,
-                          { width: `${porcentaje}%` },
-                        ]}
+                        style={{
+                          width: `${porcentaje}%`,
+                          backgroundColor: barColor,
+                          height: '100%',
+                        }}
                       />
                     </View>
                   </View>
@@ -978,7 +980,6 @@ const styles = StyleSheet.create({
   },
   bar: {
     height: '100%',
-    backgroundColor: colors.primary,
   },
   jsonSection: {
     backgroundColor: '#F5F5F5',
