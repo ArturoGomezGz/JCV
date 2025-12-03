@@ -20,7 +20,8 @@ import {
   sanitizePassword,
   isValidPhone,
   isValidName,
-  isValidPassword
+  isValidPassword,
+  hasNoDangerousChars
 } from '../utils/inputSanitization';
 
 interface AccountSettingsFormProps {
@@ -50,11 +51,9 @@ const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({
     const newErrors = { name: '', phone: '', password: '', confirmPassword: '' };
     let isValid = true;
 
-    // Sanitizar inputs
+    // Sanitizar inputs (excepto contraseñas)
     const sanitizedName = sanitizeName(name);
     const sanitizedPhone = sanitizePhone(phone);
-    const sanitizedPassword = sanitizePassword(password);
-    const sanitizedConfirmPassword = sanitizePassword(confirmPassword);
 
     // Validar nombre (obligatorio)
     if (!sanitizedName.trim()) {
@@ -72,11 +71,14 @@ const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({
     }
 
     // Validar contraseña (opcional, pero si se proporciona debe cumplir requisitos)
-    if (sanitizedPassword.trim()) {
-      if (!isValidPassword(sanitizedPassword, 6)) {
+    if (password.trim()) {
+      if (!hasNoDangerousChars(password)) {
+        newErrors.password = 'La contraseña contiene caracteres no permitidos (comillas, llaves, etc.)';
+        isValid = false;
+      } else if (password.length < 6) {
         newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
         isValid = false;
-      } else if (sanitizedPassword !== sanitizedConfirmPassword) {
+      } else if (password !== confirmPassword) {
         newErrors.confirmPassword = 'Las contraseñas no coinciden';
         isValid = false;
       }
@@ -88,13 +90,12 @@ const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({
 
   const handleSave = () => {
     if (validateForm()) {
-      // Sanitizar inputs antes de enviar
+      // Sanitizar inputs de texto antes de enviar (no contraseña)
       const sanitizedName = sanitizeName(name);
       const sanitizedPhone = sanitizePhone(phone);
-      const sanitizedPassword = sanitizePassword(password);
       
       if (onSave) {
-        onSave(sanitizedName, sanitizedPhone, sanitizedPassword);
+        onSave(sanitizedName, sanitizedPhone, password);
       }
     }
   };
@@ -208,7 +209,7 @@ const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({
               ]}
               placeholder="Nueva contraseña (opcional)"
               value={password}
-              onChangeText={(text) => setPassword(sanitizePassword(text))}
+              onChangeText={setPassword}
               secureTextEntry
               autoCapitalize="none"
               autoCorrect={false}
@@ -231,7 +232,7 @@ const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({
               ]}
               placeholder="Confirmar nueva contraseña"
               value={confirmPassword}
-              onChangeText={(text) => setConfirmPassword(sanitizePassword(text))}
+              onChangeText={setConfirmPassword}
               secureTextEntry
               autoCapitalize="none"
               autoCorrect={false}

@@ -19,7 +19,8 @@ import {
   isValidEmail,
   isValidPhone,
   isValidName,
-  isValidPassword
+  isValidPassword,
+  hasNoDangerousChars
 } from '../utils/inputSanitization';
 
 // Definición de la interfaz TypeScript para las props del componente
@@ -48,12 +49,10 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
     const newErrors = { name: '', email: '', phone: '', password: '', confirmPassword: '' };
     let isValid = true;
 
-    // Sanitizar inputs
+    // Sanitizar inputs (excepto contraseñas)
     const sanitizedName = sanitizeName(name);
     const sanitizedEmail = sanitizeEmail(email);
     const sanitizedPhone = sanitizePhone(phone);
-    const sanitizedPassword = sanitizePassword(password);
-    const sanitizedConfirmPassword = sanitizePassword(confirmPassword);
 
     // Validar nombre (obligatorio)
     if (!sanitizedName.trim()) {
@@ -79,20 +78,23 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
       isValid = false;
     }
 
-    // Validar contraseña
-    if (!sanitizedPassword.trim()) {
+    // Validar contraseña (sin sanitizar, solo validar)
+    if (!password.trim()) {
       newErrors.password = 'La contraseña es requerida';
       isValid = false;
-    } else if (!isValidPassword(sanitizedPassword, 6)) {
+    } else if (!hasNoDangerousChars(password)) {
+      newErrors.password = 'La contraseña contiene caracteres no permitidos (comillas, llaves, etc.)';
+      isValid = false;
+    } else if (password.length < 6) {
       newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
       isValid = false;
     }
 
     // Validar confirmación de contraseña
-    if (!sanitizedConfirmPassword.trim()) {
+    if (!confirmPassword.trim()) {
       newErrors.confirmPassword = 'Confirma tu contraseña';
       isValid = false;
-    } else if (sanitizedPassword !== sanitizedConfirmPassword) {
+    } else if (password !== confirmPassword) {
       newErrors.confirmPassword = 'Las contraseñas no coinciden';
       isValid = false;
     }
@@ -104,15 +106,13 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
   // Manejador para crear cuenta
   const handleCreateAccount = () => {
     if (validateForm()) {
-      // Sanitizar todos los inputs antes de enviar
+      // Sanitizar inputs de texto antes de enviar (no contraseñas)
       const sanitizedName = sanitizeName(name);
       const sanitizedEmail = sanitizeEmail(email);
       const sanitizedPhone = sanitizePhone(phone);
-      const sanitizedPassword = sanitizePassword(password);
-      const sanitizedConfirmPassword = sanitizePassword(confirmPassword);
       
       if (onCreateAccount) {
-        onCreateAccount(sanitizedName, sanitizedEmail, sanitizedPhone, sanitizedPassword, sanitizedConfirmPassword);
+        onCreateAccount(sanitizedName, sanitizedEmail, sanitizedPhone, password, confirmPassword);
       } else {
         Alert.alert('Cuenta Creada', `Cuenta creada para: ${sanitizedName} (${sanitizedEmail})`);
       }
@@ -213,7 +213,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
             ]}
             placeholder="Contraseña"
             value={password}
-            onChangeText={(text) => setPassword(sanitizePassword(text))}
+            onChangeText={setPassword}
             secureTextEntry
             autoCapitalize="none"
             autoCorrect={false}
@@ -236,7 +236,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
             ]}
             placeholder="Confirmar Contraseña"
             value={confirmPassword}
-            onChangeText={(text) => setConfirmPassword(sanitizePassword(text))}
+            onChangeText={setConfirmPassword}
             secureTextEntry
             autoCapitalize="none"
             autoCorrect={false}

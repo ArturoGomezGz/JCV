@@ -57,7 +57,7 @@ export const sanitizeEmail = (email: string): string => {
   return email
     .toLowerCase()
     .trim()
-    .replace(/['"`;{}|<>\\]/g, '')
+    .replace(DANGEROUS_CHARS, '')
     .replace(/\s/g, '')
     .slice(0, 254); // Límite RFC para emails
 };
@@ -123,6 +123,16 @@ export const isValidName = (name: string): boolean => {
 };
 
 /**
+ * Valida si una contraseña contiene caracteres peligrosos
+ * @param password - Contraseña a validar
+ * @returns true si la contraseña NO contiene caracteres peligrosos
+ */
+export const hasNoDangerousChars = (password: string): boolean => {
+  if (!password) return true;
+  return !DANGEROUS_CHARS.test(password);
+};
+
+/**
  * Valida si una contraseña cumple con requisitos mínimos de seguridad
  * @param password - Contraseña a validar
  * @param minLength - Longitud mínima (default: 6)
@@ -130,8 +140,7 @@ export const isValidName = (name: string): boolean => {
  */
 export const isValidPassword = (password: string, minLength: number = 6): boolean => {
   if (!password) return false;
-  const sanitized = sanitizePassword(password);
-  return sanitized.length >= minLength && sanitized.length <= 128;
+  return password.length >= minLength && password.length <= 128 && hasNoDangerousChars(password);
 };
 
 /**

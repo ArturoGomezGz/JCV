@@ -9,7 +9,7 @@ import {
 } from 'firebase/auth';
 import { auth } from './firebaseConfig';
 import { createUserProfile, CreateUserProfileData } from './userService';
-import { sanitizeEmail, sanitizePassword, sanitizeName, sanitizePhone } from '../utils/inputSanitization';
+import { sanitizeEmail, sanitizeName, sanitizePhone } from '../utils/inputSanitization';
 
 export interface LoginCredentials {
   email: string;
@@ -34,9 +34,8 @@ export interface AuthResult {
  */
 export const registerWithEmail = async (credentials: RegisterCredentials): Promise<AuthResult> => {
   try {
-    // Sanitizar inputs antes de procesarlos
+    // Sanitizar inputs de texto antes de procesarlos (no contraseña)
     const sanitizedEmail = sanitizeEmail(credentials.email);
-    const sanitizedPassword = sanitizePassword(credentials.password);
     const sanitizedDisplayName = sanitizeName(credentials.displayName);
     const sanitizedPhoneNumber = sanitizePhone(credentials.phoneNumber);
     
@@ -44,7 +43,7 @@ export const registerWithEmail = async (credentials: RegisterCredentials): Promi
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       sanitizedEmail,
-      sanitizedPassword
+      credentials.password
     );
     
     // Update user profile in Auth
@@ -103,14 +102,13 @@ export const registerWithEmail = async (credentials: RegisterCredentials): Promi
  */
 export const loginWithEmail = async (credentials: LoginCredentials): Promise<AuthResult> => {
   try {
-    // Sanitizar inputs antes de procesarlos
+    // Sanitizar solo el email (no la contraseña para permitir login con contraseñas existentes)
     const sanitizedEmail = sanitizeEmail(credentials.email);
-    const sanitizedPassword = sanitizePassword(credentials.password);
     
     const userCredential = await signInWithEmailAndPassword(
       auth,
       sanitizedEmail,
-      sanitizedPassword
+      credentials.password
     );
     
     return {
@@ -187,10 +185,8 @@ export const updateUserPassword = async (newPassword: string): Promise<AuthResul
       };
     }
     
-    // Sanitizar contraseña antes de actualizar
-    const sanitizedPassword = sanitizePassword(newPassword);
-    
-    await updatePassword(user, sanitizedPassword);
+    // No sanitizar contraseña - dejar que Firebase valide
+    await updatePassword(user, newPassword);
     return {
       success: true
     };

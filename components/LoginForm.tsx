@@ -15,7 +15,7 @@ import {
   ScrollView
 } from 'react-native';
 import { colors, semanticColors } from '../constants/Colors';
-import { sanitizeEmail, sanitizePassword, isValidEmail } from '../utils/inputSanitization';
+import { sanitizeEmail, isValidEmail } from '../utils/inputSanitization';
 
 // Definición de la interfaz TypeScript que especifica qué props puede recibir el componente
 // Todas las props son opcionales (?) para mayor flexibilidad
@@ -68,9 +68,8 @@ const LoginForm: React.FC<LoginFormProps> = ({
     const newErrors = { email: '', password: '' };
     let isValid = true;
 
-    // Sanitizar inputs
+    // Sanitizar email
     const sanitizedEmail = sanitizeEmail(email);
-    const sanitizedPassword = sanitizePassword(password);
 
     // Validar email
     if (!sanitizedEmail.trim()) {
@@ -81,11 +80,11 @@ const LoginForm: React.FC<LoginFormProps> = ({
       isValid = false;
     }
 
-    // Validar contraseña
-    if (!sanitizedPassword.trim()) {
+    // Validar contraseña (sin sanitizar para permitir login con contraseñas existentes)
+    if (!password.trim()) {
       newErrors.password = 'La contraseña es requerida';
       isValid = false;
-    } else if (sanitizedPassword.length < 6) {
+    } else if (password.length < 6) {
       newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
       isValid = false;
     }
@@ -99,12 +98,11 @@ const LoginForm: React.FC<LoginFormProps> = ({
   // Si no hay función onLogin, muestra una alerta por defecto
   const handleLogin = () => {
     if (validateForm()) {
-      // Sanitizar inputs antes de enviar
+      // Sanitizar solo el email (no la contraseña para permitir login con contraseñas existentes)
       const sanitizedEmail = sanitizeEmail(email);
-      const sanitizedPassword = sanitizePassword(password);
       
       if (onLogin) {
-        onLogin(sanitizedEmail, sanitizedPassword);
+        onLogin(sanitizedEmail, password);
       } else {
         // Acción por defecto si no se proporciona onLogin
         Alert.alert('Login', `Email: ${sanitizedEmail}`);
@@ -177,7 +175,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
             ]}
             placeholder="Contraseña"
             value={password}
-            onChangeText={(text) => setPassword(sanitizePassword(text))}
+            onChangeText={setPassword}
             secureTextEntry
             autoCapitalize="none"
             autoCorrect={false}
