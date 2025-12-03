@@ -50,11 +50,26 @@ const friendlyErrorMessages: Record<string, string> = {
 };
 
 /**
+ * Maximum length for a message to be considered user-friendly
+ */
+const MAX_FRIENDLY_MESSAGE_LENGTH = 100;
+
+/**
+ * Patterns that indicate a technical error message
+ */
+const TECHNICAL_ERROR_PATTERNS = ['auth/', 'Error:', 'firebase', 'FirebaseError'];
+
+/**
+ * Cache of error codes for faster lookups
+ */
+const errorCodes = Object.keys(friendlyErrorMessages);
+
+/**
  * Extrae el código de error de un mensaje de error
  */
 const extractErrorCode = (error: string): string | null => {
   // Buscar códigos de error comunes en el mensaje
-  for (const code of Object.keys(friendlyErrorMessages)) {
+  for (const code of errorCodes) {
     if (error.includes(code)) {
       return code;
     }
@@ -83,11 +98,11 @@ export const getFriendlyErrorMessage = (error: string | Error | unknown): string
   }
   
   // Si el mensaje ya es amigable (no contiene códigos técnicos), devolverlo
-  if (!errorMessage.includes('auth/') && 
-      !errorMessage.includes('Error:') && 
-      !errorMessage.includes('firebase') &&
-      !errorMessage.includes('FirebaseError') &&
-      errorMessage.length < 100) {
+  const hasTechnicalPattern = TECHNICAL_ERROR_PATTERNS.some(pattern => 
+    errorMessage.includes(pattern)
+  );
+  
+  if (!hasTechnicalPattern && errorMessage.length < MAX_FRIENDLY_MESSAGE_LENGTH) {
     return errorMessage;
   }
   
@@ -117,7 +132,7 @@ const getDefaultTitle = (type: AlertType): string => {
  * Muestra una alerta con un mensaje amigable para el usuario
  * 
  * @param type - Tipo de alerta (success, error, warning, info)
- * @param message - Mensaje a mostrar (puede ser técnico, se convertirá a amigable)
+ * @param message - Mensaje a mostrar (para errores, se convertirá a amigable si es técnico)
  * @param options - Opciones adicionales para personalizar la alerta
  */
 export const showFriendlyAlert = (
@@ -125,7 +140,11 @@ export const showFriendlyAlert = (
   message: string | Error | unknown,
   options?: FriendlyAlertOptions
 ): void => {
-  const friendlyMessage = getFriendlyErrorMessage(message);
+  // Solo procesar el mensaje como error si el tipo es 'error'
+  const friendlyMessage = type === 'error' 
+    ? getFriendlyErrorMessage(message)
+    : String(message);
+    
   const title = options?.title || getDefaultTitle(type);
   const buttons = options?.buttons || [{ text: 'OK', style: 'default' }];
   const cancelable = options?.cancelable ?? true;
@@ -144,10 +163,10 @@ export const showSuccessAlert = (
 };
 
 export const showErrorAlert = (
-  error: string | Error | unknown,
+  message: string | Error | unknown,
   options?: FriendlyAlertOptions
 ): void => {
-  showFriendlyAlert('error', error, options);
+  showFriendlyAlert('error', message, options);
 };
 
 export const showWarningAlert = (
