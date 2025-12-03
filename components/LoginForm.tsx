@@ -15,6 +15,7 @@ import {
   ScrollView
 } from 'react-native';
 import { colors, semanticColors } from '../constants/Colors';
+import { sanitizeEmail, sanitizePassword, isValidEmail } from '../utils/inputSanitization';
 
 // Definición de la interfaz TypeScript que especifica qué props puede recibir el componente
 // Todas las props son opcionales (?) para mayor flexibilidad
@@ -64,31 +65,33 @@ const LoginForm: React.FC<LoginFormProps> = ({
   // Retorna true si el formulario es válido, false si hay errores
   // Actualiza el estado 'errors' con mensajes específicos para cada campo
   const validateForm = (): boolean => {
-    /* const newErrors = { email: '', password: '' };
+    const newErrors = { email: '', password: '' };
     let isValid = true;
 
+    // Sanitizar inputs
+    const sanitizedEmail = sanitizeEmail(email);
+    const sanitizedPassword = sanitizePassword(password);
+
     // Validar email
-    if (!email.trim()) {
+    if (!sanitizedEmail.trim()) {
       newErrors.email = 'El email es requerido';
       isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
+    } else if (!isValidEmail(sanitizedEmail)) {
       newErrors.email = 'Ingresa un email válido';
       isValid = false;
     }
 
     // Validar contraseña
-    if (!password.trim()) {
+    if (!sanitizedPassword.trim()) {
       newErrors.password = 'La contraseña es requerida';
       isValid = false;
-    } else if (password.length < 6) {
+    } else if (sanitizedPassword.length < 6) {
       newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
       isValid = false;
     }
 
     setErrors(newErrors);
-    return isValid; */
-      
-    return true; // ← Temporalmente deshabilitada la validación---------------------------------------------(DEBUG MODE ON)
+    return isValid;
   };
 
   // Manejador del evento de login: se ejecuta cuando el usuario presiona "Iniciar Sesión"
@@ -96,11 +99,15 @@ const LoginForm: React.FC<LoginFormProps> = ({
   // Si no hay función onLogin, muestra una alerta por defecto
   const handleLogin = () => {
     if (validateForm()) {
+      // Sanitizar inputs antes de enviar
+      const sanitizedEmail = sanitizeEmail(email);
+      const sanitizedPassword = sanitizePassword(password);
+      
       if (onLogin) {
-        onLogin(email, password);
+        onLogin(sanitizedEmail, sanitizedPassword);
       } else {
         // Acción por defecto si no se proporciona onLogin
-        Alert.alert('Login', `Email: ${email}`);
+        Alert.alert('Login', `Email: ${sanitizedEmail}`);
       }
     }
   };
@@ -149,7 +156,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
               ]}
               placeholder="Email"
               value={email}
-              onChangeText={setEmail}
+              onChangeText={(text) => setEmail(sanitizeEmail(text))}
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}

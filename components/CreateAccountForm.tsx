@@ -11,6 +11,16 @@ import {
   Platform,
 } from 'react-native';
 import { colors, semanticColors } from '../constants/Colors';
+import { 
+  sanitizeName, 
+  sanitizeEmail, 
+  sanitizePhone, 
+  sanitizePassword,
+  isValidEmail,
+  isValidPhone,
+  isValidName,
+  isValidPassword
+} from '../utils/inputSanitization';
 
 // Definición de la interfaz TypeScript para las props del componente
 interface CreateAccountFormProps {
@@ -38,41 +48,51 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
     const newErrors = { name: '', email: '', phone: '', password: '', confirmPassword: '' };
     let isValid = true;
 
+    // Sanitizar inputs
+    const sanitizedName = sanitizeName(name);
+    const sanitizedEmail = sanitizeEmail(email);
+    const sanitizedPhone = sanitizePhone(phone);
+    const sanitizedPassword = sanitizePassword(password);
+    const sanitizedConfirmPassword = sanitizePassword(confirmPassword);
+
     // Validar nombre (obligatorio)
-    if (!name.trim()) {
+    if (!sanitizedName.trim()) {
       newErrors.name = 'El nombre es requerido';
+      isValid = false;
+    } else if (!isValidName(sanitizedName)) {
+      newErrors.name = 'El nombre contiene caracteres no permitidos';
       isValid = false;
     }
 
     // Validar email
-    if (!email.trim()) {
+    if (!sanitizedEmail.trim()) {
       newErrors.email = 'El email es requerido';
       isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
+    } else if (!isValidEmail(sanitizedEmail)) {
       newErrors.email = 'Ingresa un email válido';
       isValid = false;
     }
 
     // Validar teléfono (opcional, pero si se proporciona debe ser válido)
-    if (phone.trim() && !/^\d{10}$/.test(phone.replace(/\s+/g, ''))) {
-      newErrors.phone = 'Ingresa un teléfono válido (10 dígitos)';
+    if (sanitizedPhone.trim() && !isValidPhone(sanitizedPhone)) {
+      newErrors.phone = 'Ingresa un teléfono válido (10-15 dígitos)';
       isValid = false;
     }
 
     // Validar contraseña
-    if (!password.trim()) {
+    if (!sanitizedPassword.trim()) {
       newErrors.password = 'La contraseña es requerida';
       isValid = false;
-    } else if (password.length < 6) {
+    } else if (!isValidPassword(sanitizedPassword, 6)) {
       newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
       isValid = false;
     }
 
     // Validar confirmación de contraseña
-    if (!confirmPassword.trim()) {
+    if (!sanitizedConfirmPassword.trim()) {
       newErrors.confirmPassword = 'Confirma tu contraseña';
       isValid = false;
-    } else if (password !== confirmPassword) {
+    } else if (sanitizedPassword !== sanitizedConfirmPassword) {
       newErrors.confirmPassword = 'Las contraseñas no coinciden';
       isValid = false;
     }
@@ -84,10 +104,17 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
   // Manejador para crear cuenta
   const handleCreateAccount = () => {
     if (validateForm()) {
+      // Sanitizar todos los inputs antes de enviar
+      const sanitizedName = sanitizeName(name);
+      const sanitizedEmail = sanitizeEmail(email);
+      const sanitizedPhone = sanitizePhone(phone);
+      const sanitizedPassword = sanitizePassword(password);
+      const sanitizedConfirmPassword = sanitizePassword(confirmPassword);
+      
       if (onCreateAccount) {
-        onCreateAccount(name, email, phone, password, confirmPassword);
+        onCreateAccount(sanitizedName, sanitizedEmail, sanitizedPhone, sanitizedPassword, sanitizedConfirmPassword);
       } else {
-        Alert.alert('Cuenta Creada', `Cuenta creada para: ${name} (${email})`);
+        Alert.alert('Cuenta Creada', `Cuenta creada para: ${sanitizedName} (${sanitizedEmail})`);
       }
     }
   };
@@ -120,7 +147,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
             ]}
             placeholder="Nombre completo"
             value={name}
-            onChangeText={setName}
+            onChangeText={(text) => setName(sanitizeName(text))}
             autoCapitalize="words"
             autoCorrect={false}
             editable={!isLoading}
@@ -142,7 +169,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
             ]}
             placeholder="correo@ejemplo.com"
             value={email}
-            onChangeText={setEmail}
+            onChangeText={(text) => setEmail(sanitizeEmail(text))}
             keyboardType="email-address"
             autoCapitalize="none"
             autoCorrect={false}
@@ -163,7 +190,7 @@ const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
             ]}
             placeholder="1234567890"
             value={phone}
-            onChangeText={setPhone}
+            onChangeText={(text) => setPhone(sanitizePhone(text))}
             keyboardType="phone-pad"
             autoCapitalize="none"
             autoCorrect={false}
