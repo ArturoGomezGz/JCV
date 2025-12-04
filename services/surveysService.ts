@@ -22,6 +22,31 @@ export interface SurveysResponse {
 }
 
 /**
+ * Valida y mapea un documento de Firestore a SurveyData
+ * @param docId ID del documento de Firestore
+ * @param data Datos del documento
+ * @returns SurveyData o null si la validación falla
+ */
+const mapFirestoreDocToSurvey = (docId: string, data: any): SurveyData | null => {
+  // Validar que existan todos los campos requeridos
+  if (!data.title || !data.category || !data.question || 
+      !data.chartType || !data.description || !data.chartData) {
+    console.warn(`Documento ${docId} tiene campos faltantes, será omitido`);
+    return null;
+  }
+  
+  return {
+    id: docId,
+    title: data.title,
+    category: data.category,
+    question: data.question,
+    chartType: data.chartType,
+    description: data.description,
+    chartData: data.chartData
+  };
+};
+
+/**
  * Obtiene todas las encuestas desde la colección 'feed' en Firestore
  * Los documentos usan su ID como identificador (ej: "001", "002", etc.)
  */
@@ -34,17 +59,10 @@ export const fetchSurveys = async (): Promise<SurveyData[]> => {
     // Mapear documentos a formato SurveyData
     const surveys: SurveyData[] = [];
     querySnapshot.forEach((docSnapshot) => {
-      const data = docSnapshot.data();
-      // El ID del documento se usa como el ID de la encuesta
-      surveys.push({
-        id: docSnapshot.id,
-        title: data.title,
-        category: data.category,
-        question: data.question,
-        chartType: data.chartType,
-        description: data.description,
-        chartData: data.chartData
-      });
+      const survey = mapFirestoreDocToSurvey(docSnapshot.id, docSnapshot.data());
+      if (survey) {
+        surveys.push(survey);
+      }
     });
     
     return surveys;
@@ -66,16 +84,7 @@ export const fetchSurveyById = async (id: string): Promise<SurveyData | null> =>
       return null;
     }
     
-    const data = docSnapshot.data();
-    return {
-      id: docSnapshot.id,
-      title: data.title,
-      category: data.category,
-      question: data.question,
-      chartType: data.chartType,
-      description: data.description,
-      chartData: data.chartData
-    };
+    return mapFirestoreDocToSurvey(docSnapshot.id, docSnapshot.data());
   } catch (error) {
     console.error(`Error cargando encuesta ${id}:`, error);
     return null;
