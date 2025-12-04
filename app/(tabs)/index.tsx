@@ -59,9 +59,7 @@ export default function DashboardScreen() {
     <>
       <Feed
         isGuest={false}
-        userEmail={userEmail}
         userName={userName}
-        onLogout={handleLogout}
         onChartPress={handleChartPress}
         onProfilePress={handleProfilePress}
         onForumPress={handleForumPress}

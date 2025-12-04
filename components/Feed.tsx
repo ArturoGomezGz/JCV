@@ -19,10 +19,6 @@ import { showErrorAlert } from '../utils/alertUtils';
 
 interface FeedProps {
   isGuest?: boolean;
-  onBackToLogin?: () => void;
-  onCreateAccount?: () => void;
-  onLogout?: () => void;
-  userEmail?: string;
   userName?: string;
   onChartPress?: (title: string, chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar', category: string, question: string) => void;
   onProfilePress?: () => void;
@@ -31,10 +27,6 @@ interface FeedProps {
 
 const Feed: React.FC<FeedProps> = ({ 
   isGuest = true,
-  onBackToLogin,
-  onCreateAccount,
-  onLogout,
-  userEmail,
   userName,
   onChartPress,
   onProfilePress,

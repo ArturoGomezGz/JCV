@@ -3,7 +3,7 @@
  * Obtiene datos desde Firestore en la colección 'feed'
  */
 
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, query } from 'firebase/firestore';
 import { db } from './firebaseConfig';
 
 // Definición de tipos para las encuestas
@@ -22,15 +22,43 @@ export interface SurveysResponse {
 }
 
 /**
+ * Obtiene chartData desde la subcolección de un documento
+ * @param docId ID del documento padre
+ * @returns Datos del gráfico o null si no existe
+ */
+const fetchChartData = async (docId: string): Promise<any | null> => {
+  try {
+    const chartDataCollection = collection(db, 'feed', docId, 'chartData');
+    const querySnapshot = await getDocs(chartDataCollection);
+    
+    if (querySnapshot.empty) {
+      return null;
+    }
+    
+    // Combinar todos los documentos de la subcolección
+    const chartDataObj: any = {};
+    querySnapshot.forEach((doc) => {
+      chartDataObj[doc.id] = doc.data();
+    });
+    
+    return chartDataObj;
+  } catch (error) {
+    console.error(`Error cargando chartData para ${docId}:`, error);
+    return null;
+  }
+};
+
+/**
  * Valida y mapea un documento de Firestore a SurveyData
  * @param docId ID del documento de Firestore
  * @param data Datos del documento
+ * @param chartData Datos del gráfico desde la subcolección
  * @returns SurveyData o null si la validación falla
  */
-const mapFirestoreDocToSurvey = (docId: string, data: any): SurveyData | null => {
+const mapFirestoreDocToSurvey = (docId: string, data: any, chartData: any): SurveyData | null => {
   // Validar que existan todos los campos requeridos
   if (!data.title || !data.category || !data.question || 
-      !data.chartType || !data.description || !data.chartData) {
+      !data.chartType || !data.description || !chartData) {
     console.warn(`Documento ${docId} tiene campos faltantes, será omitido`);
     return null;
   }
@@ -42,7 +70,7 @@ const mapFirestoreDocToSurvey = (docId: string, data: any): SurveyData | null =>
     question: data.question,
     chartType: data.chartType,
     description: data.description,
-    chartData: data.chartData
+    chartData: chartData
   };
 };
 
@@ -58,12 +86,14 @@ export const fetchSurveys = async (): Promise<SurveyData[]> => {
     
     // Mapear documentos a formato SurveyData
     const surveys: SurveyData[] = [];
-    querySnapshot.forEach((docSnapshot) => {
-      const survey = mapFirestoreDocToSurvey(docSnapshot.id, docSnapshot.data());
+    
+    for (const docSnapshot of querySnapshot.docs) {
+      const chartData = await fetchChartData(docSnapshot.id);
+      const survey = mapFirestoreDocToSurvey(docSnapshot.id, docSnapshot.data(), chartData);
       if (survey) {
         surveys.push(survey);
       }
-    });
+    }
     
     return surveys;
   } catch (error) {
@@ -84,7 +114,8 @@ export const fetchSurveyById = async (id: string): Promise<SurveyData | null> =>
       return null;
     }
     
-    return mapFirestoreDocToSurvey(docSnapshot.id, docSnapshot.data());
+    const chartData = await fetchChartData(docSnapshot.id);
+    return mapFirestoreDocToSurvey(docSnapshot.id, docSnapshot.data(), chartData);
   } catch (error) {
     console.error(`Error cargando encuesta ${id}:`, error);
     return null;
