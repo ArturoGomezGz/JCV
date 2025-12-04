@@ -1,13 +1,10 @@
 /**
  * Servicio para manejar datos de encuestas de satisfacción ciudadana
- * 
- * TODO: En el futuro, reemplazar la importación de JSON local con llamadas HTTP a la API real
- * TODO: Implementar manejo de errores de red y timeouts
- * TODO: Agregar sistema de caché para optimizar rendimiento
- * TODO: Implementar autenticación para acceso a la API
+ * Obtiene datos desde Firestore en la colección 'feed'
  */
 
-import surveysData from '../data/surveysData.json';
+import { collection, getDocs, doc, getDoc, query } from 'firebase/firestore';
+import { db } from './firebaseConfig';
 
 // Definición de tipos para las encuestas
 export interface SurveyData {
@@ -25,38 +22,100 @@ export interface SurveysResponse {
 }
 
 /**
- * Simula una llamada a API para obtener todas las encuestas
- * TODO: Reemplazar con fetch() a la API real cuando esté disponible
+ * Obtiene chartData desde la subcolección de un documento
+ * @param docId ID del documento padre
+ * @returns Datos del gráfico o null si no existe
+ */
+const fetchChartData = async (docId: string): Promise<any | null> => {
+  try {
+    const chartDataCollection = collection(db, 'feed', docId, 'chartData');
+    const querySnapshot = await getDocs(chartDataCollection);
+    
+    if (querySnapshot.empty) {
+      return null;
+    }
+    
+    // Combinar todos los documentos de la subcolección
+    const chartDataObj: any = {};
+    querySnapshot.forEach((doc) => {
+      chartDataObj[doc.id] = doc.data();
+    });
+    
+    return chartDataObj;
+  } catch (error) {
+    console.error(`Error cargando chartData para ${docId}:`, error);
+    return null;
+  }
+};
+
+/**
+ * Valida y mapea un documento de Firestore a SurveyData
+ * @param docId ID del documento de Firestore
+ * @param data Datos del documento
+ * @param chartData Datos del gráfico desde la subcolección
+ * @returns SurveyData o null si la validación falla
+ */
+const mapFirestoreDocToSurvey = (docId: string, data: any, chartData: any): SurveyData | null => {
+  // Validar que existan todos los campos requeridos
+  if (!data.title || !data.category || !data.question || 
+      !data.chartType || !data.description || !chartData) {
+    console.warn(`Documento ${docId} tiene campos faltantes, será omitido`);
+    return null;
+  }
+  
+  return {
+    id: docId,
+    title: data.title,
+    category: data.category,
+    question: data.question,
+    chartType: data.chartType,
+    description: data.description,
+    chartData: chartData
+  };
+};
+
+/**
+ * Obtiene todas las encuestas desde la colección 'feed' en Firestore
+ * Los documentos usan su ID como identificador (ej: "001", "002", etc.)
  */
 export const fetchSurveys = async (): Promise<SurveyData[]> => {
   try {
-    // Simular delay de red (remover cuando se implemente API real)
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Obtener todos los documentos de la colección 'feed'
+    const feedCollection = collection(db, 'feed');
+    const querySnapshot = await getDocs(feedCollection);
     
-    // TODO: Reemplazar con:
-    // const response = await fetch('https://api.satisfaccion-ciudadana.gob.mx/v1/surveys');
-    // const data: SurveysResponse = await response.json();
-    // return data.surveys;
+    // Mapear documentos a formato SurveyData
+    const surveys: SurveyData[] = [];
     
-    const data = surveysData as SurveysResponse;
-    return data.surveys;
+    for (const docSnapshot of querySnapshot.docs) {
+      const chartData = await fetchChartData(docSnapshot.id);
+      const survey = mapFirestoreDocToSurvey(docSnapshot.id, docSnapshot.data(), chartData);
+      if (survey) {
+        surveys.push(survey);
+      }
+    }
+    
+    return surveys;
   } catch (error) {
-    console.error('Error cargando datos de encuestas:', error);
-    
-    // TODO: Implementar manejo de errores más robusto
-    // TODO: Implementar fallback a datos en caché
+    console.error('Error cargando datos de encuestas desde Firestore:', error);
     throw new Error('No se pudieron cargar los datos de las encuestas');
   }
 };
 
 /**
- * Obtiene una encuesta específica por ID
- * TODO: Implementar endpoint específico en la API para obtener encuesta individual
+ * Obtiene una encuesta específica por ID desde Firestore
  */
 export const fetchSurveyById = async (id: string): Promise<SurveyData | null> => {
   try {
-    const surveys = await fetchSurveys();
-    return surveys.find(survey => survey.id === id) || null;
+    const docRef = doc(db, 'feed', id);
+    const docSnapshot = await getDoc(docRef);
+    
+    if (!docSnapshot.exists()) {
+      return null;
+    }
+    
+    const chartData = await fetchChartData(docSnapshot.id);
+    return mapFirestoreDocToSurvey(docSnapshot.id, docSnapshot.data(), chartData);
   } catch (error) {
     console.error(`Error cargando encuesta ${id}:`, error);
     return null;

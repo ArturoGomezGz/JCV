@@ -78,7 +78,17 @@ const Content: React.FC<ContentProps> = ({
   
   // Función para obtener la descripción según el tipo de gráfica
   const getChartDescription = (type: string) => {
-    const survey = surveysData.surveys.find(survey => survey.chartType === type);
+    const surveysObj = surveysData as any;
+    let surveys: any[] = [];
+    
+    // Soportar tanto formato antiguo (array) como nuevo (objetos con claves)
+    if (Array.isArray(surveysObj.surveys)) {
+      surveys = surveysObj.surveys;
+    } else if (typeof surveysObj.surveys === 'object' && surveysObj.surveys !== null) {
+      surveys = Object.values(surveysObj.surveys);
+    }
+    
+    const survey = surveys.find(survey => survey.chartType === type);
     return survey ? survey.description : 'Esta gráfica presenta información importante de manera visual y fácil de interpretar.';
   };
 
