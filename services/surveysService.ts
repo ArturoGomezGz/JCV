@@ -38,8 +38,21 @@ export const fetchSurveys = async (): Promise<SurveyData[]> => {
     // const data: SurveysResponse = await response.json();
     // return data.surveys;
     
-    const data = surveysData as SurveysResponse;
-    return data.surveys;
+    const data = surveysData as any;
+    
+    // Soportar tanto formato antiguo (array) como nuevo (objetos con claves)
+    let surveys: SurveyData[];
+    if (Array.isArray(data.surveys)) {
+      // Formato antiguo: array directo
+      surveys = data.surveys;
+    } else if (typeof data.surveys === 'object' && data.surveys !== null) {
+      // Nuevo formato: objeto con claves numéricas
+      surveys = Object.values(data.surveys);
+    } else {
+      throw new Error('Formato de datos de encuestas no reconocido');
+    }
+    
+    return surveys;
   } catch (error) {
     console.error('Error cargando datos de encuestas:', error);
     

@@ -1,6 +1,6 @@
 {
-  "surveys": [
-    {
+  "surveys": {
+    "001": {
       "id": "survey-001",
       "title": "Satisfacción con Servicios Públicos por Mes",
       "category": "Servicios Públicos Generales",
@@ -12,7 +12,7 @@
         "values": [12, 19, 15, 22, 18, 17]
       }
     },
-    {
+    "002": {
       "id": "survey-002",
       "title": "Acceso a Infraestructura Digital",
       "category": "Infraestructura Digital",
@@ -24,7 +24,7 @@
         "values": [28, 32, 25, 15]
       }
     },
-    {
+    "003": {
       "id": "survey-003",
       "title": "Evolución de Mejoras en Infraestructura",
       "category": "Desarrollo Urbano",
@@ -45,7 +45,7 @@
         ]
       }
     },
-    {
+    "004": {
       "id": "survey-004",
       "title": "Eficiencia en Proyectos Municipales",
       "category": "Gestión Municipal",
@@ -57,7 +57,7 @@
         "values": [75, 68, 58, 82]
       }
     },
-    {
+    "005": {
       "id": "survey-005",
       "title": "Distribución de Presupuesto por Área",
       "category": "Gestión Financiera",
@@ -75,7 +75,7 @@
         ]
       }
     },
-    {
+    "006": {
       "id": "survey-006",
       "title": "Tendencia de Satisfacción Ciudadana",
       "category": "Análisis Temporal",
@@ -87,7 +87,7 @@
         "values": [3.8, 4.1, 4.0, 4.5, 4.3, 4.2]
       }
     },
-    {
+    "007": {
       "id": "survey-007",
       "title": "Impacto de Políticas Públicas",
       "category": "Efectividad Gubernamental",
@@ -99,7 +99,7 @@
         "values": [3.5, 3.8, 3.7, 4.0, 3.9, 3.8]
       }
     },
-    {
+    "008": {
       "id": "survey-008",
       "title": "Evaluación por Departamentos Municipales",
       "category": "Gestión por Áreas",
@@ -111,5 +111,5 @@
         "values": [4.2, 3.8, 3.5, 4.0, 3.9]
       }
     }
-  ]
+  }
 }

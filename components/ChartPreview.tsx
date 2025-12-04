@@ -40,7 +40,17 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
   
   // Función para obtener datos y título del survey correspondiente
   const getSurveyData = (chartType: string) => {
-    const survey = surveysData.surveys.find(s => s.chartType === chartType);
+    const surveysObj = surveysData as any;
+    let surveys: any[] = [];
+    
+    // Soportar tanto formato antiguo (array) como nuevo (objetos con claves)
+    if (Array.isArray(surveysObj.surveys)) {
+      surveys = surveysObj.surveys;
+    } else if (typeof surveysObj.surveys === 'object' && surveysObj.surveys !== null) {
+      surveys = Object.values(surveysObj.surveys);
+    }
+    
+    const survey = surveys.find(s => s.chartType === chartType);
     return {
       title: survey?.title || 'Gráfico',
       category: survey?.category || 'General'
@@ -51,7 +61,17 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
 
   // Función para generar datos basados en la información del survey
   const generateChartData = (chartType: string) => {
-    const survey = surveysData.surveys.find(s => s.chartType === chartType);
+    const surveysObj = surveysData as any;
+    let surveys: any[] = [];
+    
+    // Soportar tanto formato antiguo (array) como nuevo (objetos con claves)
+    if (Array.isArray(surveysObj.surveys)) {
+      surveys = surveysObj.surveys;
+    } else if (typeof surveysObj.surveys === 'object' && surveysObj.surveys !== null) {
+      surveys = Object.values(surveysObj.surveys);
+    }
+    
+    const survey = surveys.find(s => s.chartType === chartType);
     
     if (!survey || !survey.chartData) {
       return null;
