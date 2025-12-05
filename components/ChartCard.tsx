@@ -11,45 +11,15 @@ import ChartPreview from './ChartPreview';
 import { fetchSurveys, SurveyData } from '../services/surveysService';
 
 interface ChartCardProps {
-    title: string;
-    chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar';
+    survey: SurveyData;
     onPress?: () => void;
 }
 
 const ChartCard: React.FC<ChartCardProps> = ({
-    title,
-    chartType,
+    survey,
     onPress
 }) => {
-    const [surveys, setSurveys] = useState<SurveyData[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    // Cargar surveys desde Firebase al montar el componente
-    useEffect(() => {
-        const loadSurveys = async () => {
-            try {
-                const data = await fetchSurveys();
-                setSurveys(data);
-            } catch (error) {
-                console.error('Error cargando surveys:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        loadSurveys();
-    }, []);
-
-    // Obtener información del survey actual desde Firebase
-    const getSurveyInfo = () => {
-        const survey = surveys.find(s => s.chartType === chartType);
-        return {
-            title: survey?.title || title,
-            description: survey?.description || '',
-        };
-    };
-
-    const surveyInfo = getSurveyInfo();
+    const [isLoading, setIsLoading] = useState(false);
 
     const handlePress = () => {
         if (onPress) {
@@ -70,7 +40,8 @@ const ChartCard: React.FC<ChartCardProps> = ({
                     </View>
                 ) : (
                     <ChartPreview 
-                        type={chartType}
+                        type={survey.chartType}
+                        surveyData={survey}
                     />
                 )}
             </View>

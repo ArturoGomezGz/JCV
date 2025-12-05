@@ -31,11 +31,13 @@ export interface ChartData {
 interface ChartPreviewProps {
   type: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar';
   height?: number;
+  surveyData?: SurveyData;
 }
 
 const ChartPreview: React.FC<ChartPreviewProps> = ({
   type,
   height,
+  surveyData,
 }) => {
   const [containerWidth, setContainerWidth] = useState<number>(300);
   const [surveyInfo, setSurveyInfo] = useState<{ title: string; category: string }>({
@@ -49,6 +51,18 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
   useEffect(() => {
     const loadSurveys = async () => {
       try {
+        // Si se proporciona surveyData directamente, usarlo
+        if (surveyData) {
+          setSurveyInfo({
+            title: surveyData.title,
+            category: surveyData.category
+          });
+          setSurveys([surveyData]);
+          setIsLoading(false);
+          return;
+        }
+
+        // Si no, cargar todos los surveys
         const data = await fetchSurveys();
         setSurveys(data);
         
@@ -68,7 +82,7 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
     };
 
     loadSurveys();
-  }, [type]);
+  }, [type, surveyData]);
 
   // Función para generar datos basados en la información del survey
   const generateChartData = (chartType: string) => {

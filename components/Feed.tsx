@@ -107,8 +107,7 @@ const Feed: React.FC<FeedProps> = ({
           {surveys.map((survey) => (
             <ChartCard
               key={survey.id}
-              title={survey.title}
-              chartType={survey.chartType}
+              survey={survey}
               onPress={() => handleSurveyPress(survey)}
             />
           ))}
