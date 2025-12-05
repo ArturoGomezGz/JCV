@@ -38,9 +38,10 @@ const generateHTMLContent = (data: PDFReportData): string => {
       .replace(/^# (.+)$/gm, '<h1>$1</h1>');
 
     // Handle bullet points by wrapping consecutive items in ul tags
-    html = html.replace(/^([•\-*] .+)(\n[•\-*] .+)*/gm, (match) => {
+    html = html.replace(/(^[•\-*] .+$(\n[•\-*] .+$)*)/gm, (match) => {
       const items = match
         .split('\n')
+        .filter(line => line.trim())
         .map(line => line.replace(/^[•\-*] (.+)$/, '<li>$1</li>'))
         .join('\n');
       return `<ul>\n${items}\n</ul>`;
