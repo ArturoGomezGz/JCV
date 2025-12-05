@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Dimensions,
   LayoutChangeEvent,
+  ActivityIndicator,
 } from 'react-native';
 import {
   BarChart,
@@ -17,7 +18,7 @@ import {
   // Area Chart se puede simular con LineChart
 } from 'react-native-chart-kit';
 import { colors, generateChartColors, generateDatasetColors } from '../constants/Colors';
-import surveysData from '../data/surveysData.json';
+import { fetchSurveys, SurveyData } from '../services/surveysService';
 
 export interface ChartData {
   name?: string;
@@ -37,40 +38,40 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
   height,
 }) => {
   const [containerWidth, setContainerWidth] = useState<number>(300);
-  
-  // Función para obtener datos y título del survey correspondiente
-  const getSurveyData = (chartType: string) => {
-    const surveysObj = surveysData as any;
-    let surveys: any[] = [];
-    
-    // Soportar tanto formato antiguo (array) como nuevo (objetos con claves)
-    if (Array.isArray(surveysObj.surveys)) {
-      surveys = surveysObj.surveys;
-    } else if (typeof surveysObj.surveys === 'object' && surveysObj.surveys !== null) {
-      surveys = Object.values(surveysObj.surveys);
-    }
-    
-    const survey = surveys.find(s => s.chartType === chartType);
-    return {
-      title: survey?.title || 'Gráfico',
-      category: survey?.category || 'General'
-    };
-  };
+  const [surveyInfo, setSurveyInfo] = useState<{ title: string; category: string }>({
+    title: 'Gráfico',
+    category: 'General'
+  });
+  const [surveys, setSurveys] = useState<SurveyData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const surveyInfo = getSurveyData(type);
+  // Cargar surveys desde Firebase al montar el componente
+  useEffect(() => {
+    const loadSurveys = async () => {
+      try {
+        const data = await fetchSurveys();
+        setSurveys(data);
+        
+        // Encontrar el survey correspondiente al tipo de gráfico
+        const survey = data.find(s => s.chartType === type);
+        if (survey) {
+          setSurveyInfo({
+            title: survey.title,
+            category: survey.category
+          });
+        }
+      } catch (error) {
+        console.error('Error cargando surveys:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadSurveys();
+  }, [type]);
 
   // Función para generar datos basados en la información del survey
   const generateChartData = (chartType: string) => {
-    const surveysObj = surveysData as any;
-    let surveys: any[] = [];
-    
-    // Soportar tanto formato antiguo (array) como nuevo (objetos con claves)
-    if (Array.isArray(surveysObj.surveys)) {
-      surveys = surveysObj.surveys;
-    } else if (typeof surveysObj.surveys === 'object' && surveysObj.surveys !== null) {
-      surveys = Object.values(surveysObj.surveys);
-    }
-    
     const survey = surveys.find(s => s.chartType === chartType);
     
     if (!survey || !survey.chartData) {
@@ -168,6 +169,15 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
     const { width } = event.nativeEvent.layout;
     setContainerWidth(width - 20); // Dejamos un padding de 10px a cada lado
   };
+
+  // Mostrar indicador de carga mientras se cargan los datos
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
 
   // Altura automática basada en el tipo de gráfico
   const getChartHeight = () => {
@@ -488,6 +498,13 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#ffffff',
+    width: '100%',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: '#ffffff',
     width: '100%',
   },

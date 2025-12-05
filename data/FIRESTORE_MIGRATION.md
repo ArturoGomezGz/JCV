@@ -26,33 +26,58 @@ Cada documento en la colección `feed` representa una encuesta de satisfacción 
 }
 ```
 
-**Nota importante**: El campo `id` fue eliminado. Ahora el ID del documento de Firestore se utiliza como identificador de la encuesta.
+**Nota importante**: 
+- El campo `id` fue eliminado. Ahora el ID del documento de Firestore se utiliza como identificador de la encuesta.
+- El campo `chartData` es ahora un **map directo en el documento**, no una subcolección.
 
 ## Cambios Realizados
 
-### 1. Servicio de Encuestas (`services/surveysService.ts`)
-- **Antes**: Importaba datos de `surveysData.json`
-- **Ahora**: Obtiene datos de Firestore usando `getDocs()` y `getDoc()`
-
-### 2. Función `fetchSurveys()`
-```typescript
-// Antes: Leía del JSON local
-const data = surveysData as any;
-
-// Ahora: Lee de Firestore
-const feedCollection = collection(db, 'feed');
-const querySnapshot = await getDocs(feedCollection);
+### 1. Estructura de Firestore Actualizada
+**Antes**: El campo `chartData` era una **subcolección** dentro de cada documento:
+```
+feed/
+  └── 001/
+      ├── (campos del documento)
+      └── chartData/ (subcolección)
+          └── (documentos con datos de gráficos)
 ```
 
-### 3. Función `fetchSurveyById()`
-```typescript
-// Antes: Buscaba en el array local
-const surveys = await fetchSurveys();
-return surveys.find(survey => survey.id === id) || null;
+**Ahora**: El campo `chartData` es un **map directo** dentro del documento:
+```
+feed/
+  └── 001/
+      ├── title: "..."
+      ├── category: "..."
+      ├── chartData: { labels: [...], values: [...] }  ← Map, no subcolección
+```
 
-// Ahora: Lee directamente de Firestore por ID
-const docRef = doc(db, 'feed', id);
-const docSnapshot = await getDoc(docRef);
+### 2. Servicio de Encuestas (`services/surveysService.ts`)
+- Eliminada la función `fetchChartData()` que obtenía datos desde la subcolección
+- Actualizado `mapFirestoreDocToSurvey()` para recibir solo 2 parámetros: `docId` y `data`
+- El `chartData` ahora se obtiene directamente de `data.chartData`
+
+### 3. Función `fetchSurveys()`
+```typescript
+// Antes: Hacía await a fetchChartData() para cada documento
+for (const docSnapshot of querySnapshot.docs) {
+  const chartData = await fetchChartData(docSnapshot.id);
+  const survey = mapFirestoreDocToSurvey(docSnapshot.id, docSnapshot.data(), chartData);
+}
+
+// Ahora: Accede directamente al map en el documento
+for (const docSnapshot of querySnapshot.docs) {
+  const survey = mapFirestoreDocToSurvey(docSnapshot.id, docSnapshot.data());
+}
+```
+
+### 4. Función `fetchSurveyById()`
+```typescript
+// Antes: Hacía await a fetchChartData()
+const chartData = await fetchChartData(docSnapshot.id);
+return mapFirestoreDocToSurvey(docSnapshot.id, docSnapshot.data(), chartData);
+
+// Ahora: Accede directamente al map
+return mapFirestoreDocToSurvey(docSnapshot.id, docSnapshot.data());
 ```
 
 ## Compatibilidad

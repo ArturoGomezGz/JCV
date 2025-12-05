@@ -13,7 +13,7 @@ import { colors } from '../constants/Colors';
 import ChartPreview from './ChartPreview';
 import BottomNavigation from './BottomNavigation';
 import { generateChartAnalysis } from '../services';
-import surveysData from '../data/surveysData.json';
+import { fetchSurveys, SurveyData } from '../services/surveysService';
 import { showSuccessAlert } from '../utils/alertUtils';
 
 // Definición de la interfaz TypeScript para las props del componente
@@ -75,19 +75,25 @@ const Content: React.FC<ContentProps> = ({
 
     generateAnalysis();
   }, [chartType, title]);
+  // Estado para almacenar surveys desde Firebase
+  const [surveys, setSurveys] = useState<SurveyData[]>([]);
+
+  // Cargar surveys desde Firebase al montar el componente
+  useEffect(() => {
+    const loadSurveys = async () => {
+      try {
+        const data = await fetchSurveys();
+        setSurveys(data);
+      } catch (error) {
+        console.error('Error cargando surveys:', error);
+      }
+    };
+
+    loadSurveys();
+  }, []);
   
   // Función para obtener la descripción según el tipo de gráfica
   const getChartDescription = (type: string) => {
-    const surveysObj = surveysData as any;
-    let surveys: any[] = [];
-    
-    // Soportar tanto formato antiguo (array) como nuevo (objetos con claves)
-    if (Array.isArray(surveysObj.surveys)) {
-      surveys = surveysObj.surveys;
-    } else if (typeof surveysObj.surveys === 'object' && surveysObj.surveys !== null) {
-      surveys = Object.values(surveysObj.surveys);
-    }
-    
     const survey = surveys.find(survey => survey.chartType === type);
     return survey ? survey.description : 'Esta gráfica presenta información importante de manera visual y fácil de interpretar.';
   };

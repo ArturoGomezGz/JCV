@@ -21,44 +21,18 @@ export interface SurveysResponse {
   surveys: SurveyData[];
 }
 
-/**
- * Obtiene chartData desde la subcolección de un documento
- * @param docId ID del documento padre
- * @returns Datos del gráfico o null si no existe
- */
-const fetchChartData = async (docId: string): Promise<any | null> => {
-  try {
-    const chartDataCollection = collection(db, 'feed', docId, 'chartData');
-    const querySnapshot = await getDocs(chartDataCollection);
-    
-    if (querySnapshot.empty) {
-      return null;
-    }
-    
-    // Combinar todos los documentos de la subcolección
-    const chartDataObj: any = {};
-    querySnapshot.forEach((doc) => {
-      chartDataObj[doc.id] = doc.data();
-    });
-    
-    return chartDataObj;
-  } catch (error) {
-    console.error(`Error cargando chartData para ${docId}:`, error);
-    return null;
-  }
-};
+
 
 /**
  * Valida y mapea un documento de Firestore a SurveyData
  * @param docId ID del documento de Firestore
- * @param data Datos del documento
- * @param chartData Datos del gráfico desde la subcolección
+ * @param data Datos del documento (incluye chartData como map)
  * @returns SurveyData o null si la validación falla
  */
-const mapFirestoreDocToSurvey = (docId: string, data: any, chartData: any): SurveyData | null => {
+const mapFirestoreDocToSurvey = (docId: string, data: any): SurveyData | null => {
   // Validar que existan todos los campos requeridos
   if (!data.title || !data.category || !data.question || 
-      !data.chartType || !data.description || !chartData) {
+      !data.chartType || !data.description || !data.chartData) {
     console.warn(`Documento ${docId} tiene campos faltantes, será omitido`);
     return null;
   }
@@ -70,13 +44,14 @@ const mapFirestoreDocToSurvey = (docId: string, data: any, chartData: any): Surv
     question: data.question,
     chartType: data.chartType,
     description: data.description,
-    chartData: chartData
+    chartData: data.chartData
   };
 };
 
 /**
  * Obtiene todas las encuestas desde la colección 'feed' en Firestore
  * Los documentos usan su ID como identificador (ej: "001", "002", etc.)
+ * El chartData ahora es un map directo en el documento, no una subcolección
  */
 export const fetchSurveys = async (): Promise<SurveyData[]> => {
   try {
@@ -88,8 +63,7 @@ export const fetchSurveys = async (): Promise<SurveyData[]> => {
     const surveys: SurveyData[] = [];
     
     for (const docSnapshot of querySnapshot.docs) {
-      const chartData = await fetchChartData(docSnapshot.id);
-      const survey = mapFirestoreDocToSurvey(docSnapshot.id, docSnapshot.data(), chartData);
+      const survey = mapFirestoreDocToSurvey(docSnapshot.id, docSnapshot.data());
       if (survey) {
         surveys.push(survey);
       }
@@ -114,8 +88,7 @@ export const fetchSurveyById = async (id: string): Promise<SurveyData | null> =>
       return null;
     }
     
-    const chartData = await fetchChartData(docSnapshot.id);
-    return mapFirestoreDocToSurvey(docSnapshot.id, docSnapshot.data(), chartData);
+    return mapFirestoreDocToSurvey(docSnapshot.id, docSnapshot.data());
   } catch (error) {
     console.error(`Error cargando encuesta ${id}:`, error);
     return null;
