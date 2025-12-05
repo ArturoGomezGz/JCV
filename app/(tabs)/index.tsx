@@ -39,7 +39,8 @@ export default function DashboardScreen() {
     title: string, 
     chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar', 
     category: string, 
-    question: string
+    question: string,
+    surveyId?: string
   ) => {
     router.push({
       pathname: '/content/[id]',
@@ -50,7 +51,8 @@ export default function DashboardScreen() {
         category,
         question,
         isGuest: 'false',
-        userEmail
+        userEmail,
+        surveyId
       }
     });
   };

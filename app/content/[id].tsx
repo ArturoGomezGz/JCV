@@ -13,6 +13,7 @@ export default function ContentScreen() {
   const question = params.question as string;
   const isGuest = params.isGuest === 'true';
   const paramUserEmail = params.userEmail as string;
+  const surveyId = params.surveyId as string; // ID de la encuesta en Firebase
 
   const handleBack = () => {
     router.back();
@@ -42,6 +43,7 @@ export default function ContentScreen() {
       userEmail={isGuest ? '' : (paramUserEmail || userEmail)}
       onCreateAccount={handleCreateAccount}
       onHomePress={handleHomePress}
+      surveyId={surveyId}
     />
   );
 }
