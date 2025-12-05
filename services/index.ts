@@ -30,3 +30,11 @@ export {
 } from './userService';
 export type { UserProfile, CreateUserProfileData } from './userService';
 export type { SurveyData, SurveysResponse } from './surveysService';
+
+// Export PDF service
+export {
+  generatePDFReport,
+  generateAndSharePDF,
+  printPDFReport
+} from './pdfService';
+export type { PDFReportData } from './pdfService';

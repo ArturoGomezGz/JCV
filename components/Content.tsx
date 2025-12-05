@@ -14,7 +14,8 @@ import ChartPreview from './ChartPreview';
 import BottomNavigation from './BottomNavigation';
 import { generateChartAnalysis } from '../services';
 import { fetchSurveys, fetchSurveyById, SurveyData } from '../services/surveysService';
-import { showSuccessAlert } from '../utils/alertUtils';
+import { showSuccessAlert, showErrorAlert } from '../utils/alertUtils';
+import { generateAndSharePDF } from '../services/pdfService';
 
 // Definición de la interfaz TypeScript para las props del componente
 interface ContentProps {
@@ -128,19 +129,41 @@ const Content: React.FC<ContentProps> = ({
   };
 
   // Función para manejar la exportación a PDF
-  const handleExportToPDF = () => {
+  const handleExportToPDF = async () => {
     if (isGuest) {
       // Si es invitado, mostrar modal
       setShowGuestModal(true);
     } else {
-      // Si está logueado, mostrar mensaje de confirmación
-      showSuccessAlert(
-        `Se ha enviado el reporte PDF a su correo electrónico: ${userEmail}`,
-        {
-          title: 'Reporte Enviado',
-          buttons: [{ text: 'OK', style: 'default' }]
-        }
-      );
+      try {
+        // Generate and share PDF
+        await generateAndSharePDF({
+          title,
+          chartType,
+          category,
+          question,
+          analysis: generatedText,
+          userEmail,
+          date: new Date(),
+        });
+        
+        // Show success message
+        showSuccessAlert(
+          'El reporte PDF ha sido generado exitosamente. Puedes descargarlo o compartirlo.',
+          {
+            title: 'Reporte Generado',
+            buttons: [{ text: 'OK', style: 'default' }]
+          }
+        );
+      } catch (error) {
+        console.error('Error exporting PDF:', error);
+        showErrorAlert(
+          error instanceof Error ? error.message : 'No se pudo exportar el PDF. Por favor, intenta de nuevo.',
+          {
+            title: 'Error al Exportar',
+            buttons: [{ text: 'OK', style: 'default' }]
+          }
+        );
+      }
     }
   };
 
@@ -203,6 +226,16 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
               {getChartDescription(chartType)}
             </Text>
           </View>
+          
+          {/* Botón de exportar a PDF */}
+          <TouchableOpacity
+            style={styles.exportButton}
+            onPress={handleExportToPDF}
+            disabled={isLoading || hasError}
+          >
+            <Text style={styles.exportButtonIcon}>📄</Text>
+            <Text style={styles.exportButtonText}>Exportar a PDF</Text>
+          </TouchableOpacity>
           
           {/* Texto generado por IA */}
           <View style={styles.contentContainer}>
@@ -430,6 +463,33 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.textSecondary,
     lineHeight: 24,
+  },
+  exportButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.primary,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    marginBottom: 30,
+    shadowColor: colors.primary,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  exportButtonIcon: {
+    fontSize: 20,
+    marginRight: 10,
+  },
+  exportButtonText: {
+    color: colors.surface,
+    fontSize: 18,
+    fontWeight: '700',
   },
   contentContainer: {
     backgroundColor: colors.surface,
