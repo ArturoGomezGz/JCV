@@ -173,7 +173,7 @@ const Content: React.FC<ContentProps> = ({
     }
 
     // Validar que tenemos todos los datos necesarios
-    if (!surveyId || !generatedText || !chartRef.current) {
+    if (!surveyId || !generatedText || !chartRef.current || !chartRef.current.capture) {
       Alert.alert(
         'Error',
         'No se pueden exportar los datos. Intenta recargar la página.',
@@ -187,11 +187,6 @@ const Content: React.FC<ContentProps> = ({
 
       // Capturar la gráfica como imagen
       console.log('📸 Capturando gráfica...');
-      
-      if (!chartRef.current || !chartRef.current.capture) {
-        throw new Error('La referencia a la gráfica no está disponible');
-      }
-      
       const chartImageUri = await chartRef.current.capture();
       
       if (!chartImageUri) {

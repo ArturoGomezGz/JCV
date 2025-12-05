@@ -1,6 +1,10 @@
 /**
  * Servicio para generar reportes PDF de gráficas con análisis de IA
  * Utiliza @react-pdf/renderer para crear PDFs con formato profesional
+ * 
+ * NOTA: Se utiliza expo-file-system/legacy para compatibilidad con React Native.
+ * La API legacy proporciona métodos como readAsStringAsync y writeAsStringAsync
+ * que son necesarios para trabajar con archivos en React Native sin usar APIs web.
  */
 
 import React from 'react';
@@ -269,14 +273,12 @@ const ChartReportDocument: React.FC<PDFExportOptions> = ({
 
 /**
  * Convierte un Blob a base64 usando un ArrayBuffer
+ * Optimizado para mejor rendimiento con archivos grandes
  */
 const blobToBase64 = async (blob: Blob): Promise<string> => {
   const arrayBuffer = await blob.arrayBuffer();
   const bytes = new Uint8Array(arrayBuffer);
-  let binary = '';
-  for (let i = 0; i < bytes.byteLength; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
+  const binary = Array.from(bytes, byte => String.fromCharCode(byte)).join('');
   return btoa(binary);
 };
 
