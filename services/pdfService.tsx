@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { Document, Page, Text, View, Image, StyleSheet, pdf } from '@react-pdf/renderer';
-import { Paths, File } from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 
 // Interfaces para las opciones de exportación
@@ -14,7 +14,7 @@ export interface PDFExportOptions {
   category: string;
   question: string;
   analysisText: string;
-  chartImage: string; // Base64 encoded image
+  chartImageUri: string; // File URI to the chart image
   userEmail: string;
   surveyId: string;
   chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar';
@@ -200,7 +200,7 @@ const ChartReportDocument: React.FC<PDFExportOptions> = ({
   category,
   question,
   analysisText,
-  chartImage,
+  chartImageUri,
   surveyId,
   chartType,
 }) => {
@@ -247,7 +247,7 @@ const ChartReportDocument: React.FC<PDFExportOptions> = ({
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Visualización de Datos</Text>
           <Image
-            src={chartImage}
+            src={chartImageUri}
             style={styles.chartImage}
           />
         </View>
@@ -268,6 +268,19 @@ const ChartReportDocument: React.FC<PDFExportOptions> = ({
 };
 
 /**
+ * Convierte un Blob a base64 usando un ArrayBuffer
+ */
+const blobToBase64 = async (blob: Blob): Promise<string> => {
+  const arrayBuffer = await blob.arrayBuffer();
+  const bytes = new Uint8Array(arrayBuffer);
+  let binary = '';
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+};
+
+/**
  * Genera y guarda un PDF con los datos de la gráfica y el análisis
  */
 export const generateChartPDF = async (
@@ -277,42 +290,42 @@ export const generateChartPDF = async (
     console.log('🔄 Iniciando generación de PDF...');
 
     // Validar datos requeridos
-    if (!options.title || !options.chartImage || !options.analysisText) {
+    if (!options.title || !options.chartImageUri || !options.analysisText) {
       throw new Error('Faltan datos requeridos para generar el PDF');
     }
 
+    // Leer la imagen del chart como base64
+    const chartImageBase64 = await FileSystem.readAsStringAsync(options.chartImageUri, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+    
+    // Crear la imagen con el prefijo data URI para react-pdf
+    const chartImageDataUri = `data:image/png;base64,${chartImageBase64}`;
+
     // Generar el documento PDF
-    const doc = <ChartReportDocument {...options} />;
+    const doc = <ChartReportDocument {...options} chartImageUri={chartImageDataUri} />;
     const asPdf = pdf(doc);
     const blob = await asPdf.toBlob();
 
-    // Convertir blob a base64 para guardarlo
-    const reader = new FileReader();
-    const base64Promise = new Promise<string>((resolve, reject) => {
-      reader.onloadend = () => {
-        const base64data = reader.result as string;
-        resolve(base64data.split(',')[1]); // Remover el prefijo data:application/pdf;base64,
-      };
-      reader.onerror = reject;
-    });
-    reader.readAsDataURL(blob);
-    const base64data = await base64Promise;
+    // Convertir blob a base64 usando ArrayBuffer
+    const base64data = await blobToBase64(blob);
 
-    // Guardar el PDF en el sistema de archivos usando la nueva API
+    // Guardar el PDF en el sistema de archivos
     const fileName = `reporte_${options.surveyId}_${Date.now()}.pdf`;
-    const file = new File(Paths.document, fileName);
+    const fileUri = `${FileSystem.documentDirectory}${fileName}`;
     
-    // Escribir el contenido del PDF en formato base64
-    await file.write(base64data, { encoding: 'base64' });
+    await FileSystem.writeAsStringAsync(fileUri, base64data, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
 
-    console.log('✅ PDF generado exitosamente:', file.uri);
+    console.log('✅ PDF generado exitosamente:', fileUri);
 
     // Verificar si podemos compartir
     const canShare = await Sharing.isAvailableAsync();
     
     if (canShare) {
       // Compartir el archivo
-      await Sharing.shareAsync(file.uri, {
+      await Sharing.shareAsync(fileUri, {
         mimeType: 'application/pdf',
         dialogTitle: 'Compartir Reporte PDF',
         UTI: 'com.adobe.pdf',
@@ -321,13 +334,13 @@ export const generateChartPDF = async (
       return {
         success: true,
         message: 'PDF generado y compartido exitosamente',
-        filePath: file.uri,
+        filePath: fileUri,
       };
     } else {
       return {
         success: true,
         message: 'PDF generado exitosamente',
-        filePath: file.uri,
+        filePath: fileUri,
       };
     }
   } catch (error) {

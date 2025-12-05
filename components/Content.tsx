@@ -187,34 +187,25 @@ const Content: React.FC<ContentProps> = ({
 
       // Capturar la gráfica como imagen
       console.log('📸 Capturando gráfica...');
-      const chartImageUri = await chartRef.current.capture?.();
+      
+      if (!chartRef.current || !chartRef.current.capture) {
+        throw new Error('La referencia a la gráfica no está disponible');
+      }
+      
+      const chartImageUri = await chartRef.current.capture();
       
       if (!chartImageUri) {
         throw new Error('No se pudo capturar la imagen de la gráfica');
       }
 
-      // Convertir la imagen a base64
-      const response = await fetch(chartImageUri);
-      const blob = await response.blob();
-      const reader = new FileReader();
-      
-      const base64Image = await new Promise<string>((resolve, reject) => {
-        reader.onloadend = () => {
-          const base64data = reader.result as string;
-          resolve(base64data);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-      });
-
-      // Generar el PDF
+      // Generar el PDF con el URI de la imagen
       console.log('📄 Generando PDF...');
       const result = await generateChartPDF({
         title,
         category,
         question,
         analysisText: generatedText,
-        chartImage: base64Image,
+        chartImageUri: chartImageUri,
         userEmail: userEmail || '',
         surveyId: surveyId || '',
         chartType,
