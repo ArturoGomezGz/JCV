@@ -104,9 +104,9 @@ const Feed: React.FC<FeedProps> = ({
         </View>
 
         <View style={styles.chartsGrid}>
-          {surveys.map((survey) => (
+          {surveys.map((survey, index) => (
             <ChartCard
-              key={survey.id}
+              key={`${survey.chartType}-${index}`}
               survey={survey}
               onPress={() => handleSurveyPress(survey)}
             />

@@ -8,7 +8,6 @@ import { db } from './firebaseConfig';
 
 // Definición de tipos para las encuestas
 export interface SurveyData {
-  id: string;
   title: string;
   category: string;
   question: string;
@@ -38,7 +37,6 @@ const mapFirestoreDocToSurvey = (docId: string, data: any): SurveyData | null =>
   }
   
   return {
-    id: docId,
     title: data.title,
     category: data.category,
     question: data.question,
