@@ -302,8 +302,8 @@ export const generateChartPDF = async (
     const fileName = `reporte_${options.surveyId}_${Date.now()}.pdf`;
     const file = new File(Paths.document, fileName);
     
-    // Escribir el contenido del PDF
-    await file.write(base64data);
+    // Escribir el contenido del PDF en formato base64
+    await file.write(base64data, { encoding: 'base64' });
 
     console.log('✅ PDF generado exitosamente:', file.uri);
 
