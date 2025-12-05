@@ -50,6 +50,7 @@ const Content: React.FC<ContentProps> = ({
   const [hasError, setHasError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [showGuestModal, setShowGuestModal] = useState<boolean>(false);
+  const [isSavingToDatabase, setIsSavingToDatabase] = useState<boolean>(false);
   
   // Efecto para generar o cargar el texto del reporte
   useEffect(() => {
@@ -57,6 +58,7 @@ const Content: React.FC<ContentProps> = ({
       setIsLoading(true);
       setHasError(false);
       setErrorMessage('');
+      setIsSavingToDatabase(false);
       
       try {
         let reportContent: string | null = null;
@@ -64,6 +66,7 @@ const Content: React.FC<ContentProps> = ({
         // Si hay surveyId, intentar obtener el reporte existente
         if (surveyId) {
           try {
+            console.log(`🔍 Verificando reporte en caché para surveyId: ${surveyId}`);
             const survey = await fetchSurveyById(surveyId);
             
             // Si el reporte ya existe y no está vacío, utilizarlo
@@ -75,11 +78,12 @@ const Content: React.FC<ContentProps> = ({
               return;
             }
           } catch (fetchError) {
-            console.warn('Error verificando reporte:', fetchError);
+            console.warn('Error verificando reporte en caché:', fetchError);
           }
         }
         
         // Si no existe reporte, generar uno nuevo
+        console.log('🤖 Generando nuevo análisis con IA...');
         const analysis = await generateChartAnalysis({
           chartType,
           title,
@@ -89,7 +93,14 @@ const Content: React.FC<ContentProps> = ({
         });
         
         if (analysis && analysis.trim().length > 0) {
+          console.log('✅ Análisis generado correctamente');
           setGeneratedText(analysis);
+          
+          // Si se está guardando en BD, mostrar indicador
+          if (surveyId) {
+            setIsSavingToDatabase(true);
+            setTimeout(() => setIsSavingToDatabase(false), 2000);
+          }
         } else {
           throw new Error('El análisis generado está vacío');
         }
@@ -245,11 +256,19 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
                 </TouchableOpacity>
               </View>
             ) : (
-              <Markdown
-                style={markdownStyles}
-              >
-                {generatedText}
-              </Markdown>
+              <>
+                {isSavingToDatabase && (
+                  <View style={styles.savingIndicator}>
+                    <ActivityIndicator size="small" color={colors.primary} />
+                    <Text style={styles.savingText}>Guardando en base de datos...</Text>
+                  </View>
+                )}
+                <Markdown
+                  style={markdownStyles}
+                >
+                  {generatedText}
+                </Markdown>
+              </>
             )}
           </View>
         </View>
@@ -493,6 +512,24 @@ const styles = StyleSheet.create({
     color: colors.surface,
     fontSize: 16,
     fontWeight: '600',
+  },
+  savingIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginBottom: 16,
+    backgroundColor: '#f0f7ff',
+    borderRadius: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.primary,
+  },
+  savingText: {
+    marginLeft: 10,
+    fontSize: 14,
+    color: colors.primary,
+    fontWeight: '500',
   },
   modalOverlay: {
     flex: 1,

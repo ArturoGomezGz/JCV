@@ -91,11 +91,18 @@ El texto debe ser profesional, informativo y estar en español. Debe tener entre
       throw new Error('OpenAI retornó un análisis vacío');
     }
     
-    // Si se proporciona surveyId, guardar el reporte en Firebase (silenciosamente en background)
+    // Si se proporciona surveyId, guardar el reporte en Firebase
     if (surveyId) {
-      updateSurveyReport(surveyId, generatedAnalysis).catch((error) => {
-        console.warn('No se pudo guardar el reporte en Firebase:', error);
-      });
+      console.log(`🔄 Guardando reporte en Firebase para surveyId: ${surveyId}`);
+      const saveSuccess = await updateSurveyReport(surveyId, generatedAnalysis);
+      
+      if (saveSuccess) {
+        console.log(`✅ Reporte guardado exitosamente en Firebase para ${surveyId}`);
+      } else {
+        console.warn(`⚠️ No se pudo guardar el reporte en Firebase para ${surveyId}, pero el análisis se mostrará correctamente`);
+      }
+    } else {
+      console.log('ℹ️ No se proporcionó surveyId, el reporte no será almacenado en caché');
     }
     
     return generatedAnalysis;

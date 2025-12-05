@@ -67,7 +67,8 @@ const Feed: React.FC<FeedProps> = ({
         survey.title,
         survey.chartType,
         survey.category,
-        survey.question
+        survey.question,
+        survey.id // Pasar el ID del documento como surveyId
       );
     }
   };

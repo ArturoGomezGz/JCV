@@ -8,6 +8,7 @@ import { db } from './firebaseConfig';
 
 // Definición de tipos para las encuestas
 export interface SurveyData {
+  id: string; // ID del documento en Firestore (ej: "001", "002")
   title: string;
   category: string;
   question: string;
@@ -38,6 +39,7 @@ const mapFirestoreDocToSurvey = (docId: string, data: any): SurveyData | null =>
   }
   
   return {
+    id: docId,
     title: data.title,
     category: data.category,
     question: data.question,
@@ -147,23 +149,51 @@ export const fetchSurveyStats = async () => {
 
 /**
  * Actualiza el campo 'report' de una encuesta en Firestore
- * Esta operación es silenciosa - no lanza errores si falla
+ * Implementa reintentos automáticos en caso de falla
  * @param surveyId ID de la encuesta a actualizar
  * @param report Contenido del reporte en formato Markdown
+ * @param maxRetries Número máximo de reintentos (default: 3)
  * @returns true si la actualización fue exitosa, false en caso contrario
  */
-export const updateSurveyReport = async (surveyId: string, report: string): Promise<boolean> => {
-  try {
-    const docRef = doc(db, 'feed', surveyId);
-    
-    await updateDoc(docRef, {
-      report: report
-    });
-    
-    return true;
-  } catch (error) {
-    // No lanzar errores - solo loguear silenciosamente
-    console.warn(`No se pudo guardar el reporte en Firebase para ${surveyId}. El análisis se mostrará normalmente.`, error);
-    return false;
+export const updateSurveyReport = async (
+  surveyId: string,
+  report: string,
+  maxRetries: number = 3
+): Promise<boolean> => {
+  let lastError: any;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      if (!surveyId || !report) {
+        console.error('❌ updateSurveyReport: Parámetros inválidos', { surveyId, reportLength: report?.length });
+        return false;
+      }
+
+      console.log(`📝 Intentando guardar reporte para ${surveyId} (intento ${attempt}/${maxRetries})...`);
+      
+      const docRef = doc(db, 'feed', surveyId);
+      
+      await updateDoc(docRef, {
+        report: report,
+        reportUpdatedAt: new Date().toISOString() // Añadir timestamp
+      });
+      
+      console.log(`✅ Reporte guardado exitosamente para ${surveyId}`);
+      return true;
+    } catch (error) {
+      lastError = error;
+      console.error(`⚠️ Error en intento ${attempt}/${maxRetries} al guardar reporte para ${surveyId}:`, error);
+      
+      // Esperar antes de reintentar (backoff exponencial)
+      if (attempt < maxRetries) {
+        const delayMs = Math.pow(2, attempt - 1) * 1000; // 1s, 2s, 4s
+        console.log(`⏳ Reintentando en ${delayMs}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+      }
+    }
   }
+  
+  // Si llegamos aquí, fallaron todos los intentos
+  console.error(`❌ No se pudo guardar el reporte para ${surveyId} después de ${maxRetries} intentos. El análisis se mostrará normalmente.`, lastError);
+  return false;
 };
