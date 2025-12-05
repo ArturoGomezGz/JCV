@@ -51,6 +51,24 @@ const Content: React.FC<ContentProps> = ({
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [showGuestModal, setShowGuestModal] = useState<boolean>(false);
   const [isSavingToDatabase, setIsSavingToDatabase] = useState<boolean>(false);
+  const [surveyData, setSurveyData] = useState<SurveyData | null>(null);
+  
+  // Efecto para cargar los datos del survey
+  useEffect(() => {
+    const loadSurveyData = async () => {
+      try {
+        const data = await fetchSurveys();
+        const survey = data.find(s => s.chartType === chartType);
+        if (survey) {
+          setSurveyData(survey);
+        }
+      } catch (error) {
+        console.error('Error cargando datos del survey:', error);
+      }
+    };
+
+    loadSurveyData();
+  }, [chartType]);
   
   // Efecto para generar o cargar el texto del reporte
   useEffect(() => {
@@ -89,7 +107,8 @@ const Content: React.FC<ContentProps> = ({
           title,
           category,
           question,
-          surveyId
+          surveyId,
+          chartData: surveyData?.chartData
         });
         
         if (analysis && analysis.trim().length > 0) {
@@ -114,7 +133,7 @@ const Content: React.FC<ContentProps> = ({
     };
 
     loadOrGenerateAnalysis();
-  }, [chartType, title, surveyId]);
+  }, [chartType, title, surveyId, surveyData]);
   // Estado para almacenar surveys desde Firebase
   const [surveys, setSurveys] = useState<SurveyData[]>([]);
 
@@ -238,7 +257,8 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
                           title,
                           category,
                           question,
-                          surveyId
+                          surveyId,
+                          chartData: surveyData?.chartData
                         });
                         setGeneratedText(analysis);
                         setHasError(false);

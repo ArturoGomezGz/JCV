@@ -13,14 +13,116 @@ export interface ChartAnalysisParams {
   category: string;
   question: string;
   surveyId?: string; // ID opcional de la encuesta para guardar el reporte en Firebase
+  chartData?: {
+    labels?: string[];
+    values?: number[];
+    datasets?: Array<{
+      name?: string;
+      values: number[];
+    }>;
+    series?: string[];
+    startDate?: string;
+    endDate?: string;
+  };
 }
+
+// Función auxiliar para formatear los datos del gráfico de manera legible para el prompt
+const formatChartDataForPrompt = (
+  chartData: ChartAnalysisParams['chartData'] | undefined,
+  chartType: string
+): string => {
+  if (!chartData) {
+    return 'No se proporcionaron datos específicos de la gráfica.';
+  }
+
+  let description = '';
+
+  switch (chartType) {
+    case 'pie':
+    case 'bar':
+    case 'horizontalBar':
+      if (chartData.labels && chartData.values) {
+        description = 'Distribución de datos:\n';
+        chartData.labels.forEach((label, index) => {
+          const value = chartData.values?.[index] ?? 0;
+          description += `  - ${label}: ${value}%\n`;
+        });
+      }
+      break;
+
+    case 'line':
+    case 'bezierLine':
+    case 'areaChart':
+      if (chartData.labels && chartData.values) {
+        description = 'Tendencia temporal:\n';
+        chartData.labels.forEach((label, index) => {
+          const value = chartData.values?.[index] ?? 0;
+          description += `  - ${label}: ${value}\n`;
+        });
+      } else if (chartData.datasets && chartData.datasets.length > 0) {
+        description = 'Series de datos:\n';
+        chartData.datasets.forEach((dataset) => {
+          description += `  - ${dataset.name || 'Serie'}: [${dataset.values?.join(', ') || 'sin datos'}]\n`;
+        });
+      }
+      break;
+
+    case 'progress':
+      if (chartData.labels && chartData.values) {
+        description = 'Progreso por categoría:\n';
+        chartData.labels.forEach((label, index) => {
+          const value = chartData.values?.[index] ?? 0;
+          description += `  - ${label}: ${value}%\n`;
+        });
+      }
+      break;
+
+    case 'stackedBar':
+      if (chartData.labels && chartData.series) {
+        description = 'Datos apilados por categoría:\n';
+        chartData.labels.forEach((label, index) => {
+          description += `  - ${label}\n`;
+        });
+        description += `  - Series: ${chartData.series.join(', ')}\n`;
+      }
+      break;
+
+    case 'contribution':
+      if (chartData.startDate && chartData.endDate) {
+        description = `Contribuciones del período ${chartData.startDate} al ${chartData.endDate}.\n`;
+        if (chartData.values && chartData.values.length > 0) {
+          const sum = chartData.values.reduce((a, b) => a + b, 0);
+          const avg = sum / chartData.values.length;
+          description += `  - Total de contribuciones: ${sum}\n`;
+          description += `  - Promedio diario: ${avg.toFixed(1)}\n`;
+          description += `  - Máximo: ${Math.max(...chartData.values)}\n`;
+          description += `  - Mínimo: ${Math.min(...chartData.values)}\n`;
+        }
+      }
+      break;
+
+    default:
+      if (chartData.labels && chartData.values) {
+        description = 'Datos:\n';
+        chartData.labels.forEach((label, index) => {
+          const value = chartData.values?.[index] ?? 0;
+          description += `  - ${label}: ${value}\n`;
+        });
+      } else {
+        description = JSON.stringify(chartData, null, 2);
+      }
+  }
+
+  return description || 'Sin datos disponibles para mostrar.';
+};
 
 export const generateChartAnalysis = async ({
   chartType,
   title,
   category,
   question,
-  surveyId
+  surveyId,
+  chartData
 }: ChartAnalysisParams): Promise<string> => {
   // Verificar si el modo AI está habilitado
   const aiModeEnabled = process.env.EXPO_PUBLIC_AI_MODE_ENABLED === 'true';
@@ -39,6 +141,9 @@ export const generateChartAnalysis = async ({
     // Obtener el modelo desde variables de entorno o usar el más barato por defecto
     const model = process.env.EXPO_PUBLIC_OPENAI_MODEL || 'gpt-3.5-turbo';
 
+    // Formatear los datos del gráfico para incluir en el prompt
+    const chartDataDescription = formatChartDataForPrompt(chartData, chartType);
+
     const prompt = `
 Genera un análisis detallado en español para una gráfica de satisfacción ciudadana con las siguientes características:
 
@@ -46,6 +151,9 @@ Título: ${title}
 Categoría: ${category}
 Pregunta de la encuesta: ${question}
 Tipo de gráfica: ${chartType}
+
+DATOS DE LA GRÁFICA:
+${chartDataDescription}
 
 CONTEXTO IMPORTANTE: 
 Esta gráfica forma parte de un sistema de medición de satisfacción ciudadana. La categoría "${category}" agrupa preguntas relacionadas, y esta visualización específica responde a la pregunta: "${question}".
