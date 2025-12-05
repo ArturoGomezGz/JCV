@@ -13,7 +13,7 @@ import { colors } from '../constants/Colors';
 import ChartPreview from './ChartPreview';
 import BottomNavigation from './BottomNavigation';
 import { generateChartAnalysis } from '../services';
-import { fetchSurveys, SurveyData } from '../services/surveysService';
+import { fetchSurveys, fetchSurveyById, SurveyData } from '../services/surveysService';
 import { showSuccessAlert } from '../utils/alertUtils';
 
 // Definición de la interfaz TypeScript para las props del componente
@@ -27,6 +27,7 @@ interface ContentProps {
   userEmail?: string;
   onCreateAccount?: () => void;
   onHomePress?: () => void;
+  surveyId?: string; // ID de la encuesta en Firebase para guardar reportes
 }
 
 // Componente Content para mostrar los detalles de una gráfica
@@ -39,7 +40,8 @@ const Content: React.FC<ContentProps> = ({
   isGuest = false,
   userEmail,
   onCreateAccount,
-  onHomePress
+  onHomePress,
+  surveyId
 }) => {
   
   // Estado para el texto generado por IA
@@ -49,23 +51,50 @@ const Content: React.FC<ContentProps> = ({
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [showGuestModal, setShowGuestModal] = useState<boolean>(false);
   
-  // Efecto para generar el texto con OpenAI al montar el componente
+  // Efecto para generar o cargar el texto del reporte
   useEffect(() => {
-    const generateAnalysis = async () => {
+    const loadOrGenerateAnalysis = async () => {
       setIsLoading(true);
       setHasError(false);
       setErrorMessage('');
       
       try {
+        let reportContent: string | null = null;
+        
+        // Si hay surveyId, intentar obtener el reporte existente
+        if (surveyId) {
+          try {
+            const survey = await fetchSurveyById(surveyId);
+            
+            // Si el reporte ya existe y no está vacío, utilizarlo
+            if (survey && survey.report && survey.report.trim().length > 0) {
+              console.log('✓ Usando reporte en caché para:', surveyId);
+              reportContent = survey.report;
+              setGeneratedText(reportContent);
+              setIsLoading(false);
+              return;
+            }
+          } catch (fetchError) {
+            console.warn('Error verificando reporte:', fetchError);
+          }
+        }
+        
+        // Si no existe reporte, generar uno nuevo
         const analysis = await generateChartAnalysis({
           chartType,
           title,
           category,
-          question
+          question,
+          surveyId
         });
-        setGeneratedText(analysis);
+        
+        if (analysis && analysis.trim().length > 0) {
+          setGeneratedText(analysis);
+        } else {
+          throw new Error('El análisis generado está vacío');
+        }
       } catch (error) {
-        console.error('Error generating analysis:', error);
+        console.error('Error generando análisis:', error);
         setHasError(true);
         setErrorMessage(error instanceof Error ? error.message : 'Error desconocido');
       } finally {
@@ -73,8 +102,8 @@ const Content: React.FC<ContentProps> = ({
       }
     };
 
-    generateAnalysis();
-  }, [chartType, title]);
+    loadOrGenerateAnalysis();
+  }, [chartType, title, surveyId]);
   // Estado para almacenar surveys desde Firebase
   const [surveys, setSurveys] = useState<SurveyData[]>([]);
 
@@ -197,7 +226,8 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
                           chartType,
                           title,
                           category,
-                          question
+                          question,
+                          surveyId
                         });
                         setGeneratedText(analysis);
                         setHasError(false);

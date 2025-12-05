@@ -20,7 +20,7 @@ import { showErrorAlert } from '../utils/alertUtils';
 interface FeedProps {
   isGuest?: boolean;
   userName?: string;
-  onChartPress?: (title: string, chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar', category: string, question: string) => void;
+  onChartPress?: (title: string, chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar', category: string, question: string, surveyId?: string) => void;
   onProfilePress?: () => void;
   onForumPress?: () => void;
 }
@@ -67,7 +67,8 @@ const Feed: React.FC<FeedProps> = ({
         survey.title,
         survey.chartType,
         survey.category,
-        survey.question
+        survey.question,
+        survey.id
       );
     }
   };

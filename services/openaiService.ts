@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { updateSurveyReport } from './surveysService';
 
 // Configuración del cliente OpenAI
 const openai = new OpenAI({
@@ -11,13 +12,15 @@ export interface ChartAnalysisParams {
   title: string;
   category: string;
   question: string;
+  surveyId?: string; // ID opcional de la encuesta para guardar el reporte en Firebase
 }
 
 export const generateChartAnalysis = async ({
   chartType,
   title,
   category,
-  question
+  question,
+  surveyId
 }: ChartAnalysisParams): Promise<string> => {
   // Verificar si el modo AI está habilitado
   const aiModeEnabled = process.env.EXPO_PUBLIC_AI_MODE_ENABLED === 'true';
@@ -81,7 +84,21 @@ El texto debe ser profesional, informativo y estar en español. Debe tener entre
       temperature: 0.7,
     });
 
-    return response.choices[0]?.message?.content || 'No se pudo generar el análisis.';
+    const generatedAnalysis = response.choices[0]?.message?.content || 'No se pudo generar el análisis.';
+    
+    // Validar que el análisis no esté vacío
+    if (!generatedAnalysis.trim().length) {
+      throw new Error('OpenAI retornó un análisis vacío');
+    }
+    
+    // Si se proporciona surveyId, guardar el reporte en Firebase (silenciosamente en background)
+    if (surveyId) {
+      updateSurveyReport(surveyId, generatedAnalysis).catch((error) => {
+        console.warn('No se pudo guardar el reporte en Firebase:', error);
+      });
+    }
+    
+    return generatedAnalysis;
   } catch (error) {
     console.error('Error al generar análisis con OpenAI:', error);
     

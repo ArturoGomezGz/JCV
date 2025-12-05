@@ -3,7 +3,7 @@
  * Obtiene datos desde Firestore en la colección 'feed'
  */
 
-import { collection, getDocs, doc, getDoc, query } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, query, updateDoc } from 'firebase/firestore';
 import { db } from './firebaseConfig';
 
 // Definición de tipos para las encuestas
@@ -14,6 +14,7 @@ export interface SurveyData {
   chartType: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar';
   description: string;
   chartData: any; // Estructura flexible para diferentes tipos de gráficos
+  report?: string; // Campo opcional para almacenar el reporte generado por IA en formato Markdown
 }
 
 export interface SurveysResponse {
@@ -42,7 +43,8 @@ const mapFirestoreDocToSurvey = (docId: string, data: any): SurveyData | null =>
     question: data.question,
     chartType: data.chartType,
     description: data.description,
-    chartData: data.chartData
+    chartData: data.chartData,
+    report: data.report // Campo opcional para reportes cacheados
   };
 };
 
@@ -140,5 +142,28 @@ export const fetchSurveyStats = async () => {
   } catch (error) {
     console.error('Error calculando estadísticas:', error);
     return null;
+  }
+};
+
+/**
+ * Actualiza el campo 'report' de una encuesta en Firestore
+ * Esta operación es silenciosa - no lanza errores si falla
+ * @param surveyId ID de la encuesta a actualizar
+ * @param report Contenido del reporte en formato Markdown
+ * @returns true si la actualización fue exitosa, false en caso contrario
+ */
+export const updateSurveyReport = async (surveyId: string, report: string): Promise<boolean> => {
+  try {
+    const docRef = doc(db, 'feed', surveyId);
+    
+    await updateDoc(docRef, {
+      report: report
+    });
+    
+    return true;
+  } catch (error) {
+    // No lanzar errores - solo loguear silenciosamente
+    console.warn(`No se pudo guardar el reporte en Firebase para ${surveyId}. El análisis se mostrará normalmente.`, error);
+    return false;
   }
 };
