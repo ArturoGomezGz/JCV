@@ -51,6 +51,7 @@ const Content: React.FC<ContentProps> = ({
   const [hasError, setHasError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [showGuestModal, setShowGuestModal] = useState<boolean>(false);
+  const [isExportingPDF, setIsExportingPDF] = useState<boolean>(false);
   
   // Efecto para generar o cargar el texto del reporte
   useEffect(() => {
@@ -134,6 +135,7 @@ const Content: React.FC<ContentProps> = ({
       // Si es invitado, mostrar modal
       setShowGuestModal(true);
     } else {
+      setIsExportingPDF(true);
       try {
         // Generate and share PDF
         await generateAndSharePDF({
@@ -163,6 +165,8 @@ const Content: React.FC<ContentProps> = ({
             buttons: [{ text: 'OK', style: 'default' }]
           }
         );
+      } finally {
+        setIsExportingPDF(false);
       }
     }
   };
@@ -229,12 +233,21 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
           
           {/* Botón de exportar a PDF */}
           <TouchableOpacity
-            style={styles.exportButton}
+            style={[styles.exportButton, (isLoading || hasError || isExportingPDF) && styles.exportButtonDisabled]}
             onPress={handleExportToPDF}
-            disabled={isLoading || hasError}
+            disabled={isLoading || hasError || isExportingPDF}
           >
-            <Text style={styles.exportButtonIcon}>📄</Text>
-            <Text style={styles.exportButtonText}>Exportar a PDF</Text>
+            {isExportingPDF ? (
+              <>
+                <ActivityIndicator size="small" color={colors.surface} style={styles.exportButtonIcon} />
+                <Text style={styles.exportButtonText}>Generando PDF...</Text>
+              </>
+            ) : (
+              <>
+                <Text style={styles.exportButtonIcon}>📄</Text>
+                <Text style={styles.exportButtonText}>Exportar a PDF</Text>
+              </>
+            )}
           </TouchableOpacity>
           
           {/* Texto generado por IA */}
@@ -490,6 +503,10 @@ const styles = StyleSheet.create({
     color: colors.surface,
     fontSize: 18,
     fontWeight: '700',
+  },
+  exportButtonDisabled: {
+    backgroundColor: '#ccc',
+    shadowOpacity: 0.1,
   },
   contentContainer: {
     backgroundColor: colors.surface,

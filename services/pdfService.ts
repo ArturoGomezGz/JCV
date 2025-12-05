@@ -27,7 +27,7 @@ const generateHTMLContent = (data: PDFReportData): string => {
 
   // Convert markdown-like formatting to HTML
   const formatAnalysis = (text: string): string => {
-    return text
+    let html = text
       // Bold text
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       // Italic text
@@ -35,13 +35,32 @@ const generateHTMLContent = (data: PDFReportData): string => {
       // Headers
       .replace(/^### (.+)$/gm, '<h3>$1</h3>')
       .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-      .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-      // Bullet points
-      .replace(/^[•\-*] (.+)$/gm, '<li>$1</li>')
-      // Paragraphs
-      .replace(/\n\n/g, '</p><p>')
-      // Line breaks
-      .replace(/\n/g, '<br/>');
+      .replace(/^# (.+)$/gm, '<h1>$1</h1>');
+
+    // Handle bullet points by wrapping consecutive items in ul tags
+    html = html.replace(/^([•\-*] .+)(\n[•\-*] .+)*/gm, (match) => {
+      const items = match
+        .split('\n')
+        .map(line => line.replace(/^[•\-*] (.+)$/, '<li>$1</li>'))
+        .join('\n');
+      return `<ul>\n${items}\n</ul>`;
+    });
+
+    // Split by paragraphs and wrap them properly
+    const paragraphs = html.split('\n\n').filter(p => p.trim());
+    html = paragraphs
+      .map(p => {
+        // Don't wrap headers, lists, or already wrapped elements
+        if (p.match(/^<(h[1-3]|ul|ol|div|blockquote)/)) {
+          return p;
+        }
+        // Replace single line breaks within paragraphs
+        const content = p.replace(/\n/g, '<br/>');
+        return `<p>${content}</p>`;
+      })
+      .join('\n');
+
+    return html;
   };
 
   const formattedAnalysis = formatAnalysis(data.analysis);
@@ -268,7 +287,7 @@ const generateHTMLContent = (data: PDFReportData): string => {
   <div class="section">
     <h2 class="section-title">Análisis e Interpretación</h2>
     <div class="content">
-      <p>${formattedAnalysis}</p>
+      ${formattedAnalysis}
     </div>
   </div>
 
