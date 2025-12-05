@@ -67,8 +67,7 @@ const Feed: React.FC<FeedProps> = ({
         survey.title,
         survey.chartType,
         survey.category,
-        survey.question,
-        survey.id
+        survey.question
       );
     }
   };
