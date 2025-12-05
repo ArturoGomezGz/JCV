@@ -32,12 +32,14 @@ interface ChartPreviewProps {
   type: 'bar' | 'line' | 'pie' | 'progress' | 'contribution' | 'stackedBar' | 'bezierLine' | 'areaChart' | 'horizontalBar';
   height?: number;
   surveyData?: SurveyData;
+  surveyId?: string; // ID único para identificar la gráfica exacta
 }
 
 const ChartPreview: React.FC<ChartPreviewProps> = ({
   type,
   height,
   surveyData,
+  surveyId,
 }) => {
   const [containerWidth, setContainerWidth] = useState<number>(300);
   const [surveyInfo, setSurveyInfo] = useState<{ title: string; category: string }>({
@@ -51,7 +53,7 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
   useEffect(() => {
     const loadSurveys = async () => {
       try {
-        // Si se proporciona surveyData directamente, usarlo
+        // Si se proporciona surveyData directamente, usarlo (es el más exacto)
         if (surveyData) {
           setSurveyInfo({
             title: surveyData.title,
@@ -62,7 +64,24 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
           return;
         }
 
-        // Si no, cargar todos los surveys
+        // Si hay surveyId, buscar exactamente ese survey por ID
+        if (surveyId) {
+          const data = await fetchSurveys();
+          const survey = data.find(s => s.id === surveyId);
+          if (survey) {
+            setSurveyInfo({
+              title: survey.title,
+              category: survey.category
+            });
+            setSurveys([survey]);
+          } else {
+            console.warn(`Survey con ID ${surveyId} no encontrado`);
+          }
+          setIsLoading(false);
+          return;
+        }
+
+        // Si no, cargar todos los surveys (caso de compatibilidad hacia atrás)
         const data = await fetchSurveys();
         setSurveys(data);
         
@@ -82,11 +101,17 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
     };
 
     loadSurveys();
-  }, [type, surveyData]);
+  }, [type, surveyData, surveyId]);
 
   // Función para generar datos basados en la información del survey
   const generateChartData = (chartType: string) => {
-    const survey = surveys.find(s => s.chartType === chartType);
+    // Prioridad 1: Si se pasó surveyData directamente, usarlo
+    let survey = surveyData;
+    
+    // Si no, buscar en los surveys cargados
+    if (!survey && surveys.length > 0) {
+      survey = surveys[0]; // Ya está filtrado en el useEffect
+    }
     
     if (!survey || !survey.chartData) {
       return null;
@@ -181,7 +206,7 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
   
   const handleLayout = (event: LayoutChangeEvent) => {
     const { width } = event.nativeEvent.layout;
-    setContainerWidth(width - 20); // Dejamos un padding de 10px a cada lado
+    setContainerWidth(Math.max(300, width - 60)); // Reducimos el ancho para evitar cortes, mínimo 300
   };
 
   // Mostrar indicador de carga mientras se cargan los datos
@@ -203,17 +228,17 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
       case 'bezierLine':
       case 'areaChart':
       case 'horizontalBar':
-        return 200;
+        return 280;
       case 'pie':
-        return 280; // Aumentamos aún más para acomodar leyendas debajo
+        return 380; // Aumentamos para acomodar leyendas debajo sin cortes
       case 'progress':
-        return 160;
+        return 220;
       case 'contribution':
-        return 130; // Más compacto para el heatmap
+        return 180; // Más espacio para el heatmap
       case 'stackedBar':
-        return 200;
+        return 280;
       default:
-        return 200;
+        return 280;
     }
   };
 
@@ -297,7 +322,7 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
         <PieChart
           data={data}
           width={containerWidth}
-          height={chartHeight - 60} // Reducimos altura para dejar espacio a leyendas
+          height={chartHeight - 100} // Dejamos más espacio para la leyenda personalizada
           chartConfig={chartConfig}
           accessor="population"
           backgroundColor="transparent"
@@ -306,7 +331,7 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
           center={[Math.max(10, (containerWidth - 200) / 4), 20]}
           absolute
         />
-        {/* Leyenda personalizada debajo */}
+        {/* Leyenda personalizada debajo con mejor espaciado */}
         <View style={styles.legendContainer}>
           {data.map((item, index) => (
             <View key={index} style={styles.legendItem}>
@@ -511,16 +536,16 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: '#ffffff',
     width: '100%',
+    paddingHorizontal: 0,
   },
   loadingContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#ffffff',
     width: '100%',
+    paddingVertical: 40,
   },
   chartContainer: {
     alignItems: 'center',
@@ -530,6 +555,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     marginVertical: 5,
     width: '100%',
+    justifyContent: 'center',
   },
   title: {
     fontSize: 16,
@@ -547,15 +573,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 10,
+    alignItems: 'flex-start',
+    marginTop: 15,
     paddingHorizontal: 15,
+    paddingVertical: 10,
+    marginBottom: 5,
   },
   legendItem: {
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: 8,
-    marginVertical: 4,
+    marginVertical: 6,
   },
   legendColor: {
     width: 12,

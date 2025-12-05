@@ -42,6 +42,7 @@ const ChartCard: React.FC<ChartCardProps> = ({
                     <ChartPreview 
                         type={survey.chartType}
                         surveyData={survey}
+                        surveyId={survey.id}
                     />
                 )}
             </View>
@@ -79,8 +80,9 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     chartContainer: {
-        paddingHorizontal: 20,
+        paddingHorizontal: 30,
         paddingVertical: 10,
+        minHeight: 200,
     },
     loadingContainer: {
         justifyContent: 'center',

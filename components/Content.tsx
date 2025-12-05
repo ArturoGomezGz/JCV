@@ -58,7 +58,16 @@ const Content: React.FC<ContentProps> = ({
     const loadSurveyData = async () => {
       try {
         const data = await fetchSurveys();
-        const survey = data.find(s => s.chartType === chartType);
+        
+        // Prioridad: Si hay surveyId, buscar por ID exacto
+        let survey = null;
+        if (surveyId) {
+          survey = data.find(s => s.id === surveyId);
+        } else {
+          // Fallback: buscar por chartType
+          survey = data.find(s => s.chartType === chartType);
+        }
+        
         if (survey) {
           setSurveyData(survey);
         }
@@ -68,7 +77,7 @@ const Content: React.FC<ContentProps> = ({
     };
 
     loadSurveyData();
-  }, [chartType]);
+  }, [chartType, surveyId]);
   
   // Efecto para generar o cargar el texto del reporte
   useEffect(() => {
@@ -153,7 +162,13 @@ const Content: React.FC<ContentProps> = ({
   
   // Función para obtener la descripción según el tipo de gráfica
   const getChartDescription = (type: string) => {
-    const survey = surveys.find(survey => survey.chartType === type);
+    // Prioridad: Si hay surveyData, usar su descripción
+    if (surveyData) {
+      return surveyData.description;
+    }
+    
+    // Fallback: buscar en la lista de surveys
+    const survey = surveys.find(survey => survey.id === surveyId);
     return survey ? survey.description : 'Esta gráfica presenta información importante de manera visual y fácil de interpretar.';
   };
 
@@ -223,6 +238,8 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
           <View style={styles.chartContainer}>
             <ChartPreview 
               type={chartType}
+              surveyData={surveyData || undefined}
+              surveyId={surveyId}
             />
           </View>
           
