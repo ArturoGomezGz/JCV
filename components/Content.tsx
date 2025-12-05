@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,9 @@ import {
   ScrollView,
   ActivityIndicator,
   Modal,
+  Alert,
 } from 'react-native';
+import ViewShot from 'react-native-view-shot';
 import Markdown from 'react-native-markdown-display';
 import { colors } from '../constants/Colors';
 import ChartPreview from './ChartPreview';
@@ -15,6 +17,7 @@ import BottomNavigation from './BottomNavigation';
 import { generateChartAnalysis } from '../services';
 import { fetchSurveys, fetchSurveyById, SurveyData } from '../services/surveysService';
 import { showSuccessAlert } from '../utils/alertUtils';
+import { generateChartPDF } from '../services/pdfService';
 
 // Definición de la interfaz TypeScript para las props del componente
 interface ContentProps {
@@ -52,6 +55,10 @@ const Content: React.FC<ContentProps> = ({
   const [showGuestModal, setShowGuestModal] = useState<boolean>(false);
   const [isSavingToDatabase, setIsSavingToDatabase] = useState<boolean>(false);
   const [surveyData, setSurveyData] = useState<SurveyData | null>(null);
+  const [isExportingPDF, setIsExportingPDF] = useState<boolean>(false);
+  
+  // Ref para capturar la gráfica como imagen
+  const chartRef = useRef<ViewShot>(null);
   
   // Efecto para cargar los datos del survey
   useEffect(() => {
@@ -158,19 +165,65 @@ const Content: React.FC<ContentProps> = ({
   };
 
   // Función para manejar la exportación a PDF
-  const handleExportToPDF = () => {
+  const handleExportToPDF = async () => {
     if (isGuest) {
       // Si es invitado, mostrar modal
       setShowGuestModal(true);
-    } else {
-      // Si está logueado, mostrar mensaje de confirmación
-      showSuccessAlert(
-        `Se ha enviado el reporte PDF a su correo electrónico: ${userEmail}`,
-        {
-          title: 'Reporte Enviado',
-          buttons: [{ text: 'OK', style: 'default' }]
-        }
+      return;
+    }
+
+    // Validar que tenemos todos los datos necesarios
+    if (!surveyId || !generatedText || !chartRef.current || !chartRef.current.capture) {
+      Alert.alert(
+        'Error',
+        'No se pueden exportar los datos. Intenta recargar la página.',
+        [{ text: 'OK', style: 'default' }]
       );
+      return;
+    }
+
+    try {
+      setIsExportingPDF(true);
+
+      // Capturar la gráfica como imagen
+      console.log('📸 Capturando gráfica...');
+      const chartImageUri = await chartRef.current.capture();
+      
+      if (!chartImageUri) {
+        throw new Error('No se pudo capturar la imagen de la gráfica');
+      }
+
+      // Generar el PDF con el URI de la imagen
+      console.log('📄 Generando PDF...');
+      const result = await generateChartPDF({
+        title,
+        category,
+        question,
+        analysisText: generatedText,
+        chartImageUri: chartImageUri,
+        userEmail: userEmail || '',
+        surveyId: surveyId || '',
+        chartType,
+      });
+
+      if (result.success) {
+        Alert.alert(
+          'Éxito',
+          'El reporte PDF se ha generado y compartido exitosamente.',
+          [{ text: 'OK', style: 'default' }]
+        );
+      } else {
+        throw new Error(result.error || 'Error desconocido');
+      }
+    } catch (error) {
+      console.error('Error exportando a PDF:', error);
+      Alert.alert(
+        'Error',
+        `No se pudo generar el PDF: ${error instanceof Error ? error.message : 'Error desconocido'}`,
+        [{ text: 'OK', style: 'default' }]
+      );
+    } finally {
+      setIsExportingPDF(false);
     }
   };
 
@@ -220,11 +273,13 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
           </View>
           
           {/* Contenedor de la gráfica */}
-          <View style={styles.chartContainer}>
-            <ChartPreview 
-              type={chartType}
-            />
-          </View>
+          <ViewShot ref={chartRef} options={{ format: 'png', quality: 1.0 }}>
+            <View style={styles.chartContainer}>
+              <ChartPreview 
+                type={chartType}
+              />
+            </View>
+          </ViewShot>
           
           {/* Descripción de la gráfica */}
           <View style={styles.descriptionContainer}>
@@ -288,6 +343,24 @@ La información se actualiza en tiempo real y refleja los datos más recientes d
                 >
                   {generatedText}
                 </Markdown>
+
+                {/* Botón de exportación a PDF */}
+                <TouchableOpacity
+                  style={[styles.exportButton, isExportingPDF && styles.exportButtonDisabled]}
+                  onPress={handleExportToPDF}
+                  disabled={isExportingPDF}
+                >
+                  {isExportingPDF ? (
+                    <>
+                      <ActivityIndicator size="small" color={colors.surface} style={{ marginRight: 10 }} />
+                      <Text style={styles.exportButtonText}>Generando PDF...</Text>
+                    </>
+                  ) : (
+                    <>
+                      <Text style={styles.exportButtonText}>📄 Exportar a PDF</Text>
+                    </>
+                  )}
+                </TouchableOpacity>
               </>
             )}
           </View>
@@ -550,6 +623,34 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.primary,
     fontWeight: '500',
+  },
+  exportButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.primary,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    marginTop: 20,
+    shadowColor: colors.primary,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  exportButtonDisabled: {
+    opacity: 0.6,
+    backgroundColor: '#999999',
+  },
+  exportButtonText: {
+    color: colors.surface,
+    fontSize: 16,
+    fontWeight: '700',
+    textAlign: 'center',
   },
   modalOverlay: {
     flex: 1,
